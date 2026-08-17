@@ -4,15 +4,15 @@ Portfolio personnel full-stack, administrable et déployable. La partie publique
 
 ## Stack et architecture
 
-- **Frontend** : React 19, React Router 8 en Framework Mode avec SSR, TypeScript strict, Vite, Tailwind CSS 4, React Hook Form, Zod, Vitest, Testing Library, Playwright et axe-core.
+- **Frontend** : Next.js 16 avec App Router et React 19, Server Components, TypeScript strict, Tailwind CSS 4, React Hook Form, Zod, Vitest, Testing Library, Playwright et axe-core.
 - **Backend** : Java 21, Spring Boot 4, Spring MVC, Spring Security, Spring Data JPA, Bean Validation, Flyway, PostgreSQL, Spring Session JDBC, OpenAPI et AWS SDK S3.
 - **Infrastructure** : Docker Compose, PostgreSQL 17, MinIO en développement, stockage compatible S3 en production et Nginx non-root comme reverse proxy.
 - **Design** : une seule famille, Manrope Variable auto-hébergée, palette orange en OKLCH, thème clair minéral et thème sombre graphite.
 
 ```text
 portfolio/
-├── frontend/                 # application React publique + /admin
-│   ├── app/                  # routes, composants, contenu et styles
+├── frontend/                 # application Next.js publique + /admin
+│   ├── app/                  # App Router, composants, contenu et styles
 │   ├── public/               # placeholders, favicon et manifest
 │   └── tests/                # Vitest et Playwright
 ├── backend/                  # monolithe Spring Boot modulaire
@@ -20,13 +20,17 @@ portfolio/
 │       ├── auth/ user/ project/ media/
 │       ├── audit/ storage/ security/
 │       └── common/ config/
-├── infra/reverse-proxy/      # routage / vers React et /api vers Spring
+├── infra/reverse-proxy/      # routage / vers Next.js et /api vers Spring
 ├── scripts/                  # lanceur Gradle multiplateforme
 ├── docker-compose.dev.yml
 └── docker-compose.prod.yml
 ```
 
-Le frontend et le backend se développent et se testent indépendamment. En production, ils sont servis sous le même domaine : `/` pour React et `/api` pour Spring Boot. Cela simplifie les cookies de session et évite un CORS permissif.
+Le frontend et le backend se développent et se testent indépendamment. En production, ils sont servis sous le même domaine : `/` pour Next.js et `/api` pour Spring Boot. Cela simplifie les cookies de session et évite un CORS permissif. Les pages publiques sont pré-rendues lorsqu’elles sont statiques et rendues côté serveur lorsqu’elles dépendent de PostgreSQL.
+
+### SEO et URLs publiques
+
+Next.js génère les métadonnées globales et celles de chaque étude de cas côté serveur, ainsi que les canonical, Open Graph, Twitter Cards, données structurées, `robots.txt`, `sitemap.xml`, manifest et image sociale temporaire. Les projets publiés utilisent une URL courte directement issue du slug : `/episort`, `/janus`, `/overkill`. La route `/projects` reste l’index éditorial ; les brouillons et archives ne sont jamais ajoutés au sitemap.
 
 ## Prérequis
 
@@ -71,23 +75,24 @@ Le hot reload frontend reste volontairement local afin de ne pas alourdir la bou
 
 Copier `.env.example` puis remplacer toutes les valeurs signalées. Aucun secret réel n’est versionné.
 
-| Variable | Usage |
-| --- | --- |
-| `PUBLIC_SITE_URL` | URL canonique publique utilisée au déploiement |
-| `VITE_API_BASE_URL` | Base API côté navigateur, normalement `/api/v1` |
-| `INTERNAL_API_BASE_URL` | Base API utilisée par le rendu serveur React |
-| `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` | Base PostgreSQL |
-| `DATABASE_URL` | URL JDBC Spring/CLI |
-| `SPRING_PROFILES_ACTIVE` | `dev`, `test` ou `prod` |
-| `SESSION_COOKIE_SECURE` | `true` derrière HTTPS en production |
-| `SESSION_TIMEOUT` | Durée de session, `12h` par défaut |
-| `ADMIN_INITIAL_EMAIL`, `ADMIN_INITIAL_PASSWORD` | Uniquement pour la commande d’administration |
-| `S3_BUCKET`, `S3_REGION`, `S3_ENDPOINT` | Stockage compatible S3 |
-| `S3_ACCESS_KEY`, `S3_SECRET_KEY` | Identifiants S3, uniquement côté backend |
-| `S3_PUBLIC_BASE_URL` | Base publique éventuelle du stockage |
-| `MINIO_ROOT_USER`, `MINIO_ROOT_PASSWORD` | MinIO local |
-| `PROJECT_SEED_ENABLED` | Active le seed non destructif au démarrage |
-| `CONTACT_EMAIL` | Réservé à une future intégration du contact |
+| Variable                                            | Usage                                                      |
+| --------------------------------------------------- | ---------------------------------------------------------- |
+| `PUBLIC_SITE_URL`                                   | URL canonique publique utilisée au déploiement             |
+| `NEXT_PUBLIC_API_BASE_URL`                          | Base API côté navigateur, normalement `/api/v1`            |
+| `INTERNAL_API_BASE_URL`                             | Base API utilisée par les Server Components Next.js        |
+| `API_PROXY_TARGET`                                  | Cible du proxy `/api` utilisé par Next.js en développement |
+| `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` | Base PostgreSQL                                            |
+| `DATABASE_URL`                                      | URL JDBC Spring/CLI                                        |
+| `SPRING_PROFILES_ACTIVE`                            | `dev`, `test` ou `prod`                                    |
+| `SESSION_COOKIE_SECURE`                             | `true` derrière HTTPS en production                        |
+| `SESSION_TIMEOUT`                                   | Durée de session, `12h` par défaut                         |
+| `ADMIN_INITIAL_EMAIL`, `ADMIN_INITIAL_PASSWORD`     | Uniquement pour la commande d’administration               |
+| `S3_BUCKET`, `S3_REGION`, `S3_ENDPOINT`             | Stockage compatible S3                                     |
+| `S3_ACCESS_KEY`, `S3_SECRET_KEY`                    | Identifiants S3, uniquement côté backend                   |
+| `S3_PUBLIC_BASE_URL`                                | Base publique éventuelle du stockage                       |
+| `MINIO_ROOT_USER`, `MINIO_ROOT_PASSWORD`            | MinIO local                                                |
+| `PROJECT_SEED_ENABLED`                              | Active le seed non destructif au démarrage                 |
+| `CONTACT_EMAIL`                                     | Réservé à une future intégration du contact                |
 
 Les variables `ADMIN_INITIAL_*` ne sont pas nécessaires au fonctionnement quotidien et doivent être supprimées de l’environnement après la commande.
 

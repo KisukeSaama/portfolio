@@ -1,18 +1,24 @@
-import eslint from "@eslint/js";
-import globals from "globals";
-import jsxA11y from "eslint-plugin-jsx-a11y";
-import reactHooks from "eslint-plugin-react-hooks";
-import tseslint from "typescript-eslint";
+import { defineConfig, globalIgnores } from "eslint/config";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTypeScript from "eslint-config-next/typescript";
 
-export default tseslint.config(
-  { ignores: ["build/**", ".react-router/**", "coverage/**", "playwright-report/**"] },
-  eslint.configs.recommended,
-  ...tseslint.configs.recommended,
+export default defineConfig([
+  ...nextVitals,
+  ...nextTypeScript,
   {
-    files: ["**/*.{ts,tsx}"],
-    languageOptions: { parserOptions: { projectService: true, tsconfigRootDir: import.meta.dirname }, globals: { ...globals.browser, ...globals.node } },
-    plugins: { "jsx-a11y": jsxA11y, "react-hooks": reactHooks },
-    rules: { ...jsxA11y.flatConfigs.recommended.rules, ...reactHooks.configs.flat.recommended.rules, "@typescript-eslint/no-misused-promises": ["error", { "checksVoidReturn": { "attributes": false } }] },
+    files: ["**/*.test.{ts,tsx}", "tests/**/*.ts"],
+    rules: {
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-call": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
+    },
   },
-  { files: ["**/*.test.{ts,tsx}", "tests/**/*.ts"], rules: { "@typescript-eslint/no-unsafe-assignment": "off", "@typescript-eslint/no-unsafe-call": "off", "@typescript-eslint/no-unsafe-member-access": "off" } }
-);
+  globalIgnores([
+    ".next/**",
+    ".react-router/**",
+    "coverage/**",
+    "playwright-report/**",
+    "test-results/**",
+    "next-env.d.ts",
+  ]),
+]);

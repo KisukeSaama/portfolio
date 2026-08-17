@@ -1,3 +1,5 @@
+"use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, Save } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -8,7 +10,8 @@ import {
   type Path,
   type UseFormRegister,
 } from "react-hook-form";
-import { Link, useBlocker } from "react-router";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ApiRequestError, apiMutation } from "~/lib/api";
 import {
   defaults,
@@ -78,6 +81,7 @@ function Field({
 }
 
 export function ProjectEditor({ project }: { project?: Project }) {
+  const router = useRouter();
   const [notice, setNotice] = useState("");
   const [serverError, setServerError] = useState("");
   const [savingNavigation, setSavingNavigation] = useState(false);
@@ -111,18 +115,26 @@ export function ProjectEditor({ project }: { project?: Project }) {
     window.addEventListener("beforeunload", prevent);
     return () => window.removeEventListener("beforeunload", prevent);
   }, [isDirty, savingNavigation]);
-  const blocker = useBlocker(isDirty && !savingNavigation);
   useEffect(() => {
-    if (blocker.state === "blocked") {
+    if (!isDirty || savingNavigation) return;
+    const guardNavigation = (event: MouseEvent) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      const link = target.closest("a[href]");
+      if (!(link instanceof HTMLAnchorElement) || link.target === "_blank")
+        return;
       if (
-        window.confirm(
+        !window.confirm(
           "Des modifications ne sont pas enregistrées. Quitter cette page ?",
         )
-      )
-        blocker.proceed();
-      else blocker.reset();
-    }
-  }, [blocker]);
+      ) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    };
+    document.addEventListener("click", guardNavigation, true);
+    return () => document.removeEventListener("click", guardNavigation, true);
+  }, [isDirty, savingNavigation]);
   async function submit(values: ProjectFormValues) {
     setServerError("");
     setNotice("");
@@ -138,9 +150,8 @@ export function ProjectEditor({ project }: { project?: Project }) {
       setNotice("Projet enregistré.");
       if (!project) {
         setSavingNavigation(true);
-        window.location.assign(
-          `/admin/projects/${saved.id}/edit?saved=created`,
-        );
+        router.replace(`/admin/projects/${saved.id}/edit?saved=created`);
+        router.refresh();
       }
     } catch (error) {
       setSavingNavigation(false);
@@ -447,7 +458,7 @@ export function ProjectEditor({ project }: { project?: Project }) {
         {project && (
           <Link
             className="button button-secondary"
-            to={`/admin/projects/${project.id}/preview`}
+            href={`/admin/projects/${project.id}/preview`}
             target="_blank"
           >
             <Eye size={17} aria-hidden />

@@ -1,3 +1,5 @@
+"use client";
+
 import {
   FileClock,
   FolderKanban,
@@ -6,7 +8,8 @@ import {
   Menu,
 } from "lucide-react";
 import { useRef } from "react";
-import { NavLink, useNavigate } from "react-router";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { apiMutation, resetCsrf } from "~/lib/api";
 import { ThemeToggle } from "./theme-toggle";
 
@@ -16,29 +19,30 @@ const items = [
   ["/admin/audit", "Journal", FileClock],
 ] as const;
 function Links({ onNavigate }: { onNavigate?: () => void } = {}) {
+  const pathname = usePathname();
   return (
     <>
       {items.map(([to, label, Icon]) => (
-        <NavLink
+        <Link
           key={to}
-          end={to === "/admin"}
-          to={to}
-        className={({ isActive }) => `nav-link${isActive ? " active" : ""}`}
-        onClick={onNavigate}
+          href={to}
+          className={`nav-link${(to === "/admin" ? pathname === to : pathname.startsWith(to)) ? " active" : ""}`}
+          onClick={onNavigate}
         >
           <Icon size={17} aria-hidden />
           {label}
-        </NavLink>
+        </Link>
       ))}
     </>
   );
 }
 export function LogoutButton() {
-  const navigate = useNavigate();
+  const router = useRouter();
   async function logout() {
     await apiMutation<void>("/auth/logout", { method: "POST" });
     resetCsrf();
-    await navigate("/admin/login");
+    router.replace("/admin/login");
+    router.refresh();
   }
   return (
     <button
@@ -54,10 +58,10 @@ export function LogoutButton() {
 export function AdminSidebar() {
   return (
     <aside className="admin-sidebar">
-      <NavLink to="/admin" className="wordmark">
+      <Link href="/admin" className="wordmark">
         <span className="wordmark-mark" aria-hidden />
         Administration
-      </NavLink>
+      </Link>
       <nav aria-label="Navigation administration">
         <Links />
       </nav>
@@ -73,10 +77,10 @@ export function AdminMobile() {
   const closeMobileMenu = () => mobileMenu.current?.removeAttribute("open");
   return (
     <header className="admin-mobile">
-      <NavLink to="/admin" className="wordmark">
+      <Link href="/admin" className="wordmark">
         <span className="wordmark-mark" aria-hidden />
         Admin
-      </NavLink>
+      </Link>
       <details className="mobile-nav" ref={mobileMenu}>
         <summary aria-label="Ouvrir le menu d’administration">
           <Menu aria-hidden />

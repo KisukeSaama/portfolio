@@ -1,6 +1,9 @@
+"use client";
+
 import { Menu } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useRef } from "react";
-import { Link, useLocation } from "react-router";
 import { profile } from "~/content/profile";
 import { ThemeToggle } from "./theme-toggle";
 
@@ -12,13 +15,13 @@ const links = [
   ["/contact", "Contact"],
 ] as const;
 function NavLinks({ onNavigate }: { onNavigate?: () => void } = {}) {
-  const { pathname } = useLocation();
+  const pathname = usePathname();
   return links.map(([href, label]) => {
     const active = href === "/" ? pathname === href : pathname.startsWith(href);
     return (
       <Link
         key={href}
-        to={href}
+        href={href}
         className="nav-link"
         data-active={active}
         aria-current={active ? "page" : undefined}
@@ -36,7 +39,7 @@ export function PublicHeader() {
     <header className="site-header">
       <div className="shell header-inner">
         <Link
-          to="/"
+          href="/"
           className="wordmark"
           aria-label="Jonathan Blanchard — accueil"
         >

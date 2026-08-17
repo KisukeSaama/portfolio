@@ -1,9 +1,130 @@
 import { z } from "zod";
-import type { Project,ProjectWrite } from "~/types/api";
-const optionalUrl=z.string().refine(value=>!value||z.url().safeParse(value).success,"Saisissez une URL complète.");
-export const projectFormSchema=z.object({title:z.string().min(2,"Titre trop court.").max(120),slug:z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Utilisez des minuscules, chiffres et tirets."),shortDescription:z.string().min(20).max(280),fullDescription:z.string().min(40).max(10000),problem:z.string().min(20).max(5000),context:z.string().max(5000),solution:z.string().min(20).max(5000),role:z.string().min(10).max(2000),architecture:z.string().max(5000),status:z.enum(["CONCEPT","IN_PROGRESS","MAINTAINED","COMPLETED"]),projectType:z.enum(["PERSONAL","TEAM","LEARNING"]),featureLevel:z.enum(["PRIMARY","SECONDARY"]),featured:z.boolean(),displayOrder:z.number().int().min(0).max(9999),visibility:z.enum(["PUBLIC","PRIVATE"]),objectives:z.string(),technologies:z.string(),features:z.string(),decisions:z.string(),challenges:z.string(),learnings:z.string(),nextSteps:z.string(),githubUrl:optionalUrl,demoUrl:optionalUrl,seoTitle:z.string().max(70),seoDescription:z.string().max(170),openGraphImageUrl:optionalUrl});
-export type ProjectFormValues=z.infer<typeof projectFormSchema>;
-const lines=(value:string)=>value.split(/\r?\n/).map(v=>v.trim()).filter(Boolean);
-export function toWrite(v:ProjectFormValues):ProjectWrite{return {...v,objectives:lines(v.objectives),technologies:lines(v.technologies),features:lines(v.features),decisions:lines(v.decisions),challenges:lines(v.challenges),learnings:lines(v.learnings),nextSteps:lines(v.nextSteps)}}
-export function slugify(value:string){return value.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"")}
-export function defaults(project?:Project):ProjectFormValues{return project?{title:project.title,slug:project.slug,shortDescription:project.shortDescription,fullDescription:project.fullDescription,problem:project.problem,context:project.context,solution:project.solution,role:project.role,architecture:project.architecture,status:project.status,projectType:project.projectType,featureLevel:project.featureLevel,featured:project.featured,displayOrder:project.displayOrder,visibility:project.visibility,objectives:project.objectives.join("\n"),technologies:project.technologies.join("\n"),features:project.features.join("\n"),decisions:project.decisions.join("\n"),challenges:project.challenges.join("\n"),learnings:project.learnings.join("\n"),nextSteps:project.nextSteps.join("\n"),githubUrl:project.githubUrl??"",demoUrl:project.demoUrl??"",seoTitle:project.seoTitle??"",seoDescription:project.seoDescription??"",openGraphImageUrl:project.openGraphImageUrl??""}:{title:"",slug:"",shortDescription:"",fullDescription:"",problem:"",context:"",solution:"",role:"",architecture:"",status:"IN_PROGRESS",projectType:"PERSONAL",featureLevel:"SECONDARY",featured:false,displayOrder:10,visibility:"PRIVATE",objectives:"",technologies:"",features:"",decisions:"",challenges:"",learnings:"",nextSteps:"",githubUrl:"",demoUrl:"",seoTitle:"",seoDescription:"",openGraphImageUrl:""}}
+import type { Project, ProjectWrite } from "~/types/api";
+const optionalUrl = z
+  .string()
+  .refine(
+    (value) => !value || z.url().safeParse(value).success,
+    "Saisissez une URL complète.",
+  );
+export const projectFormSchema = z.object({
+  title: z.string().min(2, "Titre trop court.").max(120),
+  slug: z
+    .string()
+    .regex(
+      /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+      "Utilisez des minuscules, chiffres et tirets.",
+    ),
+  shortDescription: z.string().min(20).max(280),
+  fullDescription: z.string().min(40).max(10000),
+  problem: z.string().min(20).max(5000),
+  context: z.string().max(5000),
+  solution: z.string().min(20).max(5000),
+  role: z.string().min(10).max(2000),
+  architecture: z.string().max(5000),
+  status: z.enum(["CONCEPT", "IN_PROGRESS", "MAINTAINED", "COMPLETED"]),
+  projectType: z.enum(["PERSONAL", "TEAM", "LEARNING"]),
+  featureLevel: z.enum(["PRIMARY", "SECONDARY"]),
+  featured: z.boolean(),
+  displayOrder: z.number().int().min(0).max(9999),
+  visibility: z.enum(["PUBLIC", "PRIVATE"]),
+  objectives: z.string(),
+  technologies: z.string(),
+  features: z.string(),
+  decisions: z.string(),
+  challenges: z.string(),
+  learnings: z.string(),
+  nextSteps: z.string(),
+  githubUrl: optionalUrl,
+  demoUrl: optionalUrl,
+  seoTitle: z.string().max(70),
+  seoDescription: z.string().max(170),
+  openGraphImageUrl: optionalUrl,
+});
+export type ProjectFormValues = z.infer<typeof projectFormSchema>;
+const lines = (value: string) =>
+  value
+    .split(/\r?\n/)
+    .map((v) => v.trim())
+    .filter(Boolean);
+export function toWrite(v: ProjectFormValues): ProjectWrite {
+  return {
+    ...v,
+    objectives: lines(v.objectives),
+    technologies: lines(v.technologies),
+    features: lines(v.features),
+    decisions: lines(v.decisions),
+    challenges: lines(v.challenges),
+    learnings: lines(v.learnings),
+    nextSteps: lines(v.nextSteps),
+  };
+}
+export function slugify(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+export function defaults(project?: Project): ProjectFormValues {
+  return project
+    ? {
+        title: project.title,
+        slug: project.slug,
+        shortDescription: project.shortDescription,
+        fullDescription: project.fullDescription,
+        problem: project.problem,
+        context: project.context,
+        solution: project.solution,
+        role: project.role,
+        architecture: project.architecture,
+        status: project.status,
+        projectType: project.projectType,
+        featureLevel: project.featureLevel,
+        featured: project.featured,
+        displayOrder: project.displayOrder,
+        visibility: project.visibility,
+        objectives: project.objectives.join("\n"),
+        technologies: project.technologies.join("\n"),
+        features: project.features.join("\n"),
+        decisions: project.decisions.join("\n"),
+        challenges: project.challenges.join("\n"),
+        learnings: project.learnings.join("\n"),
+        nextSteps: project.nextSteps.join("\n"),
+        githubUrl: project.githubUrl ?? "",
+        demoUrl: project.demoUrl ?? "",
+        seoTitle: project.seoTitle ?? "",
+        seoDescription: project.seoDescription ?? "",
+        openGraphImageUrl: project.openGraphImageUrl ?? "",
+      }
+    : {
+        title: "",
+        slug: "",
+        shortDescription: "",
+        fullDescription: "",
+        problem: "",
+        context: "",
+        solution: "",
+        role: "",
+        architecture: "",
+        status: "IN_PROGRESS",
+        projectType: "PERSONAL",
+        featureLevel: "SECONDARY",
+        featured: false,
+        displayOrder: 10,
+        visibility: "PRIVATE",
+        objectives: "",
+        technologies: "",
+        features: "",
+        decisions: "",
+        challenges: "",
+        learnings: "",
+        nextSteps: "",
+        githubUrl: "",
+        demoUrl: "",
+        seoTitle: "",
+        seoDescription: "",
+        openGraphImageUrl: "",
+      };
+}

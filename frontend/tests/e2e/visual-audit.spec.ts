@@ -1,14 +1,18 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
-const pages = ["/", "/projects/episort", "/admin/login"] as const;
+const pages = ["/", "/episort", "/admin/login"] as const;
 
 for (const path of pages) {
-  test(`audit visuel sans débordement : ${path}`, async ({ page }, testInfo) => {
+  test(`audit visuel sans débordement : ${path}`, async ({
+    page,
+  }, testInfo) => {
     await page.goto(path);
     await expect(page.locator("body")).toBeVisible();
     const hasOverflow = await page.evaluate(
-      () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
+      () =>
+        document.documentElement.scrollWidth >
+        document.documentElement.clientWidth,
     );
     expect(hasOverflow).toBe(false);
     const accessibility = await new AxeBuilder({ page })
@@ -34,7 +38,7 @@ for (const path of pages) {
       darkAccessibility.violations,
       darkAccessibility.violations
         .map((violation) => `${violation.id}: ${violation.help}`)
-      .join("\n"),
+        .join("\n"),
     ).toEqual([]);
     await page.screenshot({
       path: testInfo.outputPath(

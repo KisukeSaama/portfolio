@@ -1,10 +1,13 @@
 export const profile = {
   name: "Jonathan Blanchard",
   title: "Développeur full-stack & créateur d’applications",
-  tagline: "Je conçois des applications complètes pour répondre à des problèmes concrets, de l’idée à l’interface, du backend jusqu’au déploiement.",
-  availability: "Je recherche une alternance en développement full-stack pour progresser au contact d’une équipe et contribuer à des produits utiles.",
+  tagline:
+    "Je conçois des applications complètes pour répondre à des problèmes concrets, de l’idée à l’interface, du backend jusqu’au déploiement.",
+  availability:
+    "Je recherche une alternance en développement full-stack pour progresser au contact d’une équipe et contribuer à des produits utiles.",
   photo: "/images/profile-placeholder.svg",
-  photoAlt: "Emplacement réservé pour le futur portrait professionnel de Jonathan Blanchard",
+  photoAlt:
+    "Emplacement réservé pour le futur portrait professionnel de Jonathan Blanchard",
   cvUrl: "/documents/cv-jonathan-blanchard.pdf",
   cvAvailable: false,
   email: null,
