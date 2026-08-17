@@ -5,6 +5,7 @@ const apiTarget = process.env.API_PROXY_TARGET ?? "http://localhost:8080";
 
 const nextConfig: NextConfig = {
   agentRules: false,
+  allowedDevOrigins: ["127.0.0.1"],
   output: process.env.NEXT_STANDALONE === "true" ? "standalone" : undefined,
   outputFileTracingRoot: path.join(import.meta.dirname, ".."),
   poweredByHeader: false,
