@@ -49,7 +49,10 @@ public class SecurityConfig {
         http
             .csrf(config->config.csrfTokenRepository(csrf).csrfTokenRequestHandler(requestHandler))
             .authorizeHttpRequests(auth->{
-                auth.requestMatchers("/api/v1/public/**","/api/v1/auth/csrf","/api/v1/auth/login","/actuator/health/**").permitAll();
+                // `/auth/session` is anonymous on purpose: it answers "are you signed in?" and the
+                // administration UI asks before it has a session. Guarding it made that question
+                // itself a 401, so the sign-in page could never be reached.
+                auth.requestMatchers("/api/v1/public/**","/api/v1/auth/csrf","/api/v1/auth/login","/api/v1/auth/session","/actuator/health/**").permitAll();
                 // The OpenAPI document maps the whole administration surface. It is a development
                 // aid, so it is only reachable where springdoc itself is switched on.
                 if(apiDocsEnabled)auth.requestMatchers("/api/openapi/**","/api/docs/**","/api/docs").permitAll();

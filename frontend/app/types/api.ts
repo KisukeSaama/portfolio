@@ -18,6 +18,30 @@ export interface ProjectMedia {
   durationSeconds: number | null;
   sortOrder: number;
 }
+/**
+ * One locale's version of a project's prose. Every field is optional: a blank one falls back to the
+ * source language rather than rendering an empty section, so a half-finished translation is safe to
+ * save. The slug and the technologies are absent on purpose. A slug is an address, and "Spring Boot"
+ * is "Spring Boot" in every language.
+ */
+export interface ProjectTranslation {
+  title?: string;
+  shortDescription?: string;
+  fullDescription?: string;
+  problem?: string;
+  context?: string;
+  solution?: string;
+  role?: string;
+  architecture?: string;
+  objectives?: string[];
+  features?: string[];
+  decisions?: string[];
+  challenges?: string[];
+  learnings?: string[];
+  nextSteps?: string[];
+  seoTitle?: string;
+  seoDescription?: string;
+}
 export interface Project {
   id: string;
   title: string;
@@ -53,6 +77,8 @@ export interface Project {
   publishedAt: string | null;
   archivedAt: string | null;
   media: ProjectMedia[];
+  /** Present on admin reads, which edit the source language. Public reads arrive already resolved. */
+  translations: Record<string, ProjectTranslation>;
 }
 export interface ProjectWrite {
   title: string;
@@ -82,6 +108,7 @@ export interface ProjectWrite {
   seoTitle: string;
   seoDescription: string;
   openGraphImageUrl: string;
+  translations: Record<string, ProjectTranslation>;
 }
 export interface ApiError {
   code: string;

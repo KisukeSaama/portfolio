@@ -20,9 +20,9 @@ public class ProjectService {
     public ProjectService(ProjectRepository projects,AuditService audit,CurrentAdmin currentAdmin){this.projects=projects;this.audit=audit;this.currentAdmin=currentAdmin;}
 
     @Transactional(readOnly=true)
-    public List<ProjectResponse> publicProjects(){return projects.findAllByPublicationStatusAndVisibilityAndArchivedAtIsNullOrderByDisplayOrderAscUpdatedAtDesc(PublicationStatus.PUBLISHED,Visibility.PUBLIC).stream().map(ProjectResponse::from).toList();}
+    public List<ProjectResponse> publicProjects(String locale){return projects.findAllByPublicationStatusAndVisibilityAndArchivedAtIsNullOrderByDisplayOrderAscUpdatedAtDesc(PublicationStatus.PUBLISHED,Visibility.PUBLIC).stream().map(p->ProjectResponse.from(p,locale)).toList();}
     @Transactional(readOnly=true)
-    public ProjectResponse publicProject(String slug){return ProjectResponse.from(projects.findBySlugAndPublicationStatusAndVisibilityAndArchivedAtIsNull(slug,PublicationStatus.PUBLISHED,Visibility.PUBLIC).orElseThrow(()->new NotFoundException("Project not found.")));}
+    public ProjectResponse publicProject(String slug,String locale){return ProjectResponse.from(projects.findBySlugAndPublicationStatusAndVisibilityAndArchivedAtIsNull(slug,PublicationStatus.PUBLISHED,Visibility.PUBLIC).orElseThrow(()->new NotFoundException("Project not found.")),locale);}
     @Transactional(readOnly=true)
     public ProjectResponse adminProject(UUID id){return ProjectResponse.from(find(id));}
     @Transactional(readOnly=true)
@@ -59,7 +59,7 @@ public class ProjectService {
     private ProjectResponse transition(UUID id,Authentication auth,HttpServletRequest request,AuditAction action,java.util.function.Consumer<Project> operation){var project=find(id);operation.accept(project);audit.record(action,currentAdmin.id(auth),project,null,request);return ProjectResponse.from(project);}
     @Transactional
     public ProjectResponse duplicate(UUID id,Authentication auth,HttpServletRequest request){
-        var source=find(id); var slug=uniqueCopySlug(source.getSlug()); var input=new ProjectWriteRequest(source.getTitle()+" (copy)",slug,source.getShortDescription(),source.getFullDescription(),source.getProblem(),source.getContext(),source.getSolution(),source.getRole(),source.getArchitecture(),source.getStatus(),source.getProjectType(),source.getFeatureLevel(),false,source.getDisplayOrder()+1,Visibility.PRIVATE,source.getObjectives(),source.getTechnologies(),source.getFeatures(),source.getDecisions(),source.getChallenges(),source.getLearnings(),source.getNextSteps(),source.getGithubUrl(),source.getDemoUrl(),source.getSeoTitle(),source.getSeoDescription(),source.getOpenGraphImageUrl());
+        var source=find(id); var slug=uniqueCopySlug(source.getSlug()); var input=new ProjectWriteRequest(source.getTitle()+" (copy)",slug,source.getShortDescription(),source.getFullDescription(),source.getProblem(),source.getContext(),source.getSolution(),source.getRole(),source.getArchitecture(),source.getStatus(),source.getProjectType(),source.getFeatureLevel(),false,source.getDisplayOrder()+1,Visibility.PRIVATE,source.getObjectives(),source.getTechnologies(),source.getFeatures(),source.getDecisions(),source.getChallenges(),source.getLearnings(),source.getNextSteps(),source.getGithubUrl(),source.getDemoUrl(),source.getSeoTitle(),source.getSeoDescription(),source.getOpenGraphImageUrl(),source.getTranslations());
         var copy=projects.save(new Project(input));audit.record(AuditAction.PROJECT_DUPLICATE,currentAdmin.id(auth),copy,"{\"sourceProjectId\":\""+id+"\"}",request);return ProjectResponse.from(copy);
     }
     @Transactional

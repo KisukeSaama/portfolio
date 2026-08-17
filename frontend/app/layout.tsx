@@ -41,9 +41,11 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  // The browser chrome, matched to `--background` in each theme. These were still the warm greys the
+  // palette used before it went neutral, so a phone framed the page in a color the page no longer had.
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f5efe5" },
-    { media: "(prefers-color-scheme: dark)", color: "#20211f" },
+    { media: "(prefers-color-scheme: light)", color: "#f3f3f3" },
+    { media: "(prefers-color-scheme: dark)", color: "#282828" },
   ],
 };
 

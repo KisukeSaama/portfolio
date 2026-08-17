@@ -33,9 +33,10 @@ export default async function HomePage({ params }: LocaleParams) {
   const { locale } = await params;
   const t = getDictionary(locale);
   const nonce = (await headers()).get(NONCE_HEADER) ?? undefined;
-  const projects = await serverApiOrNull<Project[]>("/public/projects", {
-    revalidate: 0,
-  });
+  const projects = await serverApiOrNull<Project[]>(
+    `/public/projects?locale=${locale}`,
+    { revalidate: 0 },
+  );
   const primary =
     projects?.filter((project) => project.featureLevel === "PRIMARY") ?? [];
   const secondary =

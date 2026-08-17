@@ -11,7 +11,7 @@ export default function ErrorPage({
 }) {
   const t = getDictionary(defaultLocale);
   return (
-    <main id="main-content" className="error-page">
+    <main id="main-content" className="error-boundary">
       <div>
         <p className="error-code">500</p>
         <h1>{t.errors.unexpectedTitle}</h1>

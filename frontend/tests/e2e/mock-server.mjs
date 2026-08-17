@@ -39,7 +39,35 @@ const base = {
   publishedAt: new Date().toISOString(),
   archivedAt: null,
   media: [],
+  translations: {
+    fr: {
+      shortDescription:
+        "Organiser et renommer une bibliothèque de médias avant Plex.",
+      fullDescription:
+        "Une application complète et sûre pour organiser les fichiers avant de les importer dans une bibliothèque Plex.",
+      problem:
+        "Organiser une grande bibliothèque devient difficile dès que les fichiers sont mal nommés.",
+      solution: "Analyser, puis faire confirmer un plan.",
+      role: "Design et développement complets.",
+    },
+  },
 };
+/**
+ * The same overlay the API applies: a translated field wins, a blank or missing one falls back to
+ * the source language, and the translations themselves are dropped from a public response.
+ */
+function resolve(project, locale) {
+  const translation = locale ? project.translations?.[locale] : undefined;
+  const rest = { ...project };
+  delete rest.translations;
+  if (!translation) return rest;
+  const merged = { ...rest };
+  for (const [field, value] of Object.entries(translation)) {
+    const filled = Array.isArray(value) ? value.length > 0 : Boolean(value?.trim());
+    if (filled) merged[field] = value;
+  }
+  return merged;
+}
 const janus = {
   ...base,
   id: "janus-id",
@@ -73,6 +101,20 @@ const janus = {
     "Revocation",
   ],
   decisions: ["Trace accesses without tracing secrets"],
+  translations: {
+    fr: {
+      shortDescription:
+        "Centraliser, contrôler et distribuer l’accès aux clés d’API.",
+      fullDescription:
+        "Une console d’administration et un service backend qui réduisent l’exposition des secrets. Le projet avance et toutes les fonctions ne sont pas terminées.",
+      problem:
+        "Les clés d’API finissent dispersées dans les projets, mal tournées et exposées directement.",
+      solution:
+        "Un service proxy contrôle les applications autorisées, les permissions, la révocation et l’audit.",
+      role: "Design produit, modélisation des permissions et développement full-stack.",
+      decisions: ["Tracer les accès sans tracer les secrets"],
+    },
+  },
   challenges: ["Rotation without downtime"],
   learnings: ["Secret management is a lifecycle problem"],
   nextSteps: ["Finish the proxy flow", "Strengthen authorization tests"],
@@ -92,6 +134,13 @@ const overkill = {
   solution: "A team web application centralizes search and tracking.",
   role: "Full-stack development contribution within a team project.",
   architecture: "React/Vite frontend, Symfony API, PostgreSQL and Docker.",
+  // Spread from `base`, so each project restates its own translation rather than inheriting Episort's.
+  translations: {
+    fr: {
+      shortDescription: "Agréger et suivre les offres d’emploi en Île-de-France.",
+      role: "Contribution full-stack au sein d’un projet d’équipe.",
+    },
+  },
   status: "COMPLETED",
   projectType: "TEAM",
   featureLevel: "SECONDARY",
@@ -127,6 +176,14 @@ const social = {
     "A deliberately small social network makes framework and modeling choices comparable.",
   role: "Design and development with learning as the goal.",
   architecture: "Several backend iterations, notably Laravel and then Java.",
+  translations: {
+    fr: {
+      title: "Mini réseau social",
+      shortDescription:
+        "Faire grandir une application full-stack en apprenant le backend.",
+      role: "Conception et développement, avec l’apprentissage pour objectif.",
+    },
+  },
   status: "COMPLETED",
   projectType: "LEARNING",
   featureLevel: "SECONDARY",
@@ -208,10 +265,12 @@ http
       return json(
         response,
         200,
-        projects.filter(
-          (p) =>
-            p.publicationStatus === "PUBLISHED" && p.visibility === "PUBLIC",
-        ),
+        projects
+          .filter(
+            (p) =>
+              p.publicationStatus === "PUBLISHED" && p.visibility === "PUBLIC",
+          )
+          .map((p) => resolve(p, url.searchParams.get("locale"))),
       );
     if (
       url.pathname.startsWith("/api/v1/public/projects/") &&
@@ -222,7 +281,7 @@ http
         (p) => p.slug === slug && p.publicationStatus === "PUBLISHED",
       );
       return project
-        ? json(response, 200, project)
+        ? json(response, 200, resolve(project, url.searchParams.get("locale")))
         : json(response, 404, {
             code: "not_found",
             message: "Projet introuvable.",

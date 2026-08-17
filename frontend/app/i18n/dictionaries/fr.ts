@@ -359,8 +359,6 @@ export const fr: Dictionary = {
       LEARNING: "Projet d’apprentissage",
     },
     statusLabel: "Statut :",
-    stackLabel: "Stack :",
-    roleLabel: "Rôle :",
     readCaseStudy: "Lire l’étude de cas",
     caseStudyOf: "Voir l’étude de cas {title}",
     discover: "Découvrir",
@@ -412,6 +410,7 @@ export const fr: Dictionary = {
     status: "Statut",
     type: "Type",
     role: "Rôle",
+    mechanism: "Comment ça marche",
     problem: "Le problème initial",
     context: "Contexte",
     objectives: "Objectifs",
@@ -430,6 +429,8 @@ export const fr: Dictionary = {
     media: "Médias",
     links: "Liens",
     mediaPlaceholderAlt: "Média de {title} à ajouter",
+    mediaPlaceholderNote:
+      "Les vrais médias seront déposés depuis l’administration",
     videoFallback: "Votre navigateur ne peut pas lire cette vidéo.",
   },
 
@@ -447,6 +448,5 @@ export const fr: Dictionary = {
     unexpectedTitle: "Une erreur inattendue est survenue",
     unexpectedBody: "Réessayez. Si le problème persiste, revenez plus tard.",
     retry: "Réessayer",
-    loading: "Chargement du contenu…",
   },
 };

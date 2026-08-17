@@ -349,8 +349,6 @@ export const en = {
       LEARNING: "Learning project",
     },
     statusLabel: "Status:",
-    stackLabel: "Stack:",
-    roleLabel: "Role:",
     readCaseStudy: "Read the case study",
     caseStudyOf: "Read the {title} case study",
     discover: "Discover",
@@ -408,6 +406,7 @@ export const en = {
     status: "Status",
     type: "Type",
     role: "Role",
+    mechanism: "How it works",
     problem: "The initial problem",
     context: "Context",
     objectives: "Objectives",
@@ -426,6 +425,7 @@ export const en = {
     media: "Media",
     links: "Links",
     mediaPlaceholderAlt: "Media for {title} still to be added",
+    mediaPlaceholderNote: "Real media to be uploaded from the administration area",
     videoFallback: "Your browser cannot play this video.",
   },
 
@@ -443,7 +443,6 @@ export const en = {
     unexpectedTitle: "An unexpected error occurred",
     unexpectedBody: "Try again. If the problem persists, come back later.",
     retry: "Try again",
-    loading: "Loading content…",
   },
 };
 

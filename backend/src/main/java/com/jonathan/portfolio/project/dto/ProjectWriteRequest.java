@@ -1,8 +1,10 @@
 package com.jonathan.portfolio.project.dto;
 
 import com.jonathan.portfolio.project.domain.*;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import java.util.List;
+import java.util.Map;
 import org.hibernate.validator.constraints.URL;
 
 public record ProjectWriteRequest(
@@ -32,7 +34,12 @@ public record ProjectWriteRequest(
     @URL @Pattern(regexp=WEB_URL,message=WEB_URL_MESSAGE) @Size(max=2048) String demoUrl,
     @Size(max=70) String seoTitle,
     @Size(max=170) String seoDescription,
-    @URL @Pattern(regexp=WEB_URL,message=WEB_URL_MESSAGE) @Size(max=2048) String openGraphImageUrl
+    @URL @Pattern(regexp=WEB_URL,message=WEB_URL_MESSAGE) @Size(max=2048) String openGraphImageUrl,
+    /**
+     * The same prose in other locales, keyed by language tag. Null means the caller is not editing
+     * translations and the stored ones are left alone; an empty map clears them.
+     */
+    @Size(max=8) Map<@Pattern(regexp="^[a-z]{2}(?:-[A-Za-z]{2,8})?$",message="Use a language tag such as fr.") String,@Valid ProjectTranslation> translations
 ) {
     /**
      * These end up in {@code href} and {@code src} attributes on the public site. Hibernate's

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { Project, ProjectWrite } from "~/types/api";
+import type { Project, ProjectTranslation, ProjectWrite } from "~/types/api";
 const optionalUrl = z
   .string()
   .refine(
@@ -39,6 +39,28 @@ export const projectFormSchema = z.object({
   seoTitle: z.string().max(70),
   seoDescription: z.string().max(170),
   openGraphImageUrl: optionalUrl,
+  /**
+   * The French case study. Every field is optional and empty means "not translated yet", which the
+   * API resolves by falling back to the English one above. The editor is deliberately one form and
+   * not two: the translator is the same person as the author, and a second screen would let the two
+   * languages drift without anyone noticing.
+   */
+  frTitle: z.string().max(120),
+  frShortDescription: z.string().max(280),
+  frFullDescription: z.string().max(10000),
+  frProblem: z.string().max(5000),
+  frContext: z.string().max(5000),
+  frSolution: z.string().max(5000),
+  frRole: z.string().max(2000),
+  frArchitecture: z.string().max(5000),
+  frObjectives: z.string(),
+  frFeatures: z.string(),
+  frDecisions: z.string(),
+  frChallenges: z.string(),
+  frLearnings: z.string(),
+  frNextSteps: z.string(),
+  frSeoTitle: z.string().max(70),
+  frSeoDescription: z.string().max(170),
 });
 export type ProjectFormValues = z.infer<typeof projectFormSchema>;
 const lines = (value: string) =>
@@ -46,9 +68,54 @@ const lines = (value: string) =>
     .split(/\r?\n/)
     .map((v) => v.trim())
     .filter(Boolean);
+/** Splits the French half back out of the flat form and drops it if nothing was filled in. */
+function frenchTranslation(
+  v: ProjectFormValues,
+): Record<string, ProjectTranslation> {
+  const translation: ProjectTranslation = {
+    title: v.frTitle,
+    shortDescription: v.frShortDescription,
+    fullDescription: v.frFullDescription,
+    problem: v.frProblem,
+    context: v.frContext,
+    solution: v.frSolution,
+    role: v.frRole,
+    architecture: v.frArchitecture,
+    objectives: lines(v.frObjectives),
+    features: lines(v.frFeatures),
+    decisions: lines(v.frDecisions),
+    challenges: lines(v.frChallenges),
+    learnings: lines(v.frLearnings),
+    nextSteps: lines(v.frNextSteps),
+    seoTitle: v.frSeoTitle,
+    seoDescription: v.frSeoDescription,
+  };
+  const filled = Object.values(translation).some((value) =>
+    Array.isArray(value) ? value.length > 0 : Boolean(value?.trim()),
+  );
+  // Storing an all-blank translation would be indistinguishable from a real one on the next read.
+  return filled ? { fr: translation } : {};
+}
+
 export function toWrite(v: ProjectFormValues): ProjectWrite {
+  // Listed field by field rather than spread: the form also carries the `fr`-prefixed translation,
+  // and spreading `v` would post those to the API as unknown properties.
   return {
-    ...v,
+    title: v.title,
+    slug: v.slug,
+    shortDescription: v.shortDescription,
+    fullDescription: v.fullDescription,
+    problem: v.problem,
+    context: v.context,
+    solution: v.solution,
+    role: v.role,
+    architecture: v.architecture,
+    status: v.status,
+    projectType: v.projectType,
+    featureLevel: v.featureLevel,
+    featured: v.featured,
+    displayOrder: v.displayOrder,
+    visibility: v.visibility,
     objectives: lines(v.objectives),
     technologies: lines(v.technologies),
     features: lines(v.features),
@@ -56,8 +123,15 @@ export function toWrite(v: ProjectFormValues): ProjectWrite {
     challenges: lines(v.challenges),
     learnings: lines(v.learnings),
     nextSteps: lines(v.nextSteps),
+    githubUrl: v.githubUrl,
+    demoUrl: v.demoUrl,
+    seoTitle: v.seoTitle,
+    seoDescription: v.seoDescription,
+    openGraphImageUrl: v.openGraphImageUrl,
+    translations: frenchTranslation(v),
   };
 }
+
 export function slugify(value: string) {
   return value
     .normalize("NFD")
@@ -97,6 +171,7 @@ export function defaults(project?: Project): ProjectFormValues {
         seoTitle: project.seoTitle ?? "",
         seoDescription: project.seoDescription ?? "",
         openGraphImageUrl: project.openGraphImageUrl ?? "",
+        ...french(project.translations?.fr),
       }
     : {
         title: "",
@@ -126,5 +201,28 @@ export function defaults(project?: Project): ProjectFormValues {
         seoTitle: "",
         seoDescription: "",
         openGraphImageUrl: "",
+        ...french(undefined),
       };
+}
+
+/** The stored French translation flattened back into the form's `fr`-prefixed fields. */
+function french(t: ProjectTranslation | undefined) {
+  return {
+    frTitle: t?.title ?? "",
+    frShortDescription: t?.shortDescription ?? "",
+    frFullDescription: t?.fullDescription ?? "",
+    frProblem: t?.problem ?? "",
+    frContext: t?.context ?? "",
+    frSolution: t?.solution ?? "",
+    frRole: t?.role ?? "",
+    frArchitecture: t?.architecture ?? "",
+    frObjectives: (t?.objectives ?? []).join("\n"),
+    frFeatures: (t?.features ?? []).join("\n"),
+    frDecisions: (t?.decisions ?? []).join("\n"),
+    frChallenges: (t?.challenges ?? []).join("\n"),
+    frLearnings: (t?.learnings ?? []).join("\n"),
+    frNextSteps: (t?.nextSteps ?? []).join("\n"),
+    frSeoTitle: t?.seoTitle ?? "",
+    frSeoDescription: t?.seoDescription ?? "",
+  };
 }

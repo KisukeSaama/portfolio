@@ -427,6 +427,128 @@ export function ProjectEditor({ project }: { project?: Project }) {
           )}
         </section>
         <section className="editor-section">
+          <h2>French case study</h2>
+          <p className="field-help">
+            Anything left empty falls back to the English field above, so a partial translation is
+            safe to save. The slug and the technologies are shared: an address does not change with
+            the language, and a framework keeps its name.
+          </p>
+          <div className="field-grid">
+            <Field
+              name="frTitle"
+              label="Title"
+              register={register}
+              errors={errors}
+            />
+            <Field
+              name="frShortDescription"
+              label="Short description"
+              register={register}
+              errors={errors}
+              textarea
+            />
+            <Field
+              name="frFullDescription"
+              label="Full description"
+              register={register}
+              errors={errors}
+              textarea
+              className="field-span"
+            />
+            <Field
+              name="frProblem"
+              label="The initial problem"
+              register={register}
+              errors={errors}
+              textarea
+            />
+            <Field
+              name="frContext"
+              label="Context"
+              register={register}
+              errors={errors}
+              textarea
+            />
+            <Field
+              name="frSolution"
+              label="The solution"
+              register={register}
+              errors={errors}
+              textarea
+            />
+            <Field
+              name="frRole"
+              label="Role"
+              register={register}
+              errors={errors}
+              textarea
+            />
+            <Field
+              name="frArchitecture"
+              label="Architecture"
+              register={register}
+              errors={errors}
+              textarea
+              className="field-span"
+            />
+            <Field
+              name="frObjectives"
+              label="Objectives (one per line)"
+              register={register}
+              errors={errors}
+              textarea
+            />
+            <Field
+              name="frFeatures"
+              label="Features (one per line)"
+              register={register}
+              errors={errors}
+              textarea
+            />
+            <Field
+              name="frDecisions"
+              label="Key decisions (one per line)"
+              register={register}
+              errors={errors}
+              textarea
+            />
+            <Field
+              name="frChallenges"
+              label="Challenges (one per line)"
+              register={register}
+              errors={errors}
+              textarea
+            />
+            <Field
+              name="frLearnings"
+              label="Learnings (one per line)"
+              register={register}
+              errors={errors}
+              textarea
+            />
+            <Field
+              name="frNextSteps"
+              label="Next steps (one per line)"
+              register={register}
+              errors={errors}
+              textarea
+            />
+            <Field
+              name="frSeoTitle"
+              label="SEO title (70 characters maximum)"
+              register={register}
+              errors={errors}
+            />
+            <Field
+              name="frSeoDescription"
+              label="SEO description (170 characters maximum)"
+              register={register}
+              errors={errors}
+              textarea
+            />
+          </div>
+        </section>
+        <section className="editor-section">
           <h2>SEO</h2>
           <div className="field-grid">
             <Field

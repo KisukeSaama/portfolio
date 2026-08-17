@@ -24,9 +24,10 @@ export async function generateMetadata({
 export default async function ProjectsPage({ params }: LocaleParams) {
   const { locale } = await params;
   const t = getDictionary(locale);
-  const projects = await serverApiOrNull<Project[]>("/public/projects", {
-    revalidate: 0,
-  });
+  const projects = await serverApiOrNull<Project[]>(
+    `/public/projects?locale=${locale}`,
+    { revalidate: 0 },
+  );
   const primary =
     projects?.filter((project) => project.featureLevel === "PRIMARY") ?? [];
   const secondary =

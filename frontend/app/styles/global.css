@@ -24,7 +24,7 @@
    * salmon, and it is the same corner of the wheel every AI product's brand occupies. Nothing about
    * a workbench is pink. Every value here clears its contrast bar and stays inside sRGB.
    */
-  --orange: oklch(0.65 0.155 58);
+  --orange: oklch(0.615 0.142 58);
   --orange-action: oklch(0.56 0.13 58);
   --orange-action-hover: oklch(0.5 0.12 58);
   --on-orange: oklch(0.99 0 0);
@@ -49,39 +49,52 @@
   --z-backdrop: 40;
   --z-modal: 50;
 }
+/**
+ * A dark theme, not a black one. The ramp used to start at 0.195, which renders as near-black: the
+ * page read as a void with text floating on it, and every surface above it had to crowd into the
+ * fifty levels left before mid-grey. Starting at 0.255 leaves room for four distinct planes, and a
+ * dark grey is what the direction asked for in the first place.
+ */
 [data-theme="dark"] {
   color-scheme: dark;
-  --background: oklch(0.195 0 0);
-  --surface: oklch(0.245 0 0);
-  --surface-2: oklch(0.29 0 0);
-  --elevated: oklch(0.33 0 0);
-  --ink: oklch(0.945 0 0);
-  --muted: oklch(0.755 0 0);
-  --border: oklch(0.385 0 0);
-  --border-strong: oklch(0.55 0 0);
-  --orange: oklch(0.78 0.14 58);
+  --background: oklch(0.275 0 0);
+  --surface: oklch(0.32 0 0);
+  --surface-2: oklch(0.365 0 0);
+  --elevated: oklch(0.41 0 0);
+  --ink: oklch(0.965 0 0);
+  --muted: oklch(0.8 0 0);
+  --border: oklch(0.465 0 0);
+  --border-strong: oklch(0.63 0 0);
+  /* The whole ramp moved up with the surfaces it sits on, and was re-checked against each of them. */
+  --orange: oklch(0.8 0.13 58);
   --orange-action: oklch(0.82 0.12 60);
   --orange-action-hover: oklch(0.76 0.14 58);
   --on-orange: oklch(0.2 0 0);
-  --orange-soft: oklch(0.84 0.1 60);
-  --orange-deep: oklch(0.82 0.12 60);
-  --orange-light: oklch(0.88 0.08 62);
-  --orange-muted: oklch(0.45 0.09 58);
-  --success: oklch(0.76 0.12 150);
-  --success-bg: oklch(0.32 0.045 150);
-  --warning: oklch(0.82 0.13 80);
-  --warning-bg: oklch(0.32 0.055 75);
-  --danger: oklch(0.77 0.15 25);
-  --danger-bg: oklch(0.32 0.07 25);
+  --orange-soft: oklch(0.85 0.1 60);
+  --orange-deep: oklch(0.83 0.115 60);
+  --orange-light: oklch(0.9 0.065 62);
+  --orange-muted: oklch(0.4 0.085 58);
+  --success: oklch(0.78 0.12 150);
+  --success-bg: oklch(0.36 0.05 150);
+  --warning: oklch(0.84 0.13 80);
+  --warning-bg: oklch(0.36 0.06 75);
+  --danger: oklch(0.78 0.15 25);
+  --danger-bg: oklch(0.36 0.075 25);
   --on-danger: oklch(0.2 0 0);
-  --focus: oklch(0.78 0.15 58);
-  --shadow: 0 4px 8px oklch(0.05 0 0/0.28);
+  --focus: oklch(0.8 0.125 58);
+  --shadow: 0 4px 8px oklch(0.05 0 0/0.32);
 }
 * {
   box-sizing: border-box;
 }
+/**
+ * No `scroll-behavior: smooth` here, and that is deliberate. The router scrolls to the top on every
+ * navigation by setting the scroll position; a smooth root turns that set into an animation, which
+ * hydration and the next layout pass then interrupt. The result was landing on the home page already
+ * scrolled several hundred pixels down, every time, as if a stale anchor had been followed.
+ * `scroll-padding-top` stays: it is what keeps the skip link's target clear of the sticky header.
+ */
 html {
-  scroll-behavior: smooth;
   scroll-padding-top: 6rem;
   /* Surfaces the browser draws for us, themed from the palette rather than left at its defaults. */
   scrollbar-color: var(--border) transparent;
@@ -103,7 +116,12 @@ body {
     background-color 180ms cubic-bezier(0.16, 1, 0.3, 1),
     color 180ms cubic-bezier(0.16, 1, 0.3, 1);
 }
-body,
+/**
+ * Form controls do not inherit the page font on their own, so they are told to. `body` used to be in
+ * this list, and that quietly undid the rule above it: `font: inherit` on `body` means "take whatever
+ * `html` has", which is the browser reset's stack. The site shipped in the system font the whole
+ * time, with Manrope downloaded and never drawn. It is one selector, and it cost the typography.
+ */
 button,
 input,
 textarea,
@@ -169,21 +187,27 @@ p {
 [data-theme="dark"] .accent {
   color: var(--orange-soft);
 }
+/**
+ * The page used to alternate between 16 rem of empty band and a block of tightly set small text, so
+ * it read as disconnected islands rather than as one document. Sections are closer together and the
+ * display sizes came down to meet the body: the gap between a heading and the paragraph under it now
+ * costs less than the gap between two sections, which is the only rule this rhythm has to obey.
+ */
 .section {
-  padding-block: clamp(4.5rem, 9vw, 8rem);
+  padding-block: clamp(3.25rem, 5.5vw, 5.5rem);
 }
 .section-compact {
-  padding-block: clamp(3rem, 6vw, 5rem);
+  padding-block: clamp(2.25rem, 4vw, 3.5rem);
 }
 .section-heading {
-  font-size: clamp(2rem, 4vw, 3.75rem);
-  max-width: 16ch;
+  font-size: clamp(1.85rem, 3vw, 2.75rem);
+  max-width: 22ch;
 }
 .section-lede {
-  margin: 1.35rem 0 0;
+  margin: 1rem 0 0;
   max-width: 62ch;
   color: var(--muted);
-  font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+  font-size: clamp(1rem, 1.2vw, 1.125rem);
 }
 .button {
   min-height: 2.75rem;
@@ -417,7 +441,7 @@ button:disabled,
   padding-top: 0.5rem;
 }
 .hero {
-  padding-block: clamp(3rem, 8vw, 7.5rem);
+  padding-block: clamp(2.75rem, 6vw, 5.5rem);
 }
 .hero-grid {
   display: grid;
@@ -432,13 +456,13 @@ button:disabled,
   margin: 0 0 1rem;
 }
 .hero h1 {
-  font-size: clamp(2.6rem, 6.5vw, 5.7rem);
-  max-width: 13ch;
+  font-size: clamp(2.35rem, 5vw, 4.35rem);
+  max-width: 15ch;
 }
 .hero-statement {
-  font-size: clamp(1.15rem, 2vw, 1.55rem);
-  max-width: 62ch;
-  margin: 1.75rem 0 0;
+  font-size: clamp(1.08rem, 1.5vw, 1.3rem);
+  max-width: 58ch;
+  margin: 1.35rem 0 0;
   color: var(--muted);
   line-height: 1.55;
 }
@@ -485,13 +509,17 @@ button:disabled,
   height: 100%;
   object-fit: cover;
 }
+/**
+ * This band used to be a near-black slab in the light theme: a hole punched through the page two
+ * screens from the top, and the single loudest thing on a site that is otherwise quiet. It is a
+ * raised grey panel now. Still a change of ground, no longer a void.
+ */
 .intro-section {
-  background: var(--ink);
-  color: var(--background);
+  background: var(--surface-2);
+  color: var(--ink);
 }
 [data-theme="dark"] .intro-section {
   background: var(--elevated);
-  color: var(--ink);
 }
 .intro-grid {
   display: grid;
@@ -499,14 +527,17 @@ button:disabled,
   gap: clamp(2rem, 7vw, 7rem);
 }
 .intro-title {
-  font-size: clamp(2rem, 4.5vw, 4rem);
+  font-size: clamp(1.75rem, 2.9vw, 2.6rem);
+  color: var(--orange-deep);
+}
+[data-theme="dark"] .intro-title {
   color: var(--orange-soft);
 }
 .intro-copy {
   display: grid;
-  gap: 1.4rem;
-  max-width: 68ch;
-  font-size: clamp(1.05rem, 1.4vw, 1.22rem);
+  gap: 1.15rem;
+  max-width: 66ch;
+  font-size: clamp(1rem, 1.15vw, 1.1rem);
 }
 .intro-copy p {
   margin: 0;
@@ -523,12 +554,13 @@ button:disabled,
   border-bottom: 1px solid var(--border);
 }
 .principle h3 {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   letter-spacing: -0.02em;
 }
 .principle p {
   color: var(--muted);
-  margin: 0.65rem 0 0;
+  margin: 0.5rem 0 0;
+  font-size: 0.9375rem;
 }
 .journey-list {
   margin: 3rem 0 0;
@@ -550,12 +582,13 @@ button:disabled,
   font-weight: 750;
 }
 .journey-item h3 {
-  font-size: clamp(1.3rem, 2.3vw, 1.85rem);
+  font-size: clamp(1.15rem, 1.6vw, 1.45rem);
 }
 .journey-item p {
-  margin: 0.7rem 0 0;
+  margin: 0.55rem 0 0;
   color: var(--muted);
   max-width: 65ch;
+  font-size: 0.9375rem;
 }
 /* Scoped to beat `.journey-item p` on specificity instead of on `!important`. */
 .journey-item p.journey-org {
@@ -675,20 +708,39 @@ button:disabled,
   flex-wrap: wrap;
   gap: 0.75rem;
 }
-.projects-featured {
-  margin-top: 3.5rem;
-}
 /**
- * A featured project is a full-width band, not a two-column card. The visual slot holds the
- * mechanism of the project, and a mechanism wants the whole measure rather than a 4:3 crop beside a
- * paragraph.
+ * A listing entry, and only that. Each card answers what the project is, what it is built with, and
+ * whether it is finished, then hands the reader a link. The diagrams and the reasoning used to live
+ * here and pushed two projects across four screens of a page whose job was to summarize.
  */
-.project-showcase {
-  padding-block: clamp(2.5rem, 6vw, 5rem);
-  border-top: 1px solid var(--border);
+.projects-featured {
+  margin-top: 2.5rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1rem, 2vw, 1.5rem);
 }
-.project-showcase:last-child {
-  border-bottom: 1px solid var(--border);
+.project-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: clamp(1.25rem, 2.5vw, 1.75rem);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+/* The projects page sets a second heading straight after the cards, which otherwise touched them. */
+.projects-featured + .section-heading {
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+}
+.project-stack {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+/* Pushed to the bottom edge so two cards of unequal prose still line their actions up. */
+.project-card .project-actions {
+  margin-top: auto;
+  padding-top: 0.4rem;
 }
 .showcase-head {
   display: flex;
@@ -697,7 +749,7 @@ button:disabled,
   gap: 0.75rem 1.25rem;
 }
 .project-title {
-  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-size: clamp(1.5rem, 2.2vw, 2rem);
 }
 /* Pills are for statuses only, and this is the one fact that separates shipped from finished. */
 .status-pill {
@@ -715,51 +767,16 @@ button:disabled,
   color: var(--orange-light);
 }
 .project-lede {
-  margin: 1rem 0 0;
-  max-width: 58ch;
-  color: var(--muted);
-  font-size: clamp(1.08rem, 1.8vw, 1.3rem);
-}
-.showcase-media {
-  margin-top: 2rem;
-  aspect-ratio: 16/9;
-  background: var(--surface-2);
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-.showcase-media img,
-.showcase-media video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.showcase-body {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
-  gap: clamp(1.5rem, 5vw, 4rem);
-  margin-top: 2.5rem;
-  align-items: start;
-}
-.project-meta {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 0.55rem 0.9rem;
   margin: 0;
-  font-size: 0.9375rem;
-}
-.project-meta dt {
+  max-width: 52ch;
   color: var(--muted);
-  font-weight: 750;
-}
-.project-meta dd {
-  margin: 0;
 }
 /* The `note-card` treatment: one orange rule, for a statement the reader is already asking for. */
 .showcase-signal {
-  margin: 0;
+  margin: 2rem 0 0;
   padding: 0.15rem 0 0.15rem clamp(1rem, 2.5vw, 1.5rem);
   box-shadow: inset 1px 0 0 var(--orange);
-  max-width: 62ch;
+  max-width: 68ch;
   color: var(--muted);
 }
 .project-actions {
@@ -768,6 +785,22 @@ button:disabled,
   gap: 1rem;
   align-items: center;
   margin-top: 2rem;
+}
+/* Shared by every placeholder slot, so the note sits on the art rather than pushing the layout. */
+.media-empty {
+  position: relative;
+}
+.media-note {
+  position: absolute;
+  inset: auto 1rem 1rem;
+  margin: 0;
+  background: var(--elevated);
+  color: var(--ink);
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 750;
+  text-align: center;
 }
 .project-visual {
   aspect-ratio: 4/3;
@@ -960,23 +993,30 @@ button:disabled,
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0 3.5rem;
 }
+/**
+ * Four lines used to sit here at four sizes, four weights and two colors, spaced evenly. Evenly is
+ * the mistake: nothing told the eye which line answered which. The pairs are tight and the gap
+ * between them is wide, so the block reads as two statements rather than four loose ones.
+ */
 .skill-group {
-  padding-block: 1.5rem;
+  padding-block: 1.75rem;
   border-top: 1px solid var(--border);
 }
 .skill-group h3 {
-  font-size: 1.35rem;
+  font-size: 1.1rem;
 }
 .skill-group p {
-  margin: 0.55rem 0;
+  margin: 0.4rem 0 0;
   color: var(--muted);
-}
-.skill-proof {
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
 }
 .skill-group p.skill-names {
-  font-weight: 750;
+  margin-top: 0.9rem;
+  font-weight: 700;
   color: var(--ink);
+}
+.skill-proof {
+  font-size: 0.8125rem;
 }
 .contact-panel {
   background: var(--orange-action);
@@ -989,12 +1029,12 @@ button:disabled,
   align-items: end;
 }
 .contact-panel h2 {
-  font-size: clamp(2.2rem, 5vw, 4.5rem);
-  max-width: 13ch;
+  font-size: clamp(1.9rem, 3.4vw, 3.1rem);
+  max-width: 16ch;
 }
 .contact-panel p {
   max-width: 58ch;
-  margin: 1.2rem 0 0;
+  margin: 1rem 0 0;
   color: var(--on-orange);
 }
 .contact-panel .button-secondary {
@@ -1015,40 +1055,40 @@ button:disabled,
   color: var(--orange-action);
 }
 .page-hero {
-  padding-block: clamp(3.5rem, 8vw, 7rem);
+  padding-block: clamp(2.75rem, 5vw, 4.5rem);
   border-bottom: 1px solid var(--border);
 }
 .page-hero h1 {
-  font-size: clamp(2.7rem, 7vw, 5.8rem);
-  max-width: 13ch;
+  font-size: clamp(2.2rem, 3.6vw, 3.3rem);
+  max-width: 20ch;
 }
 .page-hero p {
-  font-size: clamp(1.1rem, 2vw, 1.4rem);
+  font-size: clamp(1rem, 1.25vw, 1.175rem);
   color: var(--muted);
   max-width: 62ch;
-  margin: 1.4rem 0 0;
+  margin: 1rem 0 0;
 }
 .case-header {
-  padding-block: clamp(3.5rem, 8vw, 7rem);
+  padding-block: clamp(2.75rem, 5vw, 4.5rem);
 }
 .case-back {
   display: inline-flex;
   gap: 0.5rem;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 .case-header h1 {
-  font-size: clamp(3rem, 8vw, 6rem);
-  max-width: 12ch;
+  font-size: clamp(2.4rem, 4.5vw, 4rem);
+  max-width: 16ch;
 }
 .case-intro {
   display: grid;
   grid-template-columns: minmax(0, 1.3fr) minmax(14rem, 0.7fr);
-  gap: 3rem;
-  margin-top: 2rem;
+  gap: clamp(1.75rem, 4vw, 3rem);
+  margin-top: 1.75rem;
 }
 .case-intro > p {
-  font-size: clamp(1.15rem, 2vw, 1.45rem);
+  font-size: clamp(1.05rem, 1.4vw, 1.25rem);
   color: var(--muted);
   margin: 0;
 }
@@ -1082,14 +1122,22 @@ button:disabled,
   object-fit: cover;
 }
 .case-section {
-  padding-block: clamp(3rem, 7vw, 6rem);
+  padding-block: clamp(2.25rem, 4vw, 3.5rem);
   border-top: 1px solid var(--border);
   display: grid;
-  grid-template-columns: minmax(12rem, 0.55fr) minmax(0, 1.45fr);
-  gap: clamp(2rem, 7vw, 7rem);
+  grid-template-columns: minmax(11rem, 0.5fr) minmax(0, 1.5fr);
+  gap: clamp(1.5rem, 4vw, 4rem);
 }
 .case-section h2 {
-  font-size: clamp(1.8rem, 3.5vw, 3rem);
+  font-size: clamp(1.35rem, 2vw, 1.9rem);
+}
+/* A diagram is the one thing on this page that needs the whole measure, so it drops the side column. */
+.case-section-wide {
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+.case-section-wide .case-content {
+  max-width: none;
 }
 .case-content {
   max-width: 68ch;
@@ -1154,26 +1202,53 @@ button:disabled,
   background: var(--surface);
   color: var(--muted);
 }
+/**
+ * A 404 is a page of the site, not an interstitial. It used to be centered in a full viewport with
+ * no type scale of its own, so the heading rendered at body size under a 160px number and nothing
+ * else on screen looked like this site. It reads left, in the shell, at the page scale.
+ */
 .error-page {
-  min-height: 100vh;
+  padding-block: clamp(3rem, 7vw, 6rem);
+}
+.error-page h1 {
+  font-size: clamp(1.85rem, 3vw, 2.75rem);
+  margin-top: 0.5rem;
+  max-width: 20ch;
+}
+.error-body {
+  margin: 0.9rem 0 0;
+  max-width: 52ch;
+  color: var(--muted);
+  font-size: clamp(1rem, 1.2vw, 1.125rem);
+}
+.error-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  margin-top: 2rem;
+}
+/* The error boundaries keep the old centered treatment: the layout around them may be what broke. */
+.error-boundary {
+  min-height: 60vh;
   display: grid;
   place-items: center;
   padding: 2rem;
   text-align: center;
 }
-/**
- * Loading reused `.error-page`, which framed a routine wait as a failure and held a full viewport
- * for it. It is a quiet line at the top of the content area instead.
- */
-.loading-page {
-  padding: clamp(3rem, 10vw, 6rem) var(--gutter);
-  text-align: center;
-}
-.error-page > div {
+.error-boundary > div {
   max-width: 40rem;
 }
+.error-boundary h1 {
+  font-size: clamp(1.5rem, 2.4vw, 2.1rem);
+  margin-top: 0.5rem;
+}
+.error-boundary p:not(.error-code) {
+  margin: 0.75rem 0 1.5rem;
+  color: var(--muted);
+}
 .error-code {
-  font-size: clamp(4rem, 15vw, 10rem);
+  font-size: clamp(2.75rem, 6vw, 4.5rem);
   line-height: 1;
   margin: 0;
   color: var(--orange);
@@ -1724,8 +1799,10 @@ html:has(dialog[open]) {
     font-size: clamp(2.5rem, 7.5vw, 4.7rem);
   }
   /* The flow turns vertical, so every arrow turns with it. */
-  .flow-janus,
-  .showcase-body {
+  .flow-janus {
+    grid-template-columns: 1fr;
+  }
+  .projects-featured {
     grid-template-columns: 1fr;
   }
   .flow-janus .flow-arrow-glyph {
@@ -1774,7 +1851,7 @@ html:has(dialog[open]) {
     --gutter: 1rem;
   }
   .section {
-    padding-block: 4rem;
+    padding-block: 3rem;
   }
   .flow-episort {
     grid-template-columns: 1fr;

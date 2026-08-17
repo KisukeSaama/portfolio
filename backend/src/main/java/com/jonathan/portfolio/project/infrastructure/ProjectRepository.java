@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface ProjectRepository extends JpaRepository<Project, UUID>, JpaSpecificationExecutor<Project> {
     boolean existsBySlugIgnoreCase(String slug);
+    Optional<Project> findBySlugIgnoreCase(String slug);
     boolean existsBySlugIgnoreCaseAndIdNot(String slug, UUID id);
     List<Project> findAllByPublicationStatusAndVisibilityAndArchivedAtIsNullOrderByDisplayOrderAscUpdatedAtDesc(PublicationStatus publicationStatus, Visibility visibility);
     Optional<Project> findBySlugAndPublicationStatusAndVisibilityAndArchivedAtIsNull(String slug, PublicationStatus publicationStatus, Visibility visibility);

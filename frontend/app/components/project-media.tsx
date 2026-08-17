@@ -74,7 +74,7 @@ export function ProjectMedia({
 }) {
   if (!media)
     return (
-      <div className={className}>
+      <div className={`${className} media-empty`}>
         <Image
           src="/images/project-placeholder.svg"
           alt={format(t.caseStudy.mediaPlaceholderAlt, { title })}
@@ -83,6 +83,9 @@ export function ProjectMedia({
           priority={priority}
           sizes="(max-width: 760px) 100vw, 50vw"
         />
+        {/* The caption used to be a <text> node inside the SVG, which meant one hardcoded language
+            on a bilingual site. It is rendered from the dictionary now. */}
+        <p className="media-note">{t.caseStudy.mediaPlaceholderNote}</p>
       </div>
     );
   if (media.type === "VIDEO")

@@ -4,8 +4,7 @@ import { AdminLoginForm } from "~/components/admin-login-form";
 import { ThemeToggle } from "~/components/theme-toggle";
 import { defaultLocale } from "~/i18n/config";
 import { getDictionary } from "~/i18n";
-import { serverApi } from "~/lib/server-api";
-import type { Session } from "~/types/api";
+import { adminSession } from "~/lib/admin-session";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -16,10 +15,8 @@ export const metadata: Metadata = {
 export default async function AdminLoginPage() {
   // The administration area is single-language: it is used by the site owner only.
   const t = getDictionary(defaultLocale);
-  const session = await serverApi<Session>("/auth/session", {
-    authenticated: true,
-  });
-  if (session.authenticated) redirect("/admin");
+  const session = await adminSession();
+  if (session?.authenticated) redirect("/admin");
   return (
     <main id="main-content" className="login-page">
       <section className="login-panel" aria-labelledby="login-title">

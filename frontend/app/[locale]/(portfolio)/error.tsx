@@ -13,7 +13,7 @@ export default function PortfolioError({ reset }: { reset: () => void }) {
   const locale = isLocale(params?.locale) ? params.locale : defaultLocale;
   const t = getDictionary(locale);
   return (
-    <div className="error-page">
+    <div className="error-boundary">
       <div>
         <p className="error-code">500</p>
         <h1>{t.errors.unexpectedTitle}</h1>

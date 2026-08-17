@@ -15,18 +15,20 @@ export const dynamic = "force-dynamic";
 
 type PageParams = { params: Promise<{ locale: Locale; slug: string }> };
 
-const getProject = cache((slug: string) =>
-  serverApi<Project>(`/public/projects/${encodeURIComponent(slug)}`, {
-    notFoundOn404: true,
-    revalidate: 0,
-  }),
+// Keyed on the locale as well, so the metadata and the page body share one fetch per language
+// rather than the French page rendering whatever the English one happened to cache first.
+const getProject = cache((slug: string, locale: Locale) =>
+  serverApi<Project>(
+    `/public/projects/${encodeURIComponent(slug)}?locale=${locale}`,
+    { notFoundOn404: true, revalidate: 0 },
+  ),
 );
 
 export async function generateMetadata({
   params,
 }: PageParams): Promise<Metadata> {
   const { locale, slug } = await params;
-  const project = await getProject(slug);
+  const project = await getProject(slug, locale);
   const title = project.seoTitle || project.title;
   const description = project.seoDescription || project.shortDescription;
   const canonical = localePath(locale, `/${project.slug}`);
@@ -58,7 +60,7 @@ export default async function ProjectPage({ params }: PageParams) {
   const { locale, slug } = await params;
   const t = getDictionary(locale);
   const nonce = (await headers()).get(NONCE_HEADER) ?? undefined;
-  const project = await getProject(slug);
+  const project = await getProject(slug, locale);
 
   return (
     <article>

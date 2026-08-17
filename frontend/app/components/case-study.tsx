@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import type { Dictionary } from "~/i18n";
 import type { Locale } from "~/i18n/config";
 import type { Project } from "~/types/api";
+import { hasDiagram, ProjectDiagram } from "./project-diagram";
 import { ProjectMedia } from "./project-media";
 
 /**
@@ -14,15 +15,49 @@ import { ProjectMedia } from "./project-media";
 function CaseSection({
   title,
   children,
+  wide,
 }: {
   title: string;
   children: ReactNode;
+  /** Drops the heading column so the content gets the whole measure. Only the diagram needs it. */
+  wide?: boolean;
 }) {
   return (
-    <section className="case-section">
+    <section className={`case-section${wide ? " case-section-wide" : ""}`}>
       <h2>{title}</h2>
       <div className="case-content">{children}</div>
     </section>
+  );
+}
+
+/** The one line about how I work that belongs beside each flagship diagram, or nothing. */
+function signalFor(slug: string, t: Dictionary) {
+  if (slug === "janus") return t.showcase.janus.signal;
+  if (slug === "episort") return t.showcase.episort.signal;
+  return null;
+}
+
+/**
+ * The mechanism, drawn, and the one line about how I work that goes with it. This is the first thing
+ * under the cover on the two flagship case studies, because a reader who opened the page is asking
+ * how the thing works before asking anything else. Projects without a drawing skip it entirely.
+ */
+function MechanismSection({
+  project,
+  t,
+  locale,
+}: {
+  project: Project;
+  t: Dictionary;
+  locale: Locale;
+}) {
+  if (!hasDiagram(project.slug)) return null;
+  const signal = signalFor(project.slug, t);
+  return (
+    <CaseSection title={t.caseStudy.mechanism} wide>
+      <ProjectDiagram slug={project.slug} t={t} locale={locale} />
+      {signal && <p className="showcase-signal">{signal}</p>}
+    </CaseSection>
   );
 }
 
@@ -103,6 +138,7 @@ export function CaseStudyBody({
         className="case-media"
         priority
       />
+      <MechanismSection project={project} t={t} locale={locale} />
       <TextSection title={t.caseStudy.problem} value={project.problem} />
       <TextSection title={t.caseStudy.context} value={project.context} />
       <ListSection title={t.caseStudy.objectives} items={project.objectives} />
