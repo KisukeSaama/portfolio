@@ -7,11 +7,11 @@ vi.mock("next/navigation", () => ({
 }));
 
 describe("administration", () => {
-  it("affiche une connexion sans inscription", () => {
+  it("offers a sign-in with no sign-up", () => {
     render(<AdminLoginForm />);
     expect(
-      screen.getByRole("button", { name: "Se connecter" }),
+      screen.getByRole("button", { name: "Sign in" }),
     ).toBeInTheDocument();
-    expect(screen.queryByText(/créer un compte/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/create an account/i)).not.toBeInTheDocument();
   });
 });

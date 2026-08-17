@@ -6,7 +6,7 @@ import { requireAdmin } from "~/lib/require-admin";
 import { serverApi } from "~/lib/server-api";
 import type { Page, Project } from "~/types/api";
 
-export const metadata: Metadata = { title: "Projets — Administration" };
+export const metadata: Metadata = { title: "Projects — Administration" };
 
 export default async function AdminProjectsPage({
   searchParams,
@@ -23,43 +23,43 @@ export default async function AdminProjectsPage({
     <>
       <header className="admin-head">
         <div>
-          <h1>Projets</h1>
+          <h1>Projects</h1>
           <p>
-            {data.totalElements} projet(s), tous états éditoriaux confondus.
+            {data.totalElements} project(s), across every editorial state.
           </p>
         </div>
         <Link href="/admin/projects/new" className="button button-primary">
           <Plus size={17} aria-hidden />
-          Nouveau projet
+          New project
         </Link>
       </header>
       <form className="filters" method="get">
         <div className="field">
-          <label htmlFor="query">Rechercher</label>
+          <label htmlFor="query">Search</label>
           <input
             className="input"
             id="query"
             name="query"
             type="search"
-            placeholder="Titre ou slug"
+            placeholder="Title or slug"
             defaultValue={query}
           />
         </div>
         <div className="field">
-          <label htmlFor="status">État éditorial</label>
+          <label htmlFor="status">Editorial state</label>
           <select
             className="select"
             id="status"
             name="status"
             defaultValue={status}
           >
-            <option value="">Tous</option>
-            <option value="PUBLISHED">Publiés</option>
-            <option value="DRAFT">Brouillons</option>
-            <option value="ARCHIVED">Archivés</option>
+            <option value="">All</option>
+            <option value="PUBLISHED">Published</option>
+            <option value="DRAFT">Drafts</option>
+            <option value="ARCHIVED">Archived</option>
           </select>
         </div>
-        <button className="button button-secondary">Filtrer</button>
+        <button className="button button-secondary">Filter</button>
       </form>
       <AdminProjectList projects={data.content} />
     </>

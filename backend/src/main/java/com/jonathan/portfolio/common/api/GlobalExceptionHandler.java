@@ -22,18 +22,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidOperationException.class)
     ResponseEntity<ApiError> invalid(InvalidOperationException ex, HttpServletRequest request) { return response(HttpStatus.UNPROCESSABLE_CONTENT, "invalid_operation", ex.getMessage(), request); }
     @ExceptionHandler(AccessDeniedException.class)
-    ResponseEntity<ApiError> denied(HttpServletRequest request) { return response(HttpStatus.FORBIDDEN, "forbidden", "Cette action n’est pas autorisée.", request); }
+    ResponseEntity<ApiError> denied(HttpServletRequest request) { return response(HttpStatus.FORBIDDEN, "forbidden", "This action is not allowed.", request); }
     @ExceptionHandler(MethodArgumentNotValidException.class)
     ResponseEntity<ApiError> validation(MethodArgumentNotValidException ex, HttpServletRequest request) {
         var fields = new LinkedHashMap<String,String>();
         ex.getBindingResult().getFieldErrors().forEach(error -> fields.putIfAbsent(error.getField(), error.getDefaultMessage()));
-        var body = new ApiError("validation_error", "Certains champs doivent être corrigés.", correlation(request), java.time.Instant.now(), fields);
+        var body = new ApiError("validation_error", "Some fields need to be corrected.", correlation(request), java.time.Instant.now(), fields);
         return ResponseEntity.badRequest().body(body);
     }
     @ExceptionHandler(Exception.class)
     ResponseEntity<ApiError> unexpected(Exception ex, HttpServletRequest request) {
-        log.error("Erreur API inattendue, correlationId={}", correlation(request), ex);
-        return response(HttpStatus.INTERNAL_SERVER_ERROR, "internal_error", "Une erreur inattendue est survenue.", request);
+        log.error("Unexpected API error, correlationId={}", correlation(request), ex);
+        return response(HttpStatus.INTERNAL_SERVER_ERROR, "internal_error", "An unexpected error occurred.", request);
     }
     private ResponseEntity<ApiError> response(HttpStatus status, String code, String message, HttpServletRequest request) { return ResponseEntity.status(status).body(ApiError.of(code, message, correlation(request))); }
     private String correlation(HttpServletRequest request) { var value=request.getAttribute("correlationId"); return value == null ? "unknown" : value.toString(); }

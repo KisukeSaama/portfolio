@@ -1,15 +1,14 @@
 import { ArrowRight, ExternalLink } from "lucide-react";
 import Link from "next/link";
-import type { Project, ProjectStatus } from "~/types/api";
+import type { Dictionary } from "~/i18n";
+import { format, localePath } from "~/i18n";
+import type { Locale } from "~/i18n/config";
+import type { Project } from "~/types/api";
 import { ProjectMedia } from "./project-media";
 
-const status: Record<ProjectStatus, string> = {
-  CONCEPT: "Conception",
-  IN_PROGRESS: "En développement",
-  MAINTAINED: "Maintenu",
-  COMPLETED: "Réalisé",
-};
-export function FeaturedProjects({ projects }: { projects: Project[] }) {
+type ListProps = { projects: Project[]; locale: Locale; t: Dictionary };
+
+export function FeaturedProjects({ projects, locale, t }: ListProps) {
   return (
     <div className="projects-featured">
       {projects.map((project, index) => {
@@ -25,7 +24,7 @@ export function FeaturedProjects({ projects }: { projects: Project[] }) {
               <p className="project-problem">{project.problem}</p>
               <div className="project-meta">
                 <span className="tag status">
-                  Statut : {status[project.status]}
+                  {t.projects.statusLabel} {t.projects.status[project.status]}
                 </span>
                 {project.technologies.slice(0, 4).map((item) => (
                   <span className="tag" key={item}>
@@ -34,11 +33,14 @@ export function FeaturedProjects({ projects }: { projects: Project[] }) {
                 ))}
               </div>
               <p className="muted">
-                <strong>Rôle :</strong> {project.role}
+                <strong>{t.projects.roleLabel}</strong> {project.role}
               </p>
               <div className="project-actions">
-                <Link href={`/${project.slug}`} className="text-link">
-                  Lire l’étude de cas <ArrowRight size={17} aria-hidden />
+                <Link
+                  href={localePath(locale, `/${project.slug}`)}
+                  className="text-link"
+                >
+                  {t.projects.readCaseStudy} <ArrowRight size={17} aria-hidden />
                 </Link>
                 {project.githubUrl && (
                   <a
@@ -57,7 +59,7 @@ export function FeaturedProjects({ projects }: { projects: Project[] }) {
                     rel="noreferrer"
                     className="text-link"
                   >
-                    Démonstration <ExternalLink size={15} aria-hidden />
+                    {t.projects.demo} <ExternalLink size={15} aria-hidden />
                   </a>
                 )}
               </div>
@@ -65,6 +67,7 @@ export function FeaturedProjects({ projects }: { projects: Project[] }) {
             <ProjectMedia
               media={cover}
               title={project.title}
+              t={t}
               priority={index === 0}
             />
           </article>
@@ -73,7 +76,8 @@ export function FeaturedProjects({ projects }: { projects: Project[] }) {
     </div>
   );
 }
-export function SecondaryProjects({ projects }: { projects: Project[] }) {
+
+export function SecondaryProjects({ projects, locale, t }: ListProps) {
   return (
     <div className="secondary-projects">
       {projects.map((project) => (
@@ -81,20 +85,18 @@ export function SecondaryProjects({ projects }: { projects: Project[] }) {
           <h3>{project.title}</h3>
           <p>
             {project.shortDescription}{" "}
-            <strong>
-              {project.projectType === "TEAM"
-                ? "Projet d’équipe."
-                : project.projectType === "LEARNING"
-                  ? "Projet d’apprentissage."
-                  : ""}
-            </strong>
+            {project.projectType !== "PERSONAL" && (
+              <strong>{t.projects.type[project.projectType]}.</strong>
+            )}
           </p>
           <Link
-            href={`/${project.slug}`}
+            href={localePath(locale, `/${project.slug}`)}
             className="text-link"
-            aria-label={`Voir l’étude de cas ${project.title}`}
+            aria-label={format(t.projects.caseStudyOf, {
+              title: project.title,
+            })}
           >
-            Découvrir <ArrowRight size={16} aria-hidden />
+            {t.projects.discover} <ArrowRight size={16} aria-hidden />
           </Link>
         </article>
       ))}

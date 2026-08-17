@@ -24,7 +24,7 @@ export function MediaManager({ project }: { project: Project }) {
       form.reset();
     } catch (e) {
       setError(
-        e instanceof ApiRequestError ? e.payload.message : "Envoi impossible.",
+        e instanceof ApiRequestError ? e.payload.message : "Upload failed.",
       );
     } finally {
       setBusy(false);
@@ -52,14 +52,14 @@ export function MediaManager({ project }: { project: Project }) {
       setError(
         e instanceof ApiRequestError
           ? e.payload.message
-          : "Association impossible.",
+          : "Could not attach the URL.",
       );
     } finally {
       setBusy(false);
     }
   }
   async function remove(item: ProjectMedia) {
-    if (!window.confirm(`Supprimer définitivement le média « ${item.alt} » ?`))
+    if (!window.confirm(`Permanently delete the media “${item.alt}”?`))
       return;
     await apiMutation<void>(`/admin/media/${item.id}`, { method: "DELETE" });
     setItems((current) => current.filter((value) => value.id !== item.id));
@@ -73,8 +73,8 @@ export function MediaManager({ project }: { project: Project }) {
       )}
       {items.length === 0 ? (
         <p className="muted">
-          Aucun média associé. Le site public affichera le placeholder
-          explicite.
+          No media attached. The public site will show the explicit
+          placeholder.
         </p>
       ) : (
         items.map((item) => (
@@ -107,7 +107,7 @@ export function MediaManager({ project }: { project: Project }) {
               onClick={() => void remove(item)}
             >
               <Trash2 size={16} aria-hidden />
-              Supprimer
+              Delete
             </button>
           </div>
         ))
@@ -122,14 +122,14 @@ export function MediaManager({ project }: { project: Project }) {
         <div className="field">
           <label htmlFor="upload-type">Type</label>
           <select id="upload-type" name="type" className="select">
-            <option value="COVER">Couverture</option>
-            <option value="VIDEO">Vidéo</option>
+            <option value="COVER">Cover</option>
+            <option value="VIDEO">Video</option>
             <option value="POSTER">Poster</option>
-            <option value="GALLERY">Galerie</option>
+            <option value="GALLERY">Gallery</option>
           </select>
         </div>
         <div className="field">
-          <label htmlFor="upload-alt">Texte alternatif</label>
+          <label htmlFor="upload-alt">Alternative text</label>
           <input
             id="upload-alt"
             name="alt"
@@ -139,7 +139,7 @@ export function MediaManager({ project }: { project: Project }) {
           />
         </div>
         <div className="field field-span">
-          <label htmlFor="upload-file">Fichier image ou vidéo</label>
+          <label htmlFor="upload-file">Image or video file</label>
           <input
             id="upload-file"
             name="file"
@@ -149,13 +149,13 @@ export function MediaManager({ project }: { project: Project }) {
             className="input"
           />
           <span className="field-help">
-            Images 8 Mo max ; vidéos 40 Mo max. Validation MIME et extension
-            côté serveur.
+            Images up to 8 MB, videos up to 40 MB. MIME type and extension are
+            validated server-side.
           </span>
         </div>
         <button className="button button-secondary" disabled={busy}>
           <Upload size={16} aria-hidden />
-          Envoyer vers le stockage S3
+          Upload to the media storage
         </button>
       </form>
       <form
@@ -168,14 +168,14 @@ export function MediaManager({ project }: { project: Project }) {
         <div className="field">
           <label htmlFor="external-type">Type</label>
           <select id="external-type" name="type" className="select">
-            <option value="COVER">Couverture</option>
-            <option value="VIDEO">Vidéo</option>
+            <option value="COVER">Cover</option>
+            <option value="VIDEO">Video</option>
             <option value="POSTER">Poster</option>
-            <option value="GALLERY">Galerie</option>
+            <option value="GALLERY">Gallery</option>
           </select>
         </div>
         <div className="field">
-          <label htmlFor="external-url">URL externe</label>
+          <label htmlFor="external-url">External URL</label>
           <input
             id="external-url"
             name="url"
@@ -185,7 +185,7 @@ export function MediaManager({ project }: { project: Project }) {
           />
         </div>
         <div className="field">
-          <label htmlFor="external-alt">Texte alternatif</label>
+          <label htmlFor="external-alt">Alternative text</label>
           <input
             id="external-alt"
             name="alt"
@@ -195,7 +195,7 @@ export function MediaManager({ project }: { project: Project }) {
           />
         </div>
         <div className="field">
-          <label htmlFor="external-caption">Légende</label>
+          <label htmlFor="external-caption">Caption</label>
           <input
             id="external-caption"
             name="caption"
@@ -205,7 +205,7 @@ export function MediaManager({ project }: { project: Project }) {
         </div>
         <button className="button button-secondary" disabled={busy}>
           <ImagePlus size={16} aria-hidden />
-          Associer l’URL
+          Attach the URL
         </button>
       </form>
     </div>

@@ -1,133 +1,141 @@
-# Portfolio de Jonathan Blanchard
+# Jonathan Blanchard's portfolio
 
-Portfolio personnel full-stack, administrable et déployable. La partie publique présente Jonathan avant ses projets et raconte sa manière de transformer un problème concret en application complète. L’administration permet de gérer le cycle éditorial, les études de cas et leurs médias sans modifier le code.
+A personal full-stack portfolio, administrable and deployable. The public side introduces Jonathan before his projects and tells how he turns a concrete problem into a complete application. The administration area manages the editorial cycle, the case studies and their media without touching the code.
 
-## Stack et architecture
+The public site is bilingual (English / French). Code, comments and documentation are written in US English only; French exists as a translation locale.
 
-- **Frontend** : Next.js 16 avec App Router et React 19, Server Components, TypeScript strict, Tailwind CSS 4, React Hook Form, Zod, Vitest, Testing Library, Playwright et axe-core.
-- **Backend** : Java 21, Spring Boot 4, Spring MVC, Spring Security, Spring Data JPA, Bean Validation, Flyway, PostgreSQL, Spring Session JDBC, OpenAPI et AWS SDK S3.
-- **Infrastructure** : Docker Compose, PostgreSQL 17, MinIO en développement, stockage compatible S3 en production et Nginx non-root comme reverse proxy.
-- **Design** : une seule famille, Manrope Variable auto-hébergée, palette orange en OKLCH, thème clair minéral et thème sombre graphite.
+## Stack and architecture
+
+- **Frontend**: Next.js 16 with the App Router and React 19, Server Components, strict TypeScript, Tailwind CSS 4, React Hook Form, Zod, Vitest, Testing Library, Playwright and axe-core.
+- **Backend**: Java 21, Spring Boot 4, Spring MVC, Spring Security, Spring Data JPA, Bean Validation, Flyway, PostgreSQL, Spring Session JDBC and OpenAPI.
+- **Infrastructure**: Docker Compose, PostgreSQL 17, local-disk media storage on a Docker volume, and non-root Nginx as a reverse proxy. Everything is self-hosted — no managed cloud object storage.
+- **Design**: a single self-hosted family, Manrope Variable, an orange OKLCH palette, a mineral light theme and a graphite dark theme.
 
 ```text
 portfolio/
-├── frontend/                 # application Next.js publique + /admin
-│   ├── app/                  # App Router, composants, contenu et styles
-│   ├── public/               # placeholders, favicon et manifest
-│   └── tests/                # Vitest et Playwright
-├── backend/                  # monolithe Spring Boot modulaire
+├── frontend/                 # public Next.js application + /admin
+│   ├── app/                  # App Router, components, dictionaries and styles
+│   │   ├── [locale]/         # bilingual public site (en, fr)
+│   │   ├── admin/            # administration area, English only
+│   │   └── i18n/             # locale config and en/fr dictionaries
+│   ├── proxy.ts              # locale detection and redirect
+│   ├── public/               # placeholders, favicon and manifest
+│   └── tests/                # Vitest and Playwright
+├── backend/                  # modular Spring Boot monolith
 │   └── src/main/java/com/jonathan/portfolio/
 │       ├── auth/ user/ project/ media/
 │       ├── audit/ storage/ security/
 │       └── common/ config/
-├── deploy/                   # compose, chemins et env du déploiement GitLab CI
-├── infra/reverse-proxy/      # routage / vers Next.js et /api vers Spring
-├── scripts/                  # lanceur Gradle multiplateforme
+├── deploy/                   # compose, paths and env for the GitLab CI deployment
+├── infra/reverse-proxy/      # routes / to Next.js and /api to Spring
+├── scripts/                  # cross-platform Gradle launcher
 ├── docker-compose.dev.yml
 └── docker-compose.prod.yml
 ```
 
-Le frontend et le backend se développent et se testent indépendamment. En production, ils sont servis sous le même domaine : `/` pour Next.js et `/api` pour Spring Boot. Cela simplifie les cookies de session et évite un CORS permissif. Les pages publiques sont pré-rendues lorsqu’elles sont statiques et rendues côté serveur lorsqu’elles dépendent de PostgreSQL.
+The frontend and the backend are developed and tested independently. In production they are served under the same domain: `/` for Next.js and `/api` for Spring Boot. That keeps session cookies simple and avoids a permissive CORS setup. Public pages are pre-rendered when static and server-rendered when they depend on PostgreSQL.
 
-### SEO et URLs publiques
+### Languages and URLs
 
-Next.js génère les métadonnées globales et celles de chaque étude de cas côté serveur, ainsi que les canonical, Open Graph, Twitter Cards, données structurées, `robots.txt`, `sitemap.xml`, manifest et image sociale temporaire. Les projets publiés utilisent une URL courte directement issue du slug : `/episort`, `/janus`, `/overkill`. La route `/projects` reste l’index éditorial ; les brouillons et archives ne sont jamais ajoutés au sitemap.
+Every public URL carries its locale: `/en/...` and `/fr/...`. A request without a prefix is redirected by `frontend/proxy.ts`, which picks the locale from the `portfolio-locale` cookie, then from `Accept-Language`, and falls back to English. The header/footer switcher keeps the visitor on the same page and stores their choice in the cookie.
 
-## Prérequis
+UI copy lives in `frontend/app/i18n/dictionaries/en.ts` (the source language) and `fr.ts`. The English dictionary is the type contract: adding a key there makes TypeScript require a French translation. Project case-study content is stored once per project in the database and therefore exists in one language only; the administration area is English-only.
 
-- Node.js 22 ou plus récent et npm ;
-- Java 21 ;
-- Docker Desktop ou un moteur Docker compatible pour PostgreSQL, MinIO, Testcontainers et les compositions complètes.
+### SEO and public URLs
 
-Gradle n’a pas besoin d’être installé : le wrapper est versionné dans `backend/`.
+Next.js generates the global metadata and each case study's metadata server-side, along with canonical URLs, Open Graph, Twitter Cards, structured data, `robots.txt`, `sitemap.xml`, the manifest and a temporary social image. Published projects use a short URL taken from the slug: `/en/episort`, `/fr/janus`. Each sitemap entry lists both locales as alternates. The `/projects` route stays the editorial index; drafts and archives are never added to the sitemap.
 
-## Installation et lancement local
+## Requirements
+
+- Node.js 22 or newer, and npm;
+- Java 21;
+- Docker Desktop or a compatible Docker engine for PostgreSQL, Testcontainers and the full compositions.
+
+Gradle does not need to be installed: the wrapper is versioned in `backend/`.
+
+## Local installation and start-up
 
 ```bash
 git clone git@github.com:KisukeSaama/portfolio.git
 cd portfolio
 cp .env.example .env
 npm install
-docker compose --env-file .env -f docker-compose.dev.yml up -d postgres minio minio-init
+docker compose --env-file .env -f docker-compose.dev.yml up -d postgres
 npm run dev:backend
 ```
 
-Dans un second terminal :
+In a second terminal:
 
 ```bash
 npm run dev:frontend
 ```
 
-- Portfolio : `http://localhost:5173`
-- API : `http://localhost:8080/api/v1`
-- OpenAPI JSON : `http://localhost:8080/api/openapi`
-- Swagger UI : `http://localhost:8080/api/docs`
-- Console MinIO : `http://localhost:9001`
+- Portfolio: `http://localhost:5173`
+- API: `http://localhost:8080/api/v1`
+- OpenAPI JSON: `http://localhost:8080/api/openapi`
+- Swagger UI: `http://localhost:8080/api/docs`
 
-Pour lancer également le backend dans Docker :
+To run the backend in Docker as well:
 
 ```bash
 docker compose --env-file .env -f docker-compose.dev.yml --profile apps up -d --build
 ```
 
-Le hot reload frontend reste volontairement local afin de ne pas alourdir la boucle de développement.
+Frontend hot reload deliberately stays local so the development loop stays fast.
 
-## Variables d’environnement
+## Environment variables
 
-Copier `.env.example` puis remplacer toutes les valeurs signalées. Aucun secret réel n’est versionné.
+Copy `.env.example`, then replace every flagged value. No real secret is versioned.
 
-| Variable                                            | Usage                                                      |
-| --------------------------------------------------- | ---------------------------------------------------------- |
-| `PUBLIC_SITE_URL`                                   | URL canonique publique utilisée au déploiement             |
-| `NEXT_PUBLIC_API_BASE_URL`                          | Base API côté navigateur, normalement `/api/v1`            |
-| `INTERNAL_API_BASE_URL`                             | Base API utilisée par les Server Components Next.js        |
-| `API_PROXY_TARGET`                                  | Cible du proxy `/api` utilisé par Next.js en développement |
-| `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` | Base PostgreSQL                                            |
-| `DATABASE_URL`                                      | URL JDBC Spring/CLI                                        |
-| `SPRING_PROFILES_ACTIVE`                            | `dev`, `test` ou `prod`                                    |
-| `SESSION_COOKIE_SECURE`                             | `true` derrière HTTPS en production                        |
-| `SESSION_TIMEOUT`                                   | Durée de session, `12h` par défaut                         |
-| `ADMIN_INITIAL_EMAIL`, `ADMIN_INITIAL_PASSWORD`     | Uniquement pour la commande d’administration               |
-| `S3_BUCKET`, `S3_REGION`, `S3_ENDPOINT`             | Stockage compatible S3                                     |
-| `S3_ACCESS_KEY`, `S3_SECRET_KEY`                    | Identifiants S3, uniquement côté backend                   |
-| `S3_PUBLIC_BASE_URL`                                | Base publique éventuelle du stockage                       |
-| `MINIO_ROOT_USER`, `MINIO_ROOT_PASSWORD`            | MinIO local                                                |
-| `PROJECT_SEED_ENABLED`                              | Active le seed non destructif au démarrage                 |
-| `CONTACT_EMAIL`                                     | Réservé à une future intégration du contact                |
+| Variable                                            | Purpose                                                       |
+| --------------------------------------------------- | ------------------------------------------------------------- |
+| `PUBLIC_SITE_URL`                                   | Public canonical URL used at deployment                       |
+| `NEXT_PUBLIC_API_BASE_URL`                          | Browser-side API base, normally `/api/v1`                     |
+| `INTERNAL_API_BASE_URL`                             | API base used by Next.js Server Components                    |
+| `API_PROXY_TARGET`                                  | Target of the `/api` proxy used by Next.js in development     |
+| `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` | PostgreSQL database                                           |
+| `DATABASE_URL`                                      | Spring/CLI JDBC URL                                           |
+| `SPRING_PROFILES_ACTIVE`                            | `dev`, `test` or `prod`                                       |
+| `SESSION_COOKIE_SECURE`                             | `true` behind HTTPS in production                             |
+| `SESSION_TIMEOUT`                                   | Session duration, `12h` by default                            |
+| `ADMIN_INITIAL_EMAIL`, `ADMIN_INITIAL_PASSWORD`     | Only for the administration command                           |
+| `MEDIA_DIR`                                         | Directory where uploaded media is written on disk             |
+| `PROJECT_SEED_ENABLED`                              | Enables the non-destructive seed at start-up                  |
+| `CONTACT_EMAIL`                                     | Reserved for a future contact integration                     |
 
-Les variables `ADMIN_INITIAL_*` ne sont pas nécessaires au fonctionnement quotidien et doivent être supprimées de l’environnement après la commande.
+The `ADMIN_INITIAL_*` variables are not needed for day-to-day operation and should be removed from the environment after the command runs.
 
-## PostgreSQL, Flyway et seed
+## PostgreSQL, Flyway and seed
 
-Flyway applique automatiquement les migrations de `backend/src/main/resources/db/migration`. Hibernate reste en `ddl-auto=validate` : il ne modifie pas le schéma.
+Flyway applies the migrations in `backend/src/main/resources/db/migration` automatically. Hibernate stays on `ddl-auto=validate`: it never changes the schema.
 
-Le seed applicatif ajoute uniquement les slugs absents : `episort`, `janus`, `overkill` et `mini-reseau-social`. Il ne contient pas Overly et ne remplace jamais une modification faite dans l’administration. Une réexécution ne crée donc pas de doublon.
+The application seed only adds missing slugs: `episort`, `janus`, `overkill` and `mini-social-network`. It never replaces a change made in the administration area, so re-running it creates no duplicate.
 
-Les tables principales sont :
+The main tables are:
 
-- `admin_user` et les tables `SPRING_SESSION*` ;
-- `project` avec enums explicites de statut, publication, visibilité, type et mise en avant ;
-- les collections ordonnées d’objectifs, technologies, fonctionnalités, décisions, difficultés, apprentissages et prochaines étapes ;
-- `project_media`, qui ne stocke que les références et métadonnées ;
-- `audit_log` et `login_attempt`.
+- `admin_user` and the `SPRING_SESSION*` tables;
+- `project`, with explicit enums for status, publication, visibility, type and feature level;
+- the ordered collections of objectives, technologies, features, decisions, challenges, learnings and next steps;
+- `project_media`, which stores references and metadata only;
+- `audit_log` and `login_attempt`.
 
-Des index couvrent le slug, la publication/visibilité, le statut, l’ordre, la date de modification, l’archivage, les médias et le journal.
+Indexes cover the slug, publication/visibility, status, order, update date, archiving, media and the log.
 
-## Compte administrateur
+## Administrator account
 
-La base doit avoir été migrée au moins une fois, par exemple en démarrant le backend. Les commandes suivantes lisent les identifiants dans l’environnement et hachent les mots de passe avec BCrypt coût 12. Le mot de passe doit contenir au moins 14 caractères.
+The database must have been migrated at least once, for example by starting the backend. The commands below read credentials from the environment and hash passwords with BCrypt cost 12. The password must be at least 14 characters long.
 
-PowerShell :
+PowerShell:
 
 ```powershell
 $env:ADMIN_INITIAL_EMAIL='admin@example.invalid'
-$env:ADMIN_INITIAL_PASSWORD='une-phrase-secrete-longue'
+$env:ADMIN_INITIAL_PASSWORD='a-long-secret-passphrase'
 node scripts/gradle.mjs -PadminCommand=create adminCli
 Remove-Item Env:ADMIN_INITIAL_EMAIL
 Remove-Item Env:ADMIN_INITIAL_PASSWORD
 ```
 
-Sous bash, utiliser `export` puis `unset`. Les opérations disponibles sont :
+Under bash, use `export` then `unset`. The available operations are:
 
 ```bash
 node scripts/gradle.mjs -PadminCommand=create adminCli
@@ -137,23 +145,23 @@ node scripts/gradle.mjs -PadminCommand=enable adminCli
 node scripts/gradle.mjs -PadminCommand=delete adminCli
 ```
 
-`reset`, `disable` et `delete` invalident les sessions actives lorsque nécessaire. Pour faire tourner les secrets, changer le mot de passe via `reset`, renouveler les identifiants S3 et les secrets de base dans le gestionnaire de secrets de l’hébergeur, puis redéployer. Ne jamais placer ces valeurs dans un fichier suivi par Git.
+`reset`, `disable` and `delete` invalidate active sessions when needed. To rotate secrets, change the password with `reset`, renew the database secrets in the host's secret manager, then redeploy. Never put those values in a file tracked by Git.
 
 ## Administration
 
-`/admin` est absent de la navigation publique et protégé par Spring Security. Il n’existe ni inscription ni endpoint de création de compte public.
+`/admin` is absent from the public navigation and protected by Spring Security. There is no sign-up and no public account-creation endpoint. The panel is English-only.
 
-Le panel comprend :
+It provides:
 
-- tableau de bord issu de la base : publiés, brouillons, archivés, médias manquants, contenu incomplet et modifications récentes ;
-- recherche, filtres, ordre d’affichage, niveau principal/secondaire ;
-- création, édition, duplication, brouillon, publication, dépublication, archivage, restauration et suppression définitive confirmée par le titre ;
-- éditeur spécialisé en neuf sections, génération/modification du slug, validation Zod et serveur, sauvegarde explicite et protection contre la perte des changements ;
-- prévisualisation privée protégée par la session `ADMIN` ;
-- association de médias par envoi ou URL externe ;
-- journal paginé des connexions et opérations sensibles.
+- a database-backed dashboard: published, drafts, archived, missing media, incomplete content and recent changes;
+- search, filters, display order, primary/secondary feature level;
+- creation, editing, duplication, draft, publication, unpublication, archiving, restoration and permanent deletion confirmed by title;
+- a dedicated nine-section editor, slug generation/editing, Zod and server validation, explicit saving and protection against losing changes;
+- a private preview protected by the `ADMIN` session;
+- media attachment by upload or external URL;
+- a paginated log of sign-ins and sensitive operations.
 
-### API principale
+### Main API
 
 ```text
 GET  /api/v1/public/projects
@@ -174,45 +182,44 @@ POST/DELETE    /api/v1/admin/media
 GET            /api/v1/admin/audit
 ```
 
-Les endpoints publics ne retournent que `PUBLISHED + PUBLIC + non archivé`. Toutes les mutations admin sont autorisées côté serveur avec le rôle `ADMIN` et protégées par CSRF.
+Public endpoints only return `PUBLISHED + PUBLIC + not archived`. Every admin mutation is authorized server-side with the `ADMIN` role and protected by CSRF.
 
-## Sécurité
+## Security
 
-- session persistée en PostgreSQL, cookie `HttpOnly`, `SameSite=Lax`, `Secure` en production et invalidation à la déconnexion ;
-- cookie CSRF lisible par le navigateur uniquement pour recopier le jeton dans `X-XSRF-TOKEN` ;
-- BCrypt coût 12, erreurs de connexion non révélatrices et limitation par IP/e-mail, renforcée par Nginx ;
-- validation Bean Validation et règles métier sur chaque mutation ;
-- requêtes JPA paramétrées, contenus d’étude de cas stockés comme texte et jamais injectés comme HTML ;
-- en-têtes CSP, anti-framing, `nosniff`, politique de référent et permissions restrictives ;
-- journal sans mot de passe, jeton, cookie ou secret ;
-- corrélation des erreurs sans stack trace exposée en production.
+- session persisted in PostgreSQL, `HttpOnly` cookie, `SameSite=Lax`, `Secure` in production, invalidated on sign-out;
+- a CSRF cookie readable by the browser only so the token can be copied into `X-XSRF-TOKEN`;
+- BCrypt cost 12, non-revealing sign-in errors and per-IP/email rate limiting, reinforced by Nginx;
+- Bean Validation and business rules on every mutation;
+- parameterized JPA queries; case-study content is stored as text and never injected as HTML;
+- CSP, anti-framing, `nosniff`, referrer policy and restrictive permissions headers;
+- a log free of passwords, tokens, cookies and secrets;
+- error correlation with no stack trace exposed in production.
 
-## Médias et stockage
+## Media and storage
 
-MinIO simule S3 en développement. En production, renseigner un endpoint S3 ou compatible S3 ; aucune clé n’est transmise au frontend.
+Media is stored on the local filesystem, under the directory named by `MEDIA_DIR`, which is mounted as a Docker volume (`/var/lib/portfolio/media` in the compositions). There is no S3 or other managed object storage: this deployment is self-hosted. The backend container runs read-only apart from that volume, so the deployment pipeline chowns it to the container's UID (10001, pinned in `backend/Dockerfile`).
 
-Le backend vérifie l’authentification, le type MIME, l’extension, la taille (8 Mio image, 40 Mio vidéo), les dimensions des images lisibles et génère une clé UUID imprévisible. Les médias stockés sont servis par l’API avec `nosniff`; seuls ceux d’un projet public peuvent être lus publiquement. Les URLs externes restent possibles quand le stockage n’est pas configuré.
+The backend checks authentication, MIME type, extension, size (8 MiB for images, 40 MiB for videos) and the dimensions of readable images, then generates an unpredictable UUID key. Stored media is served by the API with `nosniff`, and only media belonging to a public project can be read publicly. External URLs remain available as an alternative.
 
-Dans l’éditeur admin, choisir couverture, vidéo, poster ou galerie, puis fournir un texte alternatif et une légende. Les vidéos publiques sont muettes par défaut, contrôlables, mises en pause hors écran et une seule peut être lue à la fois.
+In the admin editor, pick cover, video, poster or gallery, then provide alternative text and a caption. Public videos are muted by default, controllable, paused off-screen, and only one can play at a time.
 
-## Contenu personnel et placeholders
+## Personal content and placeholders
 
-- Profil, coordonnées et disponibilité : `frontend/app/content/profile.ts`.
-- Parcours : `frontend/app/content/journey.ts`.
-- Compétences : `frontend/app/content/skills.ts`.
-- Photo à remplacer : `frontend/public/images/profile-placeholder.svg`. Conserver le chemin ou mettre à jour `profile.photo` et son texte alternatif.
-- CV à ajouter : `frontend/public/documents/cv-jonathan-blanchard.pdf`, puis passer `cvAvailable` à `true`.
-- Médias de projet : à charger depuis `/admin`; le placeholder `frontend/public/images/project-placeholder.svg` n’est pas une fausse capture.
+- Profile identity, links and availability: `frontend/app/content/profile.ts` for locale-independent data, `frontend/app/i18n/dictionaries/*.ts` for the wording.
+- Journey and skills: `journey` and `skillGroups` in each dictionary.
+- Photo to replace: `frontend/public/images/profile-placeholder.svg`. Keep the path or update `profile.photo` and the `profile.photoAlt` entry in both dictionaries.
+- Resume to add: `frontend/public/documents/cv-jonathan-blanchard.pdf`, then switch `cvAvailable` to `true`.
+- Project media: upload it from `/admin`; the `frontend/public/images/project-placeholder.svg` placeholder is not a fake screenshot.
 
-Les actions sans donnée sont masquées ou remplacées par une indication non cliquable : aucun lien personnel n’est inventé.
+Actions with no data behind them are hidden or replaced by a non-clickable note: no personal link is ever invented.
 
-## Thème et accessibilité
+## Theme and accessibility
 
-Le script de thème est exécuté avant l’hydratation afin d’éviter le flash du mauvais thème. Le premier choix suit le système, puis le bouton accessible persiste `light` ou `dark` dans `localStorage`. Les palettes ne sont pas inversées : surfaces, orange d’action, ombres et contrastes ont des valeurs distinctes.
+The theme script runs before hydration to avoid a flash of the wrong theme. The first choice follows the system, then the accessible button persists `light` or `dark` in `localStorage`. The palettes are not simply inverted: surfaces, action orange, shadows and contrasts all have distinct values.
 
-Le site fournit un lien d’évitement, des landmarks, un ordre de titres logique, des labels et erreurs reliés, des cibles de 44 px, des focus visibles, des menus clavier et `prefers-reduced-motion`. Playwright exécute aussi axe-core en clair et sombre sur des écrans publics et administratifs représentatifs.
+The site provides a skip link, landmarks, a logical heading order, labels and errors that are tied together, 44 px targets, visible focus, keyboard-operable menus and `prefers-reduced-motion`. Playwright also runs axe-core in light and dark themes over representative public and administration screens, in both locales.
 
-## Tests et qualité
+## Tests and quality
 
 ```bash
 # Frontend
@@ -225,77 +232,72 @@ npm run build:frontend
 npm run test:backend
 npm run build:backend
 
-# Parcours navigateur (installe Chromium la première fois)
+# Browser journeys (installs Chromium on first run)
 npx playwright install chromium
 npm run test:e2e
 
-# Ensemble hors E2E
+# Everything except E2E
 npm run verify
 ```
 
-Les tests backend d’intégration utilisent Testcontainers et sont automatiquement ignorés lorsqu’aucun moteur Docker n’est disponible. Avec Docker actif, ils couvrent PostgreSQL réel, Flyway, authentification/session, CSRF, autorisations, CRUD, cycle éditorial, filtrage public, audit et seed idempotent.
+The backend integration tests use Testcontainers and are skipped automatically when no Docker engine is available. With Docker running, they cover a real PostgreSQL, Flyway, authentication/session, CSRF, authorization, CRUD, the editorial cycle, public filtering, auditing and the idempotent seed.
 
-## Build et déploiement
+## Build and deployment
 
-Le déploiement de référence :
+The reference deployment:
 
 ```bash
 docker compose --env-file .env -f docker-compose.prod.yml config
 docker compose --env-file .env -f docker-compose.prod.yml up -d --build
 ```
 
-La composition de production utilise des images multi-stage et des processus non-root lorsque possible. PostgreSQL n’est pas publié. Nginx expose le port 80 local ; terminer TLS dans le proxy de la plateforme ou ajouter les certificats HTTPS avant exposition publique. Vérifier ensuite `/actuator/health`, `/api/openapi`, `/robots.txt` et `/sitemap.xml`.
+The production composition uses multi-stage images and non-root processes wherever possible. PostgreSQL is not published. Nginx exposes local port 80; terminate TLS in the platform's proxy or add HTTPS certificates before public exposure. Then check `/actuator/health`, `/api/openapi`, `/robots.txt` and `/sitemap.xml`.
 
-Pour une base managée, remplacer l’hôte de `DATABASE_URL` et retirer le service PostgreSQL de la composition. Pour un stockage S3 managé, renseigner l’endpoint/région/bucket et ne jamais utiliser les identifiants MinIO de développement.
+For a managed database, replace the host in `DATABASE_URL` and remove the PostgreSQL service from the composition. Media stays on the host: back up the `MEDIA_DIR` volume along with the database.
 
-## CI/CD GitLab
+## GitLab CI/CD
 
-Le pipeline suit le modèle du groupe DevOps (`docs/ci-cd-model.md`) : runner taggé `devops`, exécuteur Docker avec socket hôte, Traefik comme unique reverse proxy et chemins sous `/home/kisuke/`.
+The pipeline follows the DevOps group model (`docs/ci-cd-model.md`): a runner tagged `devops`, a Docker executor with the host socket, Traefik as the only reverse proxy, and paths under `/home/kisuke/`.
 
-| Étape         | Déclencheur                          | Comportement                                                    |
+| Stage         | Trigger                              | Behavior                                                        |
 | ------------- | ------------------------------------ | --------------------------------------------------------------- |
-| `test_*`      | `develop`, merge requests, tags `v*` | Lint, typecheck, Vitest, build Next.js et tests Gradle           |
-| `build`       | `develop`, tags `v*`                 | Construit et pousse `backend` et `web` dans le registre GitLab   |
-| `deploy_dev`  | `develop`                            | **Manuel** → `https://portfolio-d.kisukesaama.com`               |
-| `stop_dev`    | `develop`                            | Manuel, arrête la DEV                                            |
-| `deploy_prod` | tag `v*`                             | **Automatique** → `https://kisukesaama.com`                      |
-| `stop_prod`   | tag `v*`                             | Manuel, arrête la PROD                                           |
+| `test_*`      | `develop`, merge requests, tags `v*` | Lint, typecheck, Vitest, Next.js build and Gradle tests          |
+| `build`       | `develop`, tags `v*`                 | Builds and pushes `backend` and `web` to the GitLab registry     |
+| `deploy_dev`  | `develop`                            | **Manual** → `https://portfolio-d.kisukesaama.com`               |
+| `stop_dev`    | `develop`                            | Manual, stops DEV                                                |
+| `deploy_prod` | tag `v*`                             | **Automatic** → `https://kisukesaama.com`                        |
+| `stop_prod`   | tag `v*`                             | Manual, stops PROD                                               |
 
-La production est servie sur le domaine apex : le portfolio *est* `kisukesaama.com`. Le déploiement se déclenche uniquement par tag :
+Production is served on the apex domain: the portfolio *is* `kisukesaama.com`. Deployment is triggered by tag only:
 
 ```bash
 git tag v1.0.0
 git push origin v1.0.0
 ```
 
-Le stack déployé (`deploy/compose.yml`) ne contient plus Nginx : Next.js réécrit déjà `/api/*` vers Spring Boot, et les en-têtes de sécurité sont posés par un middleware Traefik. `infra/reverse-proxy` reste la référence pour les compositions locales.
+The deployed stack (`deploy/compose.yml`) no longer contains Nginx: Next.js already rewrites `/api/*` to Spring Boot, and the security headers are set by a Traefik middleware. `infra/reverse-proxy` remains the reference for local compositions.
 
-Variables CI/CD à définir dans GitLab (scopées par environnement, protégées pour la production) :
+CI/CD variables to define in GitLab (scoped per environment, protected for production):
 
-| Variable                        | Obligatoire | Usage                                    |
-| ------------------------------- | ----------- | ---------------------------------------- |
-| `PORTFOLIO_POSTGRES_PASSWORD`   | oui         | Mot de passe PostgreSQL du déploiement   |
-| `PORTFOLIO_S3_ENDPOINT`         | oui         | Endpoint S3 ou compatible                |
-| `PORTFOLIO_S3_ACCESS_KEY`       | oui         | Identifiant S3                           |
-| `PORTFOLIO_S3_SECRET_KEY`       | oui         | Secret S3                                |
-| `PORTFOLIO_S3_PUBLIC_BASE_URL`  | oui         | Base publique du stockage                |
-| `PORTFOLIO_S3_BUCKET`           | non         | Défaut `portfolio-media`                 |
-| `PORTFOLIO_S3_REGION`           | non         | Défaut `eu-west-3`                       |
-| `PORTFOLIO_POSTGRES_DB/_USER`   | non         | Défaut `portfolio`                       |
-| `PORTFOLIO_PROJECT_SEED_ENABLED`| non         | Défaut `true`                            |
-| `PORTFOLIO_CONTACT_EMAIL`       | non         | Adresse de contact                       |
+| Variable                         | Required | Purpose                                 |
+| -------------------------------- | -------- | --------------------------------------- |
+| `PORTFOLIO_POSTGRES_PASSWORD`    | yes      | PostgreSQL password for the deployment  |
+| `PORTFOLIO_POSTGRES_DB/_USER`    | no       | Defaults to `portfolio`                 |
+| `PORTFOLIO_PROJECT_SEED_ENABLED` | no       | Defaults to `true`                      |
+| `PORTFOLIO_CONTACT_EMAIL`        | no       | Contact address                         |
 
-Le job de déploiement écrit `${DEPLOY_DIR}/{dev,prod}/app.env` en `600` à partir de ces variables : aucun secret n’est versionné. Le compte administrateur reste créé manuellement via `adminCli`, jamais par le pipeline.
+The deployment job writes `${DEPLOY_DIR}/{dev,prod}/app.env` with mode `600` from those variables: no secret is versioned. The administrator account is still created manually through `adminCli`, never by the pipeline.
 
-## Checklist avant mise en ligne
+## Checklist before going live
 
-- [ ] Remplacer la photo temporaire et son texte alternatif.
-- [ ] Ajouter le CV et activer `cvAvailable`.
-- [ ] Compléter dates, formation et expérience dans `journey.ts`.
-- [ ] Renseigner e-mail, GitHub et LinkedIn sans laisser de lien mort.
-- [ ] Charger couvertures, posters, vidéos courtes et galeries réelles depuis `/admin`.
-- [ ] Vérifier et enrichir les études de cas avec les faits réels de Jonathan.
-- [ ] Définir `PUBLIC_SITE_URL`, les secrets PostgreSQL et S3 dans un coffre de secrets.
-- [ ] Créer l’administrateur puis supprimer `ADMIN_INITIAL_*` de l’environnement.
-- [ ] Activer HTTPS et conserver `SESSION_COOKIE_SECURE=true`.
-- [ ] Exécuter lint, typecheck, tests, E2E, builds et la configuration Docker Compose.
+- [ ] Replace the temporary photo and its alternative text in both dictionaries.
+- [ ] Add the resume and switch `cvAvailable` on.
+- [ ] Fill in dates, education and experience in the `journey` entries of both dictionaries.
+- [ ] Fill in email, GitHub and LinkedIn without leaving a dead link.
+- [ ] Upload real covers, posters, short videos and galleries from `/admin`.
+- [ ] Review and enrich the case studies with Jonathan's real facts.
+- [ ] Set `PUBLIC_SITE_URL` and the PostgreSQL secrets in a secret vault.
+- [ ] Create the administrator, then remove `ADMIN_INITIAL_*` from the environment.
+- [ ] Enable HTTPS and keep `SESSION_COOKIE_SECURE=true`.
+- [ ] Back up the media volume alongside the database.
+- [ ] Run lint, typecheck, tests, E2E, builds and the Docker Compose configuration.

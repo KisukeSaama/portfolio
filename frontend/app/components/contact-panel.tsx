@@ -1,17 +1,23 @@
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { profile } from "~/content/profile";
-export function ContactPanel() {
+import type { Dictionary } from "~/i18n";
+import { localePath } from "~/i18n";
+import type { Locale } from "~/i18n/config";
+
+export function ContactPanel({
+  locale,
+  t,
+}: {
+  locale: Locale;
+  t: Dictionary;
+}) {
   return (
     <section className="section" aria-labelledby="contact-title">
       <div className="shell contact-panel">
         <div>
-          <h2 id="contact-title">Construisons la prochaine étape.</h2>
-          <p>
-            Une alternance, un produit à faire avancer ou simplement une
-            discussion sur une application utile : Jonathan est ouvert aux
-            échanges professionnels.
-          </p>
+          <h2 id="contact-title">{t.contactPanel.title}</h2>
+          <p>{t.contactPanel.body}</p>
         </div>
         <div>
           {profile.email ? (
@@ -19,16 +25,17 @@ export function ContactPanel() {
               className="button button-secondary"
               href={`mailto:${profile.email}`}
             >
-              Écrire à Jonathan <ArrowUpRight size={18} aria-hidden />
+              {t.contactPanel.write} <ArrowUpRight size={18} aria-hidden />
             </a>
           ) : (
             <>
-              <Link className="button button-secondary" href="/contact">
-                Voir les moyens de contact
+              <Link
+                className="button button-secondary"
+                href={localePath(locale, "/contact")}
+              >
+                {t.contactPanel.seeContact}
               </Link>
-              <p className="text-sm font-bold">
-                Adresse de contact à renseigner.
-              </p>
+              <p className="text-sm font-bold">{t.contactPanel.missing}</p>
             </>
           )}
         </div>

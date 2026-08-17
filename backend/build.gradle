@@ -8,7 +8,7 @@ group = 'com.jonathan'
 version = '1.0.0'
 
 java {
-    toolchain { languageVersion = JavaLanguageVersion.of(21) }
+    toolchain { languageVersion = JavaLanguageVersion.of(25) }
 }
 
 repositories { mavenCentral() }
@@ -27,9 +27,6 @@ dependencies {
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-database-postgresql'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2'
-    implementation platform('software.amazon.awssdk:bom:2.35.7')
-    implementation 'software.amazon.awssdk:s3'
-    implementation 'software.amazon.awssdk:sts'
     runtimeOnly 'org.postgresql:postgresql'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

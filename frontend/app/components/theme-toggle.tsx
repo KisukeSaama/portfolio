@@ -2,6 +2,7 @@
 
 import { Moon, Sun } from "lucide-react";
 import { useSyncExternalStore } from "react";
+import type { Dictionary } from "~/i18n";
 
 type Theme = "light" | "dark";
 function subscribe(callback: () => void) {
@@ -11,7 +12,7 @@ function subscribe(callback: () => void) {
 function snapshot(): Theme {
   return document.documentElement.dataset.theme === "dark" ? "dark" : "light";
 }
-export function ThemeToggle() {
+export function ThemeToggle({ t }: { t: Dictionary }) {
   const theme = useSyncExternalStore(subscribe, snapshot, () => "light");
   function toggle() {
     const next = theme === "dark" ? "light" : "dark";
@@ -20,8 +21,7 @@ export function ThemeToggle() {
     localStorage.setItem("jonathan-theme", next);
     window.dispatchEvent(new Event("portfolio-theme-change"));
   }
-  const label =
-    theme === "dark" ? "Activer le thème clair" : "Activer le thème sombre";
+  const label = theme === "dark" ? t.theme.toLight : t.theme.toDark;
   return (
     <button
       className="theme-toggle"

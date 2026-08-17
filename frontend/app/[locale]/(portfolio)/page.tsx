@@ -4,20 +4,31 @@ import Image from "next/image";
 import Link from "next/link";
 import { ContactPanel } from "~/components/contact-panel";
 import { FeaturedProjects, SecondaryProjects } from "~/components/project-list";
-import { journey } from "~/content/journey";
-import { personalIntroduction, profile } from "~/content/profile";
-import { skillGroups } from "~/content/skills";
+import { profile } from "~/content/profile";
+import { getDictionary, localePath } from "~/i18n";
+import type { Locale } from "~/i18n/config";
 import { serverApi } from "~/lib/server-api";
 import type { Project } from "~/types/api";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = {
-  title: "Développeur full-stack & créateur d’applications",
-  description: profile.tagline,
-  alternates: { canonical: "/" },
-};
 
-export default async function HomePage() {
+type LocaleParams = { params: Promise<{ locale: Locale }> };
+
+export async function generateMetadata({
+  params,
+}: LocaleParams): Promise<Metadata> {
+  const { locale } = await params;
+  const t = getDictionary(locale);
+  return {
+    title: t.home.metaTitle,
+    description: t.profile.tagline,
+    alternates: { canonical: localePath(locale, "/") },
+  };
+}
+
+export default async function HomePage({ params }: LocaleParams) {
+  const { locale } = await params;
+  const t = getDictionary(locale);
   const projects = await serverApi<Project[]>("/public/projects", {
     revalidate: 0,
   });
@@ -34,12 +45,15 @@ export default async function HomePage() {
         <div className="shell hero-grid">
           <div className="hero-copy">
             <p className="hero-name">{profile.name}</p>
-            <h1>{profile.title}</h1>
-            <p className="hero-statement">{profile.tagline}</p>
-            <p className="hero-availability">{profile.availability}</p>
+            <h1>{t.profile.title}</h1>
+            <p className="hero-statement">{t.profile.tagline}</p>
+            <p className="hero-availability">{t.profile.availability}</p>
             <div className="hero-actions">
-              <Link href="/about" className="button button-primary">
-                Découvrir mon approche <ArrowRight size={18} aria-hidden />
+              <Link
+                href={localePath(locale, "/about")}
+                className="button button-primary"
+              >
+                {t.home.discoverApproach} <ArrowRight size={18} aria-hidden />
               </Link>
               {profile.cvAvailable ? (
                 <a
@@ -48,11 +62,14 @@ export default async function HomePage() {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <FileText size={18} aria-hidden /> Consulter mon CV
+                  <FileText size={18} aria-hidden /> {t.home.viewResume}
                 </a>
               ) : (
-                <Link href="/contact" className="button button-secondary">
-                  Me contacter
+                <Link
+                  href={localePath(locale, "/contact")}
+                  className="button button-secondary"
+                >
+                  {t.home.contactMe}
                 </Link>
               )}
             </div>
@@ -60,7 +77,7 @@ export default async function HomePage() {
           <div className="portrait-frame">
             <Image
               src={profile.photo}
-              alt={profile.photoAlt}
+              alt={t.profile.photoAlt}
               width={800}
               height={1000}
               priority
@@ -73,10 +90,10 @@ export default async function HomePage() {
       <section className="intro-section section" aria-labelledby="intro-title">
         <div className="shell intro-grid">
           <h2 id="intro-title" className="intro-title">
-            Comprendre avant de construire.
+            {t.home.introTitle}
           </h2>
           <div className="intro-copy">
-            {personalIntroduction.map((text) => (
+            {t.introduction.map((text) => (
               <p key={text}>{text}</p>
             ))}
           </div>
@@ -86,42 +103,16 @@ export default async function HomePage() {
       <section className="section" aria-labelledby="approach-title">
         <div className="shell">
           <h2 id="approach-title" className="section-heading">
-            Une application est un ensemble de décisions.
+            {t.home.approachTitle}
           </h2>
-          <p className="section-lede">
-            Jonathan relie l’usage, l’interface, les règles métier et
-            l’exploitation pour que la solution reste cohérente du premier écran
-            au déploiement.
-          </p>
+          <p className="section-lede">{t.home.approachLede}</p>
           <div className="principles">
-            <div className="principle">
-              <h3>Partir de la gêne réelle</h3>
-              <p>
-                Observer les erreurs, les hésitations et les risques avant de
-                dessiner une fonctionnalité.
-              </p>
-            </div>
-            <div className="principle">
-              <h3>Rendre les choix explicables</h3>
-              <p>
-                Préférer les comportements compréhensibles aux automatismes
-                opaques, notamment lorsque l’action est sensible.
-              </p>
-            </div>
-            <div className="principle">
-              <h3>Relier toutes les couches</h3>
-              <p>
-                Faire évoluer l’interface, l’API, les données et
-                l’infrastructure comme un même produit.
-              </p>
-            </div>
-            <div className="principle">
-              <h3>Aller jusqu’au fonctionnement réel</h3>
-              <p>
-                Tester, journaliser, conteneuriser et préparer le déploiement
-                plutôt que s’arrêter à la démonstration.
-              </p>
-            </div>
+            {t.home.principles.map((principle) => (
+              <div className="principle" key={principle.title}>
+                <h3>{principle.title}</h3>
+                <p>{principle.body}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -129,18 +120,18 @@ export default async function HomePage() {
       <section className="section" aria-labelledby="journey-title">
         <div className="shell">
           <h2 id="journey-title" className="section-heading">
-            Un parcours construit en avançant.
+            {t.home.journeyTitle}
           </h2>
           <ol className="journey-list">
-            {journey.map((item) => (
+            {t.journey.map((item, index) => (
               <li className="journey-item" key={item.title}>
                 <span className="journey-period">{item.period}</span>
                 <div>
                   <h3>{item.title}</h3>
                   <p>{item.description}</p>
-                  {item.placeholder && (
+                  {index === 0 && (
                     <span className="placeholder-note">
-                      Informations de parcours à compléter
+                      {t.home.journeyPlaceholder}
                     </span>
                   )}
                 </div>
@@ -148,8 +139,8 @@ export default async function HomePage() {
             ))}
           </ol>
           <p>
-            <Link href="/journey" className="text-link">
-              Voir le parcours complet <ArrowRight size={16} aria-hidden />
+            <Link href={localePath(locale, "/journey")} className="text-link">
+              {t.home.fullJourney} <ArrowRight size={16} aria-hidden />
             </Link>
           </p>
         </div>
@@ -158,17 +149,17 @@ export default async function HomePage() {
       <section className="section" aria-labelledby="projects-title">
         <div className="shell">
           <h2 id="projects-title" className="section-heading">
-            Des projets pensés comme des produits.
+            {t.home.projectsTitle}
           </h2>
-          <p className="section-lede">
-            Chaque étude de cas commence par le besoin, puis montre la solution,
-            les choix et ce qu’il reste à apprendre.
-          </p>
-          <FeaturedProjects projects={primary} />
-          <SecondaryProjects projects={secondary} />
+          <p className="section-lede">{t.home.projectsLede}</p>
+          <FeaturedProjects projects={primary} locale={locale} t={t} />
+          <SecondaryProjects projects={secondary} locale={locale} t={t} />
           <p>
-            <Link href="/projects" className="button button-secondary">
-              Voir tous les projets
+            <Link
+              href={localePath(locale, "/projects")}
+              className="button button-secondary"
+            >
+              {t.home.allProjects}
             </Link>
           </p>
         </div>
@@ -177,23 +168,23 @@ export default async function HomePage() {
       <section className="section" aria-labelledby="skills-title">
         <div className="shell">
           <h2 id="skills-title" className="section-heading">
-            Des compétences reliées à l’usage.
+            {t.home.skillsTitle}
           </h2>
           <div className="skills-list">
-            {skillGroups.map((group) => (
+            {t.skillGroups.map((group) => (
               <article className="skill-group" key={group.title}>
                 <h3>{group.title}</h3>
                 <p>{group.summary}</p>
                 <p className="skill-names">{group.skills.join(" · ")}</p>
                 <p className="skill-proof">
-                  Mises en pratique dans : {group.proof}
+                  {t.home.skillProof} {group.proof}
                 </p>
               </article>
             ))}
           </div>
         </div>
       </section>
-      <ContactPanel />
+      <ContactPanel locale={locale} t={t} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -201,8 +192,8 @@ export default async function HomePage() {
             "@context": "https://schema.org",
             "@type": "Person",
             name: profile.name,
-            jobTitle: "Développeur full-stack",
-            description: profile.tagline,
+            jobTitle: t.site.jobTitle,
+            description: t.profile.tagline,
           }),
         }}
       />

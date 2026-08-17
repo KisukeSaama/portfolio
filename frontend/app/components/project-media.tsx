@@ -2,9 +2,19 @@
 
 import { useEffect, useRef } from "react";
 import Image from "next/image";
+import type { Dictionary } from "~/i18n";
+import { format } from "~/i18n";
 import type { ProjectMedia as Media } from "~/types/api";
 
-function ProjectVideo({ media, poster }: { media: Media; poster?: string }) {
+function ProjectVideo({
+  media,
+  poster,
+  t,
+}: {
+  media: Media;
+  poster?: string;
+  t: Dictionary;
+}) {
   const ref = useRef<HTMLVideoElement>(null);
   useEffect(() => {
     const video = ref.current;
@@ -43,19 +53,21 @@ function ProjectVideo({ media, poster }: { media: Media; poster?: string }) {
       aria-label={media.alt}
     >
       <source src={media.url} />
-      <p>Votre navigateur ne peut pas lire cette vidéo.</p>
+      <p>{t.caseStudy.videoFallback}</p>
     </video>
   );
 }
 export function ProjectMedia({
   media,
   title,
+  t,
   className = "project-visual",
   priority = false,
   poster,
 }: {
   media?: Media | null;
   title: string;
+  t: Dictionary;
   className?: string;
   priority?: boolean;
   poster?: string;
@@ -65,7 +77,7 @@ export function ProjectMedia({
       <div className={className}>
         <Image
           src="/images/project-placeholder.svg"
-          alt={`Média de ${title} à ajouter`}
+          alt={format(t.caseStudy.mediaPlaceholderAlt, { title })}
           width={1200}
           height={900}
           priority={priority}
@@ -76,7 +88,7 @@ export function ProjectMedia({
   if (media.type === "VIDEO")
     return (
       <div className={className}>
-        <ProjectVideo media={media} poster={poster} />
+        <ProjectVideo media={media} poster={poster} t={t} />
       </div>
     );
   return (

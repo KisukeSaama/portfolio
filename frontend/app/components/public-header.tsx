@@ -5,23 +5,40 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRef } from "react";
 import { profile } from "~/content/profile";
+import type { Dictionary } from "~/i18n";
+import { localePath } from "~/i18n";
+import type { Locale } from "~/i18n/config";
+import { LanguageSwitcher } from "./language-switcher";
 import { ThemeToggle } from "./theme-toggle";
 
-const links = [
-  ["/", "Accueil"],
-  ["/about", "À propos"],
-  ["/journey", "Parcours"],
-  ["/projects", "Projets"],
-  ["/contact", "Contact"],
-] as const;
-function NavLinks({ onNavigate }: { onNavigate?: () => void } = {}) {
+function navLinks(t: Dictionary) {
+  return [
+    ["/", t.nav.home],
+    ["/about", t.nav.about],
+    ["/journey", t.nav.journey],
+    ["/projects", t.nav.projects],
+    ["/contact", t.nav.contact],
+  ] as const;
+}
+
+function NavLinks({
+  locale,
+  t,
+  onNavigate,
+}: {
+  locale: Locale;
+  t: Dictionary;
+  onNavigate?: () => void;
+}) {
   const pathname = usePathname();
-  return links.map(([href, label]) => {
-    const active = href === "/" ? pathname === href : pathname.startsWith(href);
+  // Compare without the locale prefix, so /fr/about highlights the same link as /en/about.
+  const path = pathname.replace(`/${locale}`, "") || "/";
+  return navLinks(t).map(([href, label]) => {
+    const active = href === "/" ? path === href : path.startsWith(href);
     return (
       <Link
         key={href}
-        href={href}
+        href={localePath(locale, href)}
         className="nav-link"
         data-active={active}
         aria-current={active ? "page" : undefined}
@@ -32,22 +49,29 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void } = {}) {
     );
   });
 }
-export function PublicHeader() {
+
+export function PublicHeader({
+  locale,
+  t,
+}: {
+  locale: Locale;
+  t: Dictionary;
+}) {
   const mobileMenu = useRef<HTMLDetailsElement>(null);
   const closeMobileMenu = () => mobileMenu.current?.removeAttribute("open");
   return (
     <header className="site-header">
       <div className="shell header-inner">
         <Link
-          href="/"
+          href={localePath(locale, "/")}
           className="wordmark"
-          aria-label="Jonathan Blanchard — accueil"
+          aria-label={t.nav.homeAriaLabel}
         >
           <span className="wordmark-mark" aria-hidden />
-          Jonathan Blanchard
+          {profile.name}
         </Link>
-        <nav className="desktop-nav" aria-label="Navigation principale">
-          <NavLinks />
+        <nav className="desktop-nav" aria-label={t.nav.primary}>
+          <NavLinks locale={locale} t={t} />
           {profile.cvAvailable && (
             <a
               href={profile.cvUrl}
@@ -55,17 +79,18 @@ export function PublicHeader() {
               target="_blank"
               rel="noreferrer"
             >
-              CV
+              {t.nav.resume}
             </a>
           )}
-          <ThemeToggle />
+          <LanguageSwitcher locale={locale} label={t.nav.language} />
+          <ThemeToggle t={t} />
         </nav>
         <details className="mobile-nav" ref={mobileMenu}>
-          <summary aria-label="Ouvrir le menu">
+          <summary aria-label={t.nav.openMenu}>
             <Menu aria-hidden size={22} />
           </summary>
-          <nav className="mobile-panel" aria-label="Navigation mobile">
-            <NavLinks onNavigate={closeMobileMenu} />
+          <nav className="mobile-panel" aria-label={t.nav.mobile}>
+            <NavLinks locale={locale} t={t} onNavigate={closeMobileMenu} />
             {profile.cvAvailable && (
               <a
                 href={profile.cvUrl}
@@ -73,12 +98,16 @@ export function PublicHeader() {
                 target="_blank"
                 rel="noreferrer"
               >
-                Consulter le CV
+                {t.nav.viewResume}
               </a>
             )}
             <div className="mobile-actions">
-              <span className="muted">Thème</span>
-              <ThemeToggle />
+              <span className="muted">{t.nav.language}</span>
+              <LanguageSwitcher locale={locale} label={t.nav.language} />
+            </div>
+            <div className="mobile-actions">
+              <span className="muted">{t.nav.theme}</span>
+              <ThemeToggle t={t} />
             </div>
           </nav>
         </details>

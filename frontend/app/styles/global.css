@@ -297,6 +297,36 @@ button:disabled,
 .theme-toggle:hover {
   background: var(--surface-2);
 }
+.language-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+}
+.language-option {
+  min-width: 2.25rem;
+  min-height: 2.75rem;
+  padding: 0 0.375rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+.language-option abbr {
+  text-decoration: none;
+}
+.language-option:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+.language-option[data-active="true"] {
+  color: var(--ink);
+  background: var(--surface-2);
+}
 .mobile-nav {
   display: none;
   position: relative;
@@ -383,7 +413,7 @@ button:disabled,
   box-shadow: var(--shadow);
 }
 .portrait-frame:after {
-  content: "Portrait professionnel à remplacer";
+  content: "Professional portrait to replace";
   position: absolute;
   inset: auto 1rem 1rem;
   background: var(--elevated);

@@ -6,28 +6,32 @@ brand
 
 ## Users
 
-Le portfolio s’adresse aux recruteurs, responsables techniques et équipes produit qui évaluent un profil full-stack pour une alternance ou une collaboration. Ils doivent comprendre rapidement qui est Jonathan, comment il transforme un problème concret en application et jusqu’où va son autonomie. Le panel d’administration est une surface secondaire de registre `product`, réservée à Jonathan.
+The portfolio speaks to recruiters, technical leads and product teams evaluating a full-stack profile for an apprenticeship or a collaboration. They need to grasp quickly who Jonathan is, how he turns a concrete problem into an application, and how far his autonomy goes. The administration panel is a secondary surface in the `product` register, reserved for Jonathan.
 
 ## Product Purpose
 
-Présenter Jonathan Blanchard comme un développeur full-stack et créateur d’applications, humain avant d’être technique. La personnalité, la démarche et le parcours forment le récit ; Episort, Janus, Overkill et le mini réseau social servent de preuves concrètes. Le frontend React Router rend ce récit public et le backend Spring Boot garantit la gestion durable, sécurisée et administrable des projets.
+Present Jonathan Blanchard as a full-stack developer and application builder — human before technical. Personality, method and journey carry the narrative; Episort, Janus, Overkill and the mini social network act as concrete proof. The Next.js frontend makes that narrative public, and the Spring Boot backend keeps project management durable, secure and administrable.
+
+## Languages
+
+The public site ships in English and French. English is the source language: UI copy is authored in `frontend/app/i18n/dictionaries/en.ts` and translated in `fr.ts`. Project case-study content is stored once per project in the database, so it exists in a single language; the administration panel is English-only.
 
 ## Brand Personality
 
-Chaleureuse, méthodique, directe. L’interface évoque un établi numérique bien tenu : des outils précis, des choix visibles et une énergie orange franche, sans spectacle gratuit. La voix reste naturelle, confiante sans se prétendre experte et honnête sur l’état des projets.
+Warm, methodical, direct. The interface evokes a well-kept digital workbench: precise tools, visible choices and a frank orange energy, with no gratuitous spectacle. The voice stays natural, confident without claiming expertise, and honest about the state of each project.
 
 ## Anti-references
 
-Ni landing page SaaS, ni portfolio en grille Bento, ni faux terminal. Sont exclus : gradients de texte, glassmorphism, halos, statistiques inventées, logos technologiques en série, cartes répétitives, éditorialisme affecté, animations permanentes et marketing artificiel.
+Not a SaaS landing page, not a Bento-grid portfolio, not a fake terminal. Excluded: text gradients, glassmorphism, glows, invented statistics, rows of technology logos, repetitive cards, affected editorializing, permanent animation and artificial marketing.
 
 ## Design Principles
 
-1. Présenter la personne avant les preuves.
-2. Montrer le raisonnement produit : problème, décisions, compromis, résultat.
-3. Faire sentir la maîtrise sans la surjouer : statuts honnêtes, aucun fait inventé.
-4. Donner une fonction à chaque accent de couleur, mouvement et icône.
-5. Concevoir l’administration comme un outil spécialisé, dense et familier.
+1. Present the person before the proof.
+2. Show the product reasoning: problem, decisions, trade-offs, result.
+3. Convey command without overplaying it: honest statuses, no invented facts.
+4. Give every color accent, movement and icon a function.
+5. Design the administration area as a specialized, dense, familiar tool.
 
 ## Accessibility & Inclusion
 
-Objectif WCAG 2.2 AA : contrastes vérifiés, navigation clavier, focus visible, HTML sémantique, zones tactiles suffisantes, alternatives textuelles, erreurs reliées aux champs et fonctionnement complet avec `prefers-reduced-motion`. Aucun état ne dépend uniquement de la couleur ou du survol.
+Target WCAG 2.2 AA: verified contrast, keyboard navigation, visible focus, semantic HTML, adequate touch targets, text alternatives, errors tied to their fields, and full operation under `prefers-reduced-motion`. No state depends on color or hover alone.

@@ -50,11 +50,6 @@ app:
   seed:
     enabled: ${PROJECT_SEED_ENABLED:true}
   storage:
-    bucket: ${S3_BUCKET:portfolio-media}
-    region: ${S3_REGION:eu-west-3}
-    endpoint: ${S3_ENDPOINT:http://localhost:9000}
-    access-key: ${S3_ACCESS_KEY:minioadmin}
-    secret-key: ${S3_SECRET_KEY:minioadmin}
-    public-base-url: ${S3_PUBLIC_BASE_URL:http://localhost:9000/portfolio-media}
+    directory: ${MEDIA_DIR:./data/media}
     max-image-bytes: 8388608
     max-video-bytes: 41943040

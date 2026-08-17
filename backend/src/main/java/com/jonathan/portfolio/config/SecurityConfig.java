@@ -31,8 +31,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth->auth.requestMatchers("/api/v1/public/**","/api/v1/auth/csrf","/api/v1/auth/login","/actuator/health/**","/api/openapi/**","/api/docs/**","/api/docs").permitAll().requestMatchers("/api/v1/admin/**").hasRole("ADMIN").anyRequest().authenticated())
             .sessionManagement(session->session.sessionFixation(fix->fix.migrateSession()).maximumSessions(1))
             .exceptionHandling(errors->errors
-                .authenticationEntryPoint((request,response,exception)->writeError(response,mapper,401,"unauthorized","Authentification requise.",request.getAttribute("correlationId")))
-                .accessDeniedHandler((request,response,exception)->writeError(response,mapper,403,"forbidden","Cette action n’est pas autorisée.",request.getAttribute("correlationId"))))
+                .authenticationEntryPoint((request,response,exception)->writeError(response,mapper,401,"unauthorized","Authentication required.",request.getAttribute("correlationId")))
+                .accessDeniedHandler((request,response,exception)->writeError(response,mapper,403,"forbidden","This action is not allowed.",request.getAttribute("correlationId"))))
             .headers(headers->headers.contentSecurityPolicy(csp->csp.policyDirectives("default-src 'none'; frame-ancestors 'none'; base-uri 'none'")).frameOptions(frame->frame.deny()).referrerPolicy(ref->ref.policy(org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter.ReferrerPolicy.NO_REFERRER)))
             .requestCache(cache->cache.disable());
         return http.build();

@@ -3,23 +3,23 @@ import { requireAdmin } from "~/lib/require-admin";
 import { serverApi } from "~/lib/server-api";
 import type { AuditEntry, Page } from "~/types/api";
 
-export const metadata: Metadata = { title: "Journal d’administration" };
+export const metadata: Metadata = { title: "Administration log" };
 const labels: Record<string, string> = {
-  LOGIN_SUCCESS: "Connexion réussie",
-  LOGIN_FAILURE: "Connexion refusée",
-  LOGOUT: "Déconnexion",
-  PROJECT_CREATE: "Projet créé",
-  PROJECT_UPDATE: "Projet modifié",
-  PROJECT_DUPLICATE: "Projet dupliqué",
-  PROJECT_PUBLISH: "Projet publié",
-  PROJECT_UNPUBLISH: "Projet dépublié",
-  PROJECT_ARCHIVE: "Projet archivé",
-  PROJECT_RESTORE: "Projet restauré",
-  PROJECT_DELETE: "Projet supprimé",
-  PROJECT_REORDER: "Ordre modifié",
-  PROJECT_SLUG_CHANGE: "Slug modifié",
-  MEDIA_ADD: "Média ajouté",
-  MEDIA_DELETE: "Média supprimé",
+  LOGIN_SUCCESS: "Sign-in succeeded",
+  LOGIN_FAILURE: "Sign-in refused",
+  LOGOUT: "Sign-out",
+  PROJECT_CREATE: "Project created",
+  PROJECT_UPDATE: "Project updated",
+  PROJECT_DUPLICATE: "Project duplicated",
+  PROJECT_PUBLISH: "Project published",
+  PROJECT_UNPUBLISH: "Project unpublished",
+  PROJECT_ARCHIVE: "Project archived",
+  PROJECT_RESTORE: "Project restored",
+  PROJECT_DELETE: "Project deleted",
+  PROJECT_REORDER: "Order changed",
+  PROJECT_SLUG_CHANGE: "Slug changed",
+  MEDIA_ADD: "Media added",
+  MEDIA_DELETE: "Media deleted",
 };
 
 export default async function AdminAuditPage() {
@@ -31,22 +31,22 @@ export default async function AdminAuditPage() {
     <>
       <header className="admin-head">
         <div>
-          <h1>Journal d’administration</h1>
+          <h1>Administration log</h1>
           <p>
-            Actions sensibles, sans mots de passe, cookies, tokens ni secrets.
+            Sensitive actions, with no passwords, cookies, tokens or secrets.
           </p>
         </div>
       </header>
       <ul className="audit-list">
         {data.content.length === 0 ? (
-          <li className="empty-state">Aucune action enregistrée.</li>
+          <li className="empty-state">No action recorded.</li>
         ) : (
           data.content.map((entry) => (
             <li key={entry.id}>
               <strong>{labels[entry.action] ?? entry.action}</strong>
-              <span>{entry.projectTitle ?? entry.actorEmail ?? "Système"}</span>
+              <span>{entry.projectTitle ?? entry.actorEmail ?? "System"}</span>
               <time dateTime={entry.createdAt}>
-                {new Intl.DateTimeFormat("fr-FR", {
+                {new Intl.DateTimeFormat("en-US", {
                   dateStyle: "medium",
                   timeStyle: "short",
                 }).format(new Date(entry.createdAt))}

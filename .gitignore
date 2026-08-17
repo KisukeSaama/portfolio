@@ -13,6 +13,7 @@ frontend/coverage/
 backend/.gradle/
 backend/build/
 infra/data/
+backend/data/
 *.log
 *.tsbuildinfo
 .idea/

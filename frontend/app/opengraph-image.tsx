@@ -1,7 +1,11 @@
 import { ImageResponse } from "next/og";
+import { defaultLocale } from "~/i18n/config";
+import { getDictionary } from "~/i18n";
 
-export const alt =
-  "Jonathan Blanchard — Développeur full-stack & créateur d’applications";
+// One shared social card, rendered in the source language.
+const t = getDictionary(defaultLocale);
+
+export const alt = `Jonathan Blanchard — ${t.profile.title}`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -48,10 +52,10 @@ export default function OpenGraphImage() {
         }}
       >
         <div style={{ fontSize: 68, lineHeight: 1.08, fontWeight: 750 }}>
-          Développeur full-stack & créateur d’applications
+          {t.profile.title}
         </div>
         <div style={{ fontSize: 30, lineHeight: 1.35, color: "#6d655c" }}>
-          Des applications complètes, de l’idée au déploiement.
+          {t.site.ogDescription}
         </div>
       </div>
       <div style={{ height: 9, width: 190, background: "#b94c1f" }} />

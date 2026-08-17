@@ -1,37 +1,49 @@
 import "@fontsource-variable/manrope";
 import type { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
 import type { ReactNode } from "react";
-import { profile } from "~/content/profile";
+import { defaultLocale, isLocale, type Locale } from "~/i18n/config";
+import { getDictionary } from "~/i18n";
 import "./styles/global.css";
 
 const siteUrl = process.env.PUBLIC_SITE_URL ?? "http://localhost:5173";
 const themeScript = `(()=>{try{const saved=localStorage.getItem('jonathan-theme');const theme=saved==='light'||saved==='dark'?saved:(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme}catch{}})()`;
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title: {
-    default: "Jonathan Blanchard — Développeur full-stack",
-    template: "%s — Jonathan Blanchard",
-  },
-  description: profile.tagline,
-  applicationName: "Portfolio de Jonathan Blanchard",
-  alternates: { canonical: "/" },
-  openGraph: {
-    type: "website",
-    locale: "fr_FR",
-    siteName: "Jonathan Blanchard",
-    title: "Jonathan Blanchard — Développeur full-stack",
-    description: "Des applications complètes, de l’idée au déploiement.",
-    url: "/",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Jonathan Blanchard — Développeur full-stack",
-    description: "Des applications complètes, de l’idée au déploiement.",
-  },
-  icons: { icon: "/favicon.svg" },
-  manifest: "/manifest.webmanifest",
-};
+/**
+ * Only the root layout may render <html>, and it sits above the [locale] segment, so the active
+ * locale arrives through the header the middleware sets on every request.
+ */
+async function activeLocale(): Promise<Locale> {
+  const value = (await headers()).get("x-portfolio-locale") ?? undefined;
+  return isLocale(value) ? value : defaultLocale;
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await activeLocale();
+  const t = getDictionary(locale);
+  return {
+    metadataBase: new URL(siteUrl),
+    title: { default: t.site.titleDefault, template: t.site.titleTemplate },
+    description: t.profile.tagline,
+    applicationName: t.site.applicationName,
+    alternates: { canonical: `/${locale}` },
+    openGraph: {
+      type: "website",
+      locale: t.ogLocale,
+      siteName: "Jonathan Blanchard",
+      title: t.site.titleDefault,
+      description: t.site.ogDescription,
+      url: `/${locale}`,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: t.site.titleDefault,
+      description: t.site.ogDescription,
+    },
+    icons: { icon: "/favicon.svg" },
+    manifest: "/manifest.webmanifest",
+  };
+}
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -43,15 +55,21 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const locale = await activeLocale();
+  const t = getDictionary(locale);
   return (
-    <html lang="fr" suppressHydrationWarning>
+    <html lang={t.htmlLang} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body>
         <a className="skip-link" href="#main-content">
-          Aller au contenu
+          {t.site.skipToContent}
         </a>
         {children}
       </body>

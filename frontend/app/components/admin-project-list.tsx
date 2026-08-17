@@ -42,7 +42,7 @@ export function AdminProjectList({ projects }: { projects: Project[] }) {
         message:
           error instanceof ApiRequestError
             ? error.payload.message
-            : "L’action n’a pas pu être effectuée. Réessayez.",
+            : "The action could not be completed. Try again.",
       });
     } finally {
       setPendingId(null);
@@ -56,7 +56,7 @@ export function AdminProjectList({ projects }: { projects: Project[] }) {
     if (
       (action === "archive" || action === "unpublish") &&
       !window.confirm(
-        `${action === "archive" ? "Archiver" : "Dépublier"} « ${project.title} » ?`,
+        `${action === "archive" ? "Archive" : "Unpublish"} “${project.title}”?`,
       )
     )
       return;
@@ -66,7 +66,7 @@ export function AdminProjectList({ projects }: { projects: Project[] }) {
         apiMutation(`/admin/projects/${project.id}/${action}`, {
           method: "POST",
         }),
-      "L’état éditorial a été mis à jour.",
+      "The editorial state has been updated.",
     );
   }
 
@@ -82,7 +82,7 @@ export function AdminProjectList({ projects }: { projects: Project[] }) {
 
   async function remove(project: Project) {
     const value = window.prompt(
-      `Suppression définitive. Saisissez exactement : ${project.title}`,
+      `Permanent deletion. Type exactly: ${project.title}`,
     );
     if (value !== project.title) return;
     await perform(
@@ -92,7 +92,7 @@ export function AdminProjectList({ projects }: { projects: Project[] }) {
           method: "DELETE",
           headers: { "X-Confirm-Project-Title": value },
         }),
-      "Le projet a été supprimé définitivement.",
+      "The project has been permanently deleted.",
     );
   }
 
@@ -111,7 +111,7 @@ export function AdminProjectList({ projects }: { projects: Project[] }) {
           method: "PUT",
           body: JSON.stringify({ projectIds }),
         }),
-      "L’ordre d’affichage a été enregistré.",
+      "The display order has been saved.",
     );
   }
 
@@ -127,15 +127,15 @@ export function AdminProjectList({ projects }: { projects: Project[] }) {
       )}
       <div className="data-list" aria-busy={pendingId !== null}>
         <div className="data-head">
-          <span>Projet</span>
+          <span>Project</span>
           <span>Publication</span>
-          <span>Ordre</span>
-          <span>Modifié</span>
+          <span>Order</span>
+          <span>Updated</span>
           <span>Actions</span>
         </div>
         {projects.length === 0 ? (
           <p className="empty-state">
-            Aucun projet ne correspond à ces filtres.
+            No project matches these filters.
           </p>
         ) : (
           projects.map((project, index) => (
@@ -147,16 +147,16 @@ export function AdminProjectList({ projects }: { projects: Project[] }) {
                 <small>
                   {project.slug} ·{" "}
                   {project.featureLevel === "PRIMARY"
-                    ? "Principal"
-                    : "Secondaire"}
+                    ? "Primary"
+                    : "Secondary"}
                 </small>
               </div>
               <span data-label="Publication" className="tag status">
                 {project.publicationStatus}
               </span>
-              <span data-label="Ordre">{project.displayOrder}</span>
-              <time data-label="Modifié" dateTime={project.updatedAt}>
-                {new Intl.DateTimeFormat("fr-FR", {
+              <span data-label="Order">{project.displayOrder}</span>
+              <time data-label="Updated" dateTime={project.updatedAt}>
+                {new Intl.DateTimeFormat("en-US", {
                   dateStyle: "short",
                 }).format(new Date(project.updatedAt))}
               </time>
@@ -166,7 +166,7 @@ export function AdminProjectList({ projects }: { projects: Project[] }) {
                   type="button"
                   onClick={() => void move(index, -1)}
                   disabled={index === 0 || pendingId !== null}
-                  aria-label={`Remonter ${project.title}`}
+                  aria-label={`Move ${project.title} up`}
                 >
                   <ArrowUp size={16} aria-hidden />
                 </button>
@@ -175,7 +175,7 @@ export function AdminProjectList({ projects }: { projects: Project[] }) {
                   type="button"
                   onClick={() => void move(index, 1)}
                   disabled={index === projects.length - 1 || pendingId !== null}
-                  aria-label={`Descendre ${project.title}`}
+                  aria-label={`Move ${project.title} down`}
                 >
                   <ArrowDown size={16} aria-hidden />
                 </button>
@@ -183,7 +183,7 @@ export function AdminProjectList({ projects }: { projects: Project[] }) {
                   className="button button-quiet"
                   href={`/admin/projects/${project.id}/preview`}
                   target="_blank"
-                  aria-label={`Prévisualiser ${project.title}`}
+                  aria-label={`Preview ${project.title}`}
                 >
                   <Eye size={16} aria-hidden />
                 </Link>
@@ -192,7 +192,7 @@ export function AdminProjectList({ projects }: { projects: Project[] }) {
                   type="button"
                   onClick={() => void duplicate(project)}
                   disabled={pendingId !== null}
-                  aria-label={`Dupliquer ${project.title}`}
+                  aria-label={`Duplicate ${project.title}`}
                 >
                   <Copy size={16} aria-hidden />
                 </button>
@@ -202,8 +202,8 @@ export function AdminProjectList({ projects }: { projects: Project[] }) {
                     type="button"
                   onClick={() => void lifecycle(project, "publish")}
                   disabled={pendingId !== null}
-                  title="Publier"
-                  aria-label={`Publier ${project.title}`}
+                  title="Publish"
+                  aria-label={`Publish ${project.title}`}
                   >
                     <Send size={16} aria-hidden />
                   </button>
@@ -215,8 +215,8 @@ export function AdminProjectList({ projects }: { projects: Project[] }) {
                       type="button"
                     onClick={() => void lifecycle(project, "unpublish")}
                     disabled={pendingId !== null}
-                    title="Dépublier"
-                    aria-label={`Dépublier ${project.title}`}
+                    title="Unpublish"
+                    aria-label={`Unpublish ${project.title}`}
                     >
                       <Undo2 size={16} aria-hidden />
                     </button>
@@ -225,8 +225,8 @@ export function AdminProjectList({ projects }: { projects: Project[] }) {
                       type="button"
                     onClick={() => void lifecycle(project, "archive")}
                     disabled={pendingId !== null}
-                    title="Archiver"
-                      aria-label={`Archiver ${project.title}`}
+                    title="Archive"
+                      aria-label={`Archive ${project.title}`}
                     >
                       <Archive size={16} aria-hidden />
                     </button>
@@ -239,8 +239,8 @@ export function AdminProjectList({ projects }: { projects: Project[] }) {
                       type="button"
                     onClick={() => void lifecycle(project, "restore")}
                     disabled={pendingId !== null}
-                    title="Restaurer"
-                      aria-label={`Restaurer ${project.title}`}
+                    title="Restore"
+                      aria-label={`Restore ${project.title}`}
                     >
                       <RotateCcw size={16} aria-hidden />
                     </button>
@@ -249,8 +249,8 @@ export function AdminProjectList({ projects }: { projects: Project[] }) {
                       type="button"
                     onClick={() => void remove(project)}
                     disabled={pendingId !== null}
-                    title="Supprimer définitivement"
-                      aria-label={`Supprimer définitivement ${project.title}`}
+                    title="Delete permanently"
+                      aria-label={`Permanently delete ${project.title}`}
                     >
                       <Trash2 size={16} aria-hidden />
                     </button>

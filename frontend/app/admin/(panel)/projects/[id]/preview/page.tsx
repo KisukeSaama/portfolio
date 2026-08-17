@@ -2,12 +2,14 @@ import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ProjectMedia } from "~/components/project-media";
+import { defaultLocale } from "~/i18n/config";
+import { getDictionary } from "~/i18n";
 import { requireAdmin } from "~/lib/require-admin";
 import { serverApi } from "~/lib/server-api";
 import type { Project } from "~/types/api";
 
 export const metadata: Metadata = {
-  title: "Prévisualisation privée",
+  title: "Private preview",
   robots: { index: false, follow: false, noarchive: true },
 };
 
@@ -17,6 +19,7 @@ export default async function AdminPreviewPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const t = getDictionary(defaultLocale);
   await requireAdmin();
   const project = await serverApi<Project>(
     `/admin/projects/${encodeURIComponent(id)}/preview`,
@@ -26,8 +29,8 @@ export default async function AdminPreviewPage({
   return (
     <>
       <div className="draft-banner">
-        Prévisualisation privée · {project.publicationStatus} · visible
-        uniquement avec une session ADMIN
+        Private preview · {project.publicationStatus} · visible only with an
+        ADMIN session
       </div>
       <article>
         <header className="case-header">
@@ -37,14 +40,14 @@ export default async function AdminPreviewPage({
               className="case-back text-link"
             >
               <ArrowLeft size={17} aria-hidden />
-              Retour à l’éditeur
+              Back to the editor
             </Link>
             <h1>{project.title}</h1>
             <div className="case-intro">
               <p>{project.fullDescription}</p>
               <dl className="case-facts">
                 <div>
-                  <dt>Statut</dt>
+                  <dt>Status</dt>
                   <dd>{project.status}</dd>
                 </div>
                 <div>
@@ -52,7 +55,7 @@ export default async function AdminPreviewPage({
                   <dd>{project.projectType}</dd>
                 </div>
                 <div>
-                  <dt>Rôle</dt>
+                  <dt>Role</dt>
                   <dd>{project.role}</dd>
                 </div>
               </dl>
@@ -63,10 +66,11 @@ export default async function AdminPreviewPage({
           <ProjectMedia
             media={cover}
             title={project.title}
+            t={t}
             className="case-media"
           />
           <section className="case-section">
-            <h2>Problème</h2>
+            <h2>Problem</h2>
             <div className="case-content">
               <p>{project.problem}</p>
             </div>
@@ -78,7 +82,7 @@ export default async function AdminPreviewPage({
             </div>
           </section>
           <section className="case-section">
-            <h2>Fonctionnalités</h2>
+            <h2>Features</h2>
             <div className="case-content">
               <ul>
                 {project.features.map((item) => (

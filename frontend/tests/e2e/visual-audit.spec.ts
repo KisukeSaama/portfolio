@@ -1,10 +1,10 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
-const pages = ["/", "/episort", "/admin/login"] as const;
+const pages = ["/en", "/fr", "/en/episort", "/admin/login"] as const;
 
 for (const path of pages) {
-  test(`audit visuel sans débordement : ${path}`, async ({
+  test(`visual audit without overflow: ${path}`, async ({
     page,
   }, testInfo) => {
     await page.goto(path);
@@ -28,6 +28,9 @@ for (const path of pages) {
       path: testInfo.outputPath(`${path.replaceAll("/", "-") || "home"}.png`),
       fullPage: true,
     });
+    // Theme tokens transition over 180 ms; sampling mid-transition pairs dark text with the light
+    // background and reports false contrast failures, so the swap is made instant first.
+    await page.emulateMedia({ reducedMotion: "reduce" });
     await page.evaluate(() => {
       document.documentElement.dataset.theme = "dark";
     });
@@ -49,11 +52,11 @@ for (const path of pages) {
   });
 }
 
-test("audit du parcours administrateur authentifié", async ({ page }) => {
+test("audit of the authenticated administrator flow", async ({ page }) => {
   await page.goto("/admin/login");
-  await page.getByLabel("Adresse e-mail").fill("e2e@example.test");
-  await page.getByLabel("Mot de passe").fill("test-only-password");
-  await page.getByRole("button", { name: "Se connecter" }).click();
+  await page.getByLabel("Email address").fill("e2e@example.test");
+  await page.getByLabel("Password").fill("test-only-password");
+  await page.getByRole("button", { name: "Sign in" }).click();
   await expect(page).toHaveURL(/\/admin$/);
 
   for (const path of ["/admin", "/admin/projects", "/admin/projects/new"]) {

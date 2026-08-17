@@ -10,8 +10,8 @@ import { ApiRequestError, apiMutation, resetCsrf } from "~/lib/api";
 import type { Session } from "~/types/api";
 
 const schema = z.object({
-  email: z.email("Saisissez une adresse e-mail valide."),
-  password: z.string().min(1, "Le mot de passe est obligatoire.").max(200),
+  email: z.email("Enter a valid email address."),
+  password: z.string().min(1, "Password is required.").max(200),
 });
 type Values = z.infer<typeof schema>;
 
@@ -38,7 +38,7 @@ export function AdminLoginForm() {
       setServerError(
         error instanceof ApiRequestError
           ? error.payload.message
-          : "Connexion impossible. Réessayez.",
+          : "Sign-in failed. Try again.",
       );
     }
   }
@@ -55,7 +55,7 @@ export function AdminLoginForm() {
         </p>
       )}
       <div className="field">
-        <label htmlFor="email">Adresse e-mail</label>
+        <label htmlFor="email">Email address</label>
         <input
           className="input"
           id="email"
@@ -72,7 +72,7 @@ export function AdminLoginForm() {
         )}
       </div>
       <div className="field">
-        <label htmlFor="password">Mot de passe</label>
+        <label htmlFor="password">Password</label>
         <input
           className="input"
           id="password"
@@ -90,11 +90,11 @@ export function AdminLoginForm() {
       </div>
       <button className="button button-primary" disabled={isSubmitting}>
         {isSubmitting ? (
-          "Connexion…"
+          "Signing in…"
         ) : (
           <>
             <LockKeyhole size={17} aria-hidden />
-            Se connecter
+            Sign in
           </>
         )}
       </button>

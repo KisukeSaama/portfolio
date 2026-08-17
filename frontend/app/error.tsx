@@ -1,22 +1,23 @@
 "use client";
 
+import { defaultLocale } from "~/i18n/config";
+import { getDictionary } from "~/i18n";
+
 export default function ErrorPage({
   reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const t = getDictionary(defaultLocale);
   return (
     <main id="main-content" className="error-page">
       <div>
         <p className="error-code">500</p>
-        <h1>La page n’a pas pu être chargée.</h1>
-        <p>
-          Le service est peut-être momentanément indisponible. Vous pouvez
-          réessayer sans perdre votre navigation.
-        </p>
+        <h1>{t.errors.unexpectedTitle}</h1>
+        <p>{t.errors.unexpectedBody}</p>
         <button className="button button-primary" type="button" onClick={reset}>
-          Réessayer
+          {t.errors.retry}
         </button>
       </div>
     </main>

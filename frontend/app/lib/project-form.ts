@@ -4,15 +4,15 @@ const optionalUrl = z
   .string()
   .refine(
     (value) => !value || z.url().safeParse(value).success,
-    "Saisissez une URL complète.",
+    "Enter a complete URL.",
   );
 export const projectFormSchema = z.object({
-  title: z.string().min(2, "Titre trop court.").max(120),
+  title: z.string().min(2, "Title is too short.").max(120),
   slug: z
     .string()
     .regex(
       /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-      "Utilisez des minuscules, chiffres et tirets.",
+      "Use lowercase letters, digits and hyphens.",
     ),
   shortDescription: z.string().min(20).max(280),
   fullDescription: z.string().min(40).max(10000),

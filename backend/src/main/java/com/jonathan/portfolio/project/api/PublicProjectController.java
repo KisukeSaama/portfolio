@@ -9,6 +9,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController @RequestMapping("/api/v1/public/projects")
 public class PublicProjectController {
     private final ProjectService service; public PublicProjectController(ProjectService service){this.service=service;}
-    @GetMapping @Operation(summary="Liste des projets publiés et visibles") public List<ProjectResponse> list(){return service.publicProjects();}
-    @GetMapping("/{slug}") @Operation(summary="Étude de cas publique par slug") public ProjectResponse detail(@PathVariable String slug){return service.publicProject(slug);}
+    @GetMapping @Operation(summary="List published and visible projects") public List<ProjectResponse> list(){return service.publicProjects();}
+    @GetMapping("/{slug}") @Operation(summary="Public case study by slug") public ProjectResponse detail(@PathVariable String slug){return service.publicProject(slug);}
 }

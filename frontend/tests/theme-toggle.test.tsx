@@ -1,15 +1,17 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 import { ThemeToggle } from "~/components/theme-toggle";
-describe("thème", () => {
+import { getDictionary } from "~/i18n";
+
+describe("theme", () => {
   beforeEach(() => {
     document.documentElement.dataset.theme = "light";
     localStorage.clear();
   });
-  it("persiste le choix manuel", () => {
-    render(<ThemeToggle />);
+  it("persists the manual choice", () => {
+    render(<ThemeToggle t={getDictionary("en")} />);
     fireEvent.click(
-      screen.getByRole("button", { name: "Activer le thème sombre" }),
+      screen.getByRole("button", { name: "Switch to the dark theme" }),
     );
     expect(document.documentElement.dataset.theme).toBe("dark");
     expect(localStorage.getItem("jonathan-theme")).toBe("dark");

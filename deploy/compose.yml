@@ -31,13 +31,13 @@ services:
       - "3000"
     healthcheck:
       test:
-        ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/legal >/dev/null 2>&1 || exit 1"]
+        ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/en/legal >/dev/null 2>&1 || exit 1"]
       interval: 30s
       timeout: 5s
       retries: 5
     restart: unless-stopped
     # The standalone server writes nothing outside /tmp: everything it serves was baked into the
-    # image, and uploads go to S3 through the backend.
+    # image, and uploads are written to the backend's media volume.
     read_only: true
     tmpfs:
       - /tmp
@@ -71,18 +71,13 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       SESSION_COOKIE_SECURE: "true"
       SERVER_FORWARD_HEADERS_STRATEGY: framework
-      STORAGE_PROVIDER: s3
-      S3_BUCKET: ${S3_BUCKET}
-      S3_REGION: ${S3_REGION}
-      S3_ENDPOINT: ${S3_ENDPOINT}
-      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
-      S3_SECRET_KEY: ${S3_SECRET_KEY}
-      S3_PUBLIC_BASE_URL: ${S3_PUBLIC_BASE_URL}
+      MEDIA_DIR: /var/lib/portfolio/media
       PROJECT_SEED_ENABLED: ${PROJECT_SEED_ENABLED:-true}
       CONTACT_EMAIL: ${CONTACT_EMAIL:-}
     networks:
       - application
-      - egress
+    volumes:
+      - ${DATA_DIR}/${DEPLOY_ENV}/media:/var/lib/portfolio/media
     depends_on:
       postgres:
         condition: service_healthy
@@ -124,11 +119,10 @@ services:
       - no-new-privileges:true
 
 networks:
-  # The database and the two applications talk on a network with no route out; only the backend
-  # also joins `egress`, because it is the one that calls S3.
+  # The database and the two applications talk on a network with no route out. Nothing here needs
+  # egress: media is stored on a local volume, so no service calls out to the internet.
   application:
     internal: true
-  egress: {}
   traefik:
     external: true
     name: ${TRAEFIK_NETWORK}

@@ -2,77 +2,88 @@ import { expect, test } from "@playwright/test";
 
 test.describe.configure({ mode: "serial" });
 
-test("navigation publique et thème", async ({ page }) => {
+test("public navigation, language switch and theme", async ({ page }) => {
   await page.goto("/");
+  // An unprefixed visit is redirected to a locale; the test client asks for English.
+  await expect(page).toHaveURL(/\/en$/);
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    "Développeur full-stack",
+    "Full-stack developer",
   );
   await page
-    .getByRole("link", { name: /Lire l’étude de cas/ })
+    .getByRole("link", { name: /Read the case study/ })
     .first()
     .click();
-  await expect(page).toHaveURL(/\/episort$/);
+  await expect(page).toHaveURL(/\/en\/episort$/);
+
+  // On mobile both controls live in the same menu, and switching language navigates away, so the
+  // theme is toggled first while the menu is still open.
   if ((page.viewportSize()?.width ?? 1200) < 900)
-    await page.getByLabel("Ouvrir le menu").click();
-  await page.getByRole("button", { name: "Activer le thème sombre" }).click();
+    await page.getByLabel("Open the menu").click();
+  await page.getByRole("button", { name: "Switch to the dark theme" }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+
+  await page.getByRole("button", { name: "FR" }).click();
+  await expect(page).toHaveURL(/\/fr\/episort$/);
+  await expect(page.locator("html")).toHaveAttribute("lang", "fr");
+  // The footer is outside the collapsible menu, so it proves the translation on every viewport.
+  await expect(
+    page.getByRole("link", { name: "Mentions légales" }),
+  ).toBeVisible();
 });
 
-test("cycle éditorial administrateur", async ({ page, context }) => {
+test("administrator editorial cycle", async ({ page, context }) => {
   const timestamp = Date.now();
   const slug = `e2e-${test.info().project.name}-${timestamp}`;
-  const title = `Projet E2E ${test.info().project.name} ${timestamp}`;
+  const title = `E2E project ${test.info().project.name} ${timestamp}`;
   await page.goto("/admin");
   await expect(page).toHaveURL(/\/admin\/login/);
-  await page.getByLabel("Adresse e-mail").fill("e2e@example.test");
-  await page.getByLabel("Mot de passe").fill("test-only-password");
-  await page.getByRole("button", { name: "Se connecter" }).click();
-  await page.getByRole("link", { name: /Nouveau projet/ }).click();
-  await page.getByLabel("Titre", { exact: true }).fill(title);
+  await page.getByLabel("Email address").fill("e2e@example.test");
+  await page.getByLabel("Password").fill("test-only-password");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await page.getByRole("link", { name: /New project/ }).click();
+  await page.getByLabel("Title", { exact: true }).fill(title);
   await page.getByLabel("Slug").fill(slug);
   await page
-    .getByLabel("Description courte")
-    .fill("Une description courte complète pour le test end-to-end.");
+    .getByLabel("Short description")
+    .fill("A short description that is complete enough for the end-to-end test.");
   await page
-    .getByLabel("Description complète")
+    .getByLabel("Full description")
     .fill(
-      "Une description complète et suffisamment longue pour valider le parcours de création end-to-end.",
+      "A full description long enough to validate the end-to-end creation flow.",
     );
   await page
-    .getByLabel("Rôle de Jonathan")
-    .fill("Conception et développement du projet de test.");
+    .getByLabel("Jonathan's role")
+    .fill("Design and development of the test project.");
   await page
-    .getByLabel("Problème concret")
-    .fill(
-      "Un problème concret décrit de façon suffisamment précise pour le test.",
-    );
+    .getByLabel("Concrete problem")
+    .fill("A concrete problem described precisely enough for the test.");
   await page
-    .getByLabel("Solution imaginée")
-    .fill("Une solution imaginée et décrite de façon suffisamment précise.");
-  await page.getByRole("button", { name: /Enregistrer/ }).click();
+    .getByLabel("Solution", { exact: true })
+    .fill("A solution described precisely enough for the test.");
+  await page.getByRole("button", { name: /Save/ }).click();
   await expect(page).toHaveURL(/\/admin\/projects\/.+\/edit/);
   const previewPromise = context.waitForEvent("page");
-  await page.getByRole("link", { name: /Prévisualiser/ }).click();
+  await page.getByRole("link", { name: /Preview/ }).click();
   const preview = await previewPromise;
-  await expect(preview.getByText(/Prévisualisation privée/)).toBeVisible();
+  await expect(preview.getByText(/Private preview/)).toBeVisible();
   await preview.close();
   await page.goto("/admin/projects");
   const row = page.locator(".data-row").filter({ hasText: slug });
-  await row.getByTitle("Publier").click();
+  await row.getByTitle("Publish").click();
   await expect(row).toContainText("PUBLISHED");
-  await page.goto("/projects");
+  await page.goto("/en/projects");
   await expect(page.getByRole("heading", { name: title })).toBeVisible();
   await page.goto("/admin/projects");
   page.once("dialog", (dialog) => dialog.accept());
   const publishedRow = page.locator(".data-row").filter({ hasText: slug });
-  await publishedRow.getByTitle("Dépublier").click();
+  await publishedRow.getByTitle("Unpublish").click();
   await expect(publishedRow).toContainText("DRAFT");
-  await page.goto("/projects");
+  await page.goto("/en/projects");
   await expect(page.getByRole("heading", { name: title })).toHaveCount(0);
   await page.goto("/admin");
   if ((page.viewportSize()?.width ?? 1200) < 900)
-    await page.getByLabel("Ouvrir le menu d’administration").click();
-  await page.getByRole("button", { name: /Déconnexion/ }).click();
+    await page.getByLabel("Open the administration menu").click();
+  await page.getByRole("button", { name: /Sign out/ }).click();
   await expect(page).toHaveURL(/\/admin\/login/);
   await page.goto("/admin");
   await expect(page).toHaveURL(/\/admin\/login/);

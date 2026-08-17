@@ -125,7 +125,7 @@ export function ProjectEditor({ project }: { project?: Project }) {
         return;
       if (
         !window.confirm(
-          "Des modifications ne sont pas enregistrées. Quitter cette page ?",
+          "Some changes are not saved. Leave this page?",
         )
       ) {
         event.preventDefault();
@@ -147,7 +147,7 @@ export function ProjectEditor({ project }: { project?: Project }) {
         },
       );
       reset(defaults(saved));
-      setNotice("Projet enregistré.");
+      setNotice("Project saved.");
       if (!project) {
         setSavingNavigation(true);
         router.replace(`/admin/projects/${saved.id}/edit?saved=created`);
@@ -163,7 +163,7 @@ export function ProjectEditor({ project }: { project?: Project }) {
           if (field in values)
             setError(field as Path<ProjectFormValues>, { message });
         }
-      } else setServerError("Enregistrement impossible. Réessayez.");
+      } else setServerError("Saving failed. Try again.");
     }
   }
   return (
@@ -183,11 +183,11 @@ export function ProjectEditor({ project }: { project?: Project }) {
         </p>
       )}
       <section className="editor-section">
-        <h2>Informations générales</h2>
+        <h2>General information</h2>
         <div className="field-grid">
           <Field
             name="title"
-            label="Titre"
+            label="Title"
             register={register}
             errors={errors}
           />
@@ -201,12 +201,12 @@ export function ProjectEditor({ project }: { project?: Project }) {
               label="Slug"
               register={register}
               errors={errors}
-              help="Unique, modifiable avant publication."
+              help="Unique, editable before publication."
             />
           </div>
           <Field
             name="shortDescription"
-            label="Description courte"
+            label="Short description"
             register={register}
             errors={errors}
             textarea
@@ -214,7 +214,7 @@ export function ProjectEditor({ project }: { project?: Project }) {
           />
           <Field
             name="fullDescription"
-            label="Description complète"
+            label="Full description"
             register={register}
             errors={errors}
             textarea
@@ -222,19 +222,19 @@ export function ProjectEditor({ project }: { project?: Project }) {
           />
           <Field
             name="role"
-            label="Rôle de Jonathan"
+            label="Jonathan's role"
             register={register}
             errors={errors}
             textarea
             className="field-span"
           />
           <div className="field">
-            <label htmlFor="status">État du projet</label>
+            <label htmlFor="status">Project state</label>
             <select id="status" className="select" {...register("status")}>
-              <option value="CONCEPT">Conception</option>
-              <option value="IN_PROGRESS">En développement</option>
-              <option value="MAINTAINED">Maintenu</option>
-              <option value="COMPLETED">Réalisé</option>
+              <option value="CONCEPT">Concept</option>
+              <option value="IN_PROGRESS">In development</option>
+              <option value="MAINTAINED">Maintained</option>
+              <option value="COMPLETED">Completed</option>
             </select>
           </div>
           <div className="field">
@@ -244,19 +244,19 @@ export function ProjectEditor({ project }: { project?: Project }) {
               className="select"
               {...register("projectType")}
             >
-              <option value="PERSONAL">Personnel</option>
-              <option value="TEAM">Équipe</option>
-              <option value="LEARNING">Apprentissage</option>
+              <option value="PERSONAL">Personal</option>
+              <option value="TEAM">Team</option>
+              <option value="LEARNING">Learning</option>
             </select>
           </div>
         </div>
       </section>
       <section className="editor-section">
-        <h2>Problème et solution</h2>
+        <h2>Problem and solution</h2>
         <div className="field-grid">
           <Field
             name="problem"
-            label="Problème concret"
+            label="Concrete problem"
             register={register}
             errors={errors}
             textarea
@@ -264,21 +264,21 @@ export function ProjectEditor({ project }: { project?: Project }) {
           />
           <Field
             name="context"
-            label="Contexte"
+            label="Context"
             register={register}
             errors={errors}
             textarea
           />
           <Field
             name="solution"
-            label="Solution imaginée"
+            label="Solution"
             register={register}
             errors={errors}
             textarea
           />
           <Field
             name="objectives"
-            label="Objectifs — un par ligne"
+            label="Objectives — one per line"
             register={register}
             errors={errors}
             textarea
@@ -287,7 +287,7 @@ export function ProjectEditor({ project }: { project?: Project }) {
         </div>
       </section>
       <section className="editor-section">
-        <h2>Étude de cas</h2>
+        <h2>Case study</h2>
         <div className="field-grid">
           <Field
             name="architecture"
@@ -299,28 +299,28 @@ export function ProjectEditor({ project }: { project?: Project }) {
           />
           <Field
             name="decisions"
-            label="Choix importants — un par ligne"
+            label="Key decisions — one per line"
             register={register}
             errors={errors}
             textarea
           />
           <Field
             name="challenges"
-            label="Difficultés — une par ligne"
+            label="Challenges — one per line"
             register={register}
             errors={errors}
             textarea
           />
           <Field
             name="learnings"
-            label="Apprentissages — un par ligne"
+            label="Learnings — one per line"
             register={register}
             errors={errors}
             textarea
           />
           <Field
             name="nextSteps"
-            label="Prochaines étapes — une par ligne"
+            label="Next steps — one per line"
             register={register}
             errors={errors}
             textarea
@@ -328,18 +328,18 @@ export function ProjectEditor({ project }: { project?: Project }) {
         </div>
       </section>
       <section className="editor-section">
-        <h2>Technologies et fonctionnalités</h2>
+        <h2>Technologies and features</h2>
         <div className="field-grid">
           <Field
             name="technologies"
-            label="Technologies — une par ligne"
+            label="Technologies — one per line"
             register={register}
             errors={errors}
             textarea
           />
           <Field
             name="features"
-            label="Fonctionnalités — une par ligne"
+            label="Features — one per line"
             register={register}
             errors={errors}
             textarea
@@ -347,49 +347,48 @@ export function ProjectEditor({ project }: { project?: Project }) {
         </div>
       </section>
       <section className="editor-section">
-        <h2>Médias</h2>
+        <h2>Media</h2>
         {project ? (
           <MediaManager project={project} />
         ) : (
           <p className="muted">
-            Enregistrez d’abord le brouillon pour envoyer ou associer des médias
-            au projet.
+            Save the draft first to upload or attach media to the project.
           </p>
         )}
       </section>
       <section className="editor-section">
-        <h2>Liens</h2>
+        <h2>Links</h2>
         <div className="field-grid">
           <Field
             name="githubUrl"
-            label="URL GitHub (facultative)"
+            label="GitHub URL (optional)"
             register={register}
             errors={errors}
           />
           <Field
             name="demoUrl"
-            label="URL de démonstration (facultative)"
+            label="Demo URL (optional)"
             register={register}
             errors={errors}
           />
         </div>
       </section>
       <section className="editor-section">
-        <h2>Publication et hiérarchie</h2>
+        <h2>Publication and hierarchy</h2>
         <div className="field-grid">
           <div className="field">
-            <label htmlFor="featureLevel">Niveau de mise en avant</label>
+            <label htmlFor="featureLevel">Feature level</label>
             <select
               id="featureLevel"
               className="select"
               {...register("featureLevel")}
             >
-              <option value="PRIMARY">Principal</option>
-              <option value="SECONDARY">Secondaire</option>
+              <option value="PRIMARY">Primary</option>
+              <option value="SECONDARY">Secondary</option>
             </select>
           </div>
           <div className="field">
-            <label htmlFor="displayOrder">Ordre d’affichage</label>
+            <label htmlFor="displayOrder">Display order</label>
             <input
               id="displayOrder"
               type="number"
@@ -403,25 +402,26 @@ export function ProjectEditor({ project }: { project?: Project }) {
             )}
           </div>
           <div className="field">
-            <label htmlFor="visibility">Visibilité cible</label>
+            <label htmlFor="visibility">Target visibility</label>
             <select
               id="visibility"
               className="select"
               {...register("visibility")}
             >
-              <option value="PRIVATE">Privé</option>
+              <option value="PRIVATE">Private</option>
               <option value="PUBLIC">Public</option>
             </select>
           </div>
           <label className="checkbox">
             <input type="checkbox" {...register("featured")} />
-            Projet mis en avant
+            Featured project
           </label>
         </div>
         {project && (
           <p className="field-help">
-            État éditorial actuel : <strong>{project.publicationStatus}</strong>
-            . Publiez ou archivez depuis la liste des projets.
+            Current editorial state:{" "}
+            <strong>{project.publicationStatus}</strong>. Publish or archive it
+            from the project list.
           </p>
         )}
       </section>
@@ -430,20 +430,20 @@ export function ProjectEditor({ project }: { project?: Project }) {
         <div className="field-grid">
           <Field
             name="seoTitle"
-            label="Titre SEO — 70 caractères maximum"
+            label="SEO title — 70 characters maximum"
             register={register}
             errors={errors}
           />
           <Field
             name="seoDescription"
-            label="Description SEO — 170 caractères maximum"
+            label="SEO description — 170 characters maximum"
             register={register}
             errors={errors}
             textarea
           />
           <Field
             name="openGraphImageUrl"
-            label="Image Open Graph (URL)"
+            label="Open Graph image (URL)"
             register={register}
             errors={errors}
             className="field-span"
@@ -453,7 +453,7 @@ export function ProjectEditor({ project }: { project?: Project }) {
       <div className="editor-actions">
         <button className="button button-primary" disabled={isSubmitting}>
           <Save size={17} aria-hidden />
-          {isSubmitting ? "Enregistrement…" : "Enregistrer"}
+          {isSubmitting ? "Saving…" : "Save"}
         </button>
         {project && (
           <Link
@@ -462,13 +462,13 @@ export function ProjectEditor({ project }: { project?: Project }) {
             target="_blank"
           >
             <Eye size={17} aria-hidden />
-            Prévisualiser
+            Preview
           </Link>
         )}
         <span className="unsaved" aria-live="polite">
           {isDirty
-            ? "Modifications non enregistrées"
-            : "Toutes les modifications sont enregistrées"}
+            ? "Unsaved changes"
+            : "All changes are saved"}
         </span>
       </div>
     </form>

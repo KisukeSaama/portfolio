@@ -2,13 +2,13 @@
 
 ## Direction
 
-Scène de référence : un établi numérique éclairé en fin d’après-midi, avec un outil orange immédiatement identifiable posé sur des surfaces graphite et minérales. Le portfolio utilise un registre de marque personnel ; l’administration reprend les mêmes matériaux avec une densité d’outil de production.
+Reference scene: a digital workbench lit in late afternoon, with an immediately recognizable orange tool resting on graphite and mineral surfaces. The portfolio uses a personal brand register; the administration area reuses the same materials at the density of a production tool.
 
-Mots de voix : **franc**, **mécanique**, **attentionné**.
+Voice words: **frank**, **mechanical**, **attentive**.
 
 ## Color strategy
 
-Palette `Committed` côté public : l’orange porte les actions, repères de lecture et surfaces clés sans envahir l’interface. Palette `Restrained` côté administration : l’orange est réservé aux actions, sélections et focus. Toutes les couleurs sont exprimées en OKLCH et le thème sombre est composé séparément.
+`Committed` palette on the public side: orange carries actions, reading landmarks and key surfaces without taking over the interface. `Restrained` palette in the administration area: orange is reserved for actions, selections and focus. Every color is expressed in OKLCH, and the dark theme is composed separately.
 
 ```css
 :root {
@@ -39,21 +39,21 @@ Palette `Committed` côté public : l’orange porte les actions, repères de le
 
 ## Typography
 
-Une famille auto-hébergée : Manrope Variable. Les titres publics emploient une échelle `clamp()` au maximum de 5,8 rem, jamais centrée par réflexe. L’administration conserve une échelle fixe et compacte. Les paragraphes restent sous 68 caractères.
+One self-hosted family: Manrope Variable. Public headings use a `clamp()` scale capped at 5.8 rem, never centered by reflex. The administration area keeps a fixed, compact scale. Paragraphs stay under 68 characters.
 
 ## Shape, layout and components
 
-- Rayons de 8 à 14 px ; pilules uniquement pour les statuts.
-- Une surface utilise une bordure ou une ombre courte, jamais les deux comme décoration.
-- Hero asymétrique texte/portrait. Les projets principaux sont de grands chapitres ; les secondaires, des lignes compactes.
-- Navigation publique compacte ; sidebar simple côté admin, remplacée par une barre mobile.
-- Bouton primaire orange plein, secondaire bordé, champs à labels persistants, états explicites.
-- Placeholders abstraits et clairement temporaires, jamais de fausses captures.
+- Radii from 8 to 14 px; pills only for statuses.
+- A surface uses either a border or a short shadow, never both as decoration.
+- Asymmetric text/portrait hero. Primary projects are large chapters; secondary ones are compact rows.
+- Compact public navigation, including the EN/FR language switch; a simple sidebar in the admin area, replaced by a mobile bar.
+- Solid orange primary button, outlined secondary, fields with persistent labels, explicit states.
+- Abstract, clearly temporary placeholders, never fake screenshots.
 
 ## Motion
 
-Transitions de 160 à 220 ms avec sortie franche, uniquement pour expliquer un changement d’état. Aucun contenu n’est masqué en attente d’une animation. `prefers-reduced-motion` rend tout instantané.
+Transitions from 160 to 220 ms with a frank exit, only to explain a state change. No content is hidden waiting for an animation. `prefers-reduced-motion` makes everything instant.
 
 ## Responsive
 
-La structure change réellement selon l’espace : portrait replacé dans le récit mobile, projets en une colonne, sidebar transformée, tableaux administratifs en lignes étiquetées. Aucune fonctionnalité critique n’est cachée.
+The structure genuinely changes with the available space: the portrait moves into the mobile narrative, projects collapse to one column, the sidebar transforms, and admin tables become labeled rows. No critical feature is hidden.

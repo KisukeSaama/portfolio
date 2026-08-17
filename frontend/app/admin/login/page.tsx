@@ -2,16 +2,20 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { AdminLoginForm } from "~/components/admin-login-form";
 import { ThemeToggle } from "~/components/theme-toggle";
+import { defaultLocale } from "~/i18n/config";
+import { getDictionary } from "~/i18n";
 import { serverApi } from "~/lib/server-api";
 import type { Session } from "~/types/api";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
-  title: "Connexion — Administration",
+  title: "Sign in — Administration",
   robots: { index: false, follow: false },
 };
 
 export default async function AdminLoginPage() {
+  // The administration area is single-language: it is used by the site owner only.
+  const t = getDictionary(defaultLocale);
   const session = await serverApi<Session>("/auth/session", {
     authenticated: true,
   });
@@ -24,11 +28,11 @@ export default async function AdminLoginPage() {
             <span className="wordmark-mark" aria-hidden />
             Administration
           </span>
-          <ThemeToggle />
+          <ThemeToggle t={t} />
         </div>
-        <h1 id="login-title">Connexion</h1>
+        <h1 id="login-title">Sign in</h1>
         <p>
-          Accès réservé à Jonathan. Aucune inscription publique n’est proposée.
+          Restricted to Jonathan. There is no public sign-up.
         </p>
         <AdminLoginForm />
       </section>

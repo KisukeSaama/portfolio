@@ -1,23 +1,24 @@
 import { describe, expect, it } from "vitest";
 import { defaults, projectFormSchema, slugify } from "~/lib/project-form";
-describe("éditeur projet", () => {
-  it("génère un slug stable avec accents", () =>
+
+describe("project editor", () => {
+  it("builds a stable slug from accented input", () =>
     expect(slugify("Mini réseau social !")).toBe("mini-reseau-social"));
-  it("refuse un brouillon incomplet", () => {
+  it("rejects an incomplete draft", () => {
     const result = projectFormSchema.safeParse(defaults());
     expect(result.success).toBe(false);
   });
-  it("refuse les slugs non sûrs", () => {
+  it("rejects unsafe slugs", () => {
     const value = {
       ...defaults(),
-      title: "Projet valide",
-      slug: "Projet Invalide",
-      shortDescription: "Une description courte suffisamment précise.",
+      title: "Valid project",
+      slug: "Invalid Project",
+      shortDescription: "A short description that is precise enough.",
       fullDescription:
-        "Une description complète suffisamment longue pour passer la validation.",
-      problem: "Un problème concret suffisamment détaillé.",
-      solution: "Une solution suffisamment détaillée.",
-      role: "Conception et développement du projet.",
+        "A full description long enough to pass every validation rule.",
+      problem: "A concrete problem with enough detail.",
+      solution: "A solution described with enough detail.",
+      role: "Project design and development.",
     };
     expect(projectFormSchema.safeParse(value).success).toBe(false);
   });

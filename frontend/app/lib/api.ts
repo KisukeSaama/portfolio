@@ -1,4 +1,9 @@
+import { defaultLocale } from "~/i18n/config";
+import { getDictionary } from "~/i18n";
 import type { ApiError } from "~/types/api";
+
+// Client-side transport failures are surfaced in the admin area, which is English-only.
+const t = getDictionary(defaultLocale);
 
 function baseUrl() {
   return process.env.NEXT_PUBLIC_API_BASE_URL || "/api/v1";
@@ -20,7 +25,7 @@ async function csrf() {
     credentials: "include",
   });
   if (!response.ok)
-    throw new Error("Impossible d’initialiser la protection de la requête.");
+    throw new Error(t.errors.csrf);
   const data = (await response.json()) as { token: string };
   csrfToken = data.token;
   return csrfToken;
@@ -52,7 +57,7 @@ export async function apiMutation<T>(path: string, init: RequestInit = {}) {
     } catch {
       payload = {
         code: "network_error",
-        message: "Le serveur n’a pas pu traiter la demande.",
+        message: t.errors.network,
         correlationId: "unknown",
       };
     }

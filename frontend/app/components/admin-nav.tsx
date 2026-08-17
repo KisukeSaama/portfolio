@@ -10,13 +10,18 @@ import {
 import { useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { defaultLocale } from "~/i18n/config";
+import { getDictionary } from "~/i18n";
 import { apiMutation, resetCsrf } from "~/lib/api";
+
+// The administration area is single-language; it always renders in the source language.
+const t = getDictionary(defaultLocale);
 import { ThemeToggle } from "./theme-toggle";
 
 const items = [
-  ["/admin", "Tableau de bord", LayoutDashboard],
-  ["/admin/projects", "Projets", FolderKanban],
-  ["/admin/audit", "Journal", FileClock],
+  ["/admin", "Dashboard", LayoutDashboard],
+  ["/admin/projects", "Projects", FolderKanban],
+  ["/admin/audit", "Log", FileClock],
 ] as const;
 function Links({ onNavigate }: { onNavigate?: () => void } = {}) {
   const pathname = usePathname();
@@ -51,7 +56,7 @@ export function LogoutButton() {
       onClick={() => void logout()}
     >
       <LogOut size={17} aria-hidden />
-      Déconnexion
+      Sign out
     </button>
   );
 }
@@ -62,11 +67,11 @@ export function AdminSidebar() {
         <span className="wordmark-mark" aria-hidden />
         Administration
       </Link>
-      <nav aria-label="Navigation administration">
+      <nav aria-label="Administration navigation">
         <Links />
       </nav>
       <div className="admin-sidebar-foot">
-        <ThemeToggle />
+        <ThemeToggle t={t} />
         <LogoutButton />
       </div>
     </aside>
@@ -82,16 +87,16 @@ export function AdminMobile() {
         Admin
       </Link>
       <details className="mobile-nav" ref={mobileMenu}>
-        <summary aria-label="Ouvrir le menu d’administration">
+        <summary aria-label="Open the administration menu">
           <Menu aria-hidden />
         </summary>
         <nav
           className="mobile-panel"
-          aria-label="Navigation administration mobile"
+          aria-label="Mobile administration navigation"
         >
           <Links onNavigate={closeMobileMenu} />
           <div className="mobile-actions">
-            <ThemeToggle />
+            <ThemeToggle t={t} />
             <LogoutButton />
           </div>
         </nav>

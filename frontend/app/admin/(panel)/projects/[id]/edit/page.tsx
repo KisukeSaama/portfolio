@@ -5,7 +5,7 @@ import { serverApi } from "~/lib/server-api";
 import type { Project } from "~/types/api";
 
 export const metadata: Metadata = {
-  title: "Modifier un projet — Administration",
+  title: "Edit a project — Administration",
 };
 export default async function EditProjectPage({
   params,
@@ -22,10 +22,10 @@ export default async function EditProjectPage({
     <>
       <header className="admin-head">
         <div>
-          <h1>Modifier {project.title}</h1>
+          <h1>Edit {project.title}</h1>
           <p>
-            Dernière modification :{" "}
-            {new Intl.DateTimeFormat("fr-FR", {
+            Last change:{" "}
+            {new Intl.DateTimeFormat("en-US", {
               dateStyle: "medium",
               timeStyle: "short",
             }).format(new Date(project.updatedAt))}

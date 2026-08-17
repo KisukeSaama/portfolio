@@ -6,8 +6,8 @@ import java.util.List;
 import org.hibernate.validator.constraints.URL;
 
 public record ProjectWriteRequest(
-    @NotBlank @Size(max=120) @Pattern(regexp="^[^<>]+$",message="Le titre contient des caractères non autorisés.") String title,
-    @NotBlank @Size(max=120) @Pattern(regexp="^[a-z0-9]+(?:-[a-z0-9]+)*$",message="Le slug doit utiliser des minuscules, chiffres et tirets.") String slug,
+    @NotBlank @Size(max=120) @Pattern(regexp="^[^<>]+$",message="Title contains characters that are not allowed.") String title,
+    @NotBlank @Size(max=120) @Pattern(regexp="^[a-z0-9]+(?:-[a-z0-9]+)*$",message="Slug must use lowercase letters, digits and hyphens.") String slug,
     @NotBlank @Size(min=20,max=280) String shortDescription,
     @NotBlank @Size(min=40,max=10000) String fullDescription,
     @NotBlank @Size(min=20,max=5000) String problem,
