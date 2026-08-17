@@ -20,6 +20,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.session:spring-session-jdbc'
+    // Spring Boot 4 moved each integration's auto-configuration into its own module: without
+    // this one, flyway-core sits on the classpath and nothing ever runs a migration, so the
+    // first schema validation fails on an empty database.
+    implementation 'org.springframework.boot:spring-boot-flyway'
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-database-postgresql'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2'

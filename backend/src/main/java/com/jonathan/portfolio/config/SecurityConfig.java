@@ -1,6 +1,6 @@
 package com.jonathan.portfolio.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.jonathan.portfolio.common.api.ApiError;
 import jakarta.servlet.http.HttpServletResponse;
 import java.time.Duration;

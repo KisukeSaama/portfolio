@@ -20,6 +20,7 @@ portfolio/
 │       ├── auth/ user/ project/ media/
 │       ├── audit/ storage/ security/
 │       └── common/ config/
+├── deploy/                   # compose, chemins et env du déploiement GitLab CI
 ├── infra/reverse-proxy/      # routage / vers Next.js et /api vers Spring
 ├── scripts/                  # lanceur Gradle multiplateforme
 ├── docker-compose.dev.yml
@@ -246,6 +247,45 @@ docker compose --env-file .env -f docker-compose.prod.yml up -d --build
 La composition de production utilise des images multi-stage et des processus non-root lorsque possible. PostgreSQL n’est pas publié. Nginx expose le port 80 local ; terminer TLS dans le proxy de la plateforme ou ajouter les certificats HTTPS avant exposition publique. Vérifier ensuite `/actuator/health`, `/api/openapi`, `/robots.txt` et `/sitemap.xml`.
 
 Pour une base managée, remplacer l’hôte de `DATABASE_URL` et retirer le service PostgreSQL de la composition. Pour un stockage S3 managé, renseigner l’endpoint/région/bucket et ne jamais utiliser les identifiants MinIO de développement.
+
+## CI/CD GitLab
+
+Le pipeline suit le modèle du groupe DevOps (`docs/ci-cd-model.md`) : runner taggé `devops`, exécuteur Docker avec socket hôte, Traefik comme unique reverse proxy et chemins sous `/home/kisuke/`.
+
+| Étape         | Déclencheur                          | Comportement                                                    |
+| ------------- | ------------------------------------ | --------------------------------------------------------------- |
+| `test_*`      | `develop`, merge requests, tags `v*` | Lint, typecheck, Vitest, build Next.js et tests Gradle           |
+| `build`       | `develop`, tags `v*`                 | Construit et pousse `backend` et `web` dans le registre GitLab   |
+| `deploy_dev`  | `develop`                            | **Manuel** → `https://portfolio-d.kisukesaama.com`               |
+| `stop_dev`    | `develop`                            | Manuel, arrête la DEV                                            |
+| `deploy_prod` | tag `v*`                             | **Automatique** → `https://kisukesaama.com`                      |
+| `stop_prod`   | tag `v*`                             | Manuel, arrête la PROD                                           |
+
+La production est servie sur le domaine apex : le portfolio *est* `kisukesaama.com`. Le déploiement se déclenche uniquement par tag :
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+Le stack déployé (`deploy/compose.yml`) ne contient plus Nginx : Next.js réécrit déjà `/api/*` vers Spring Boot, et les en-têtes de sécurité sont posés par un middleware Traefik. `infra/reverse-proxy` reste la référence pour les compositions locales.
+
+Variables CI/CD à définir dans GitLab (scopées par environnement, protégées pour la production) :
+
+| Variable                        | Obligatoire | Usage                                    |
+| ------------------------------- | ----------- | ---------------------------------------- |
+| `PORTFOLIO_POSTGRES_PASSWORD`   | oui         | Mot de passe PostgreSQL du déploiement   |
+| `PORTFOLIO_S3_ENDPOINT`         | oui         | Endpoint S3 ou compatible                |
+| `PORTFOLIO_S3_ACCESS_KEY`       | oui         | Identifiant S3                           |
+| `PORTFOLIO_S3_SECRET_KEY`       | oui         | Secret S3                                |
+| `PORTFOLIO_S3_PUBLIC_BASE_URL`  | oui         | Base publique du stockage                |
+| `PORTFOLIO_S3_BUCKET`           | non         | Défaut `portfolio-media`                 |
+| `PORTFOLIO_S3_REGION`           | non         | Défaut `eu-west-3`                       |
+| `PORTFOLIO_POSTGRES_DB/_USER`   | non         | Défaut `portfolio`                       |
+| `PORTFOLIO_PROJECT_SEED_ENABLED`| non         | Défaut `true`                            |
+| `PORTFOLIO_CONTACT_EMAIL`       | non         | Adresse de contact                       |
+
+Le job de déploiement écrit `${DEPLOY_DIR}/{dev,prod}/app.env` en `600` à partir de ces variables : aucun secret n’est versionné. Le compte administrateur reste créé manuellement via `adminCli`, jamais par le pipeline.
 
 ## Checklist avant mise en ligne
 
