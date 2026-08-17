@@ -1,0 +1,60 @@
+spring:
+  application:
+    name: portfolio-backend
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/portfolio}
+    username: ${POSTGRES_USER:portfolio}
+    password: ${POSTGRES_PASSWORD:portfolio}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+  session:
+    jdbc:
+      initialize-schema: never
+    timeout: ${SESSION_TIMEOUT:12h}
+  servlet:
+    multipart:
+      max-file-size: 40MB
+      max-request-size: 42MB
+server:
+  forward-headers-strategy: ${SERVER_FORWARD_HEADERS_STRATEGY:framework}
+  servlet:
+    session:
+      cookie:
+        name: PORTFOLIO_SESSION
+        http-only: true
+        secure: ${SESSION_COOKIE_SECURE:false}
+        same-site: lax
+springdoc:
+  swagger-ui:
+    path: /api/docs
+  api-docs:
+    path: /api/openapi
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+app:
+  seed:
+    enabled: ${PROJECT_SEED_ENABLED:true}
+  storage:
+    bucket: ${S3_BUCKET:portfolio-media}
+    region: ${S3_REGION:eu-west-3}
+    endpoint: ${S3_ENDPOINT:http://localhost:9000}
+    access-key: ${S3_ACCESS_KEY:minioadmin}
+    secret-key: ${S3_SECRET_KEY:minioadmin}
+    public-base-url: ${S3_PUBLIC_BASE_URL:http://localhost:9000/portfolio-media}
+    max-image-bytes: 8388608
+    max-video-bytes: 41943040

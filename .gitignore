@@ -1,0 +1,16 @@
+.env
+.DS_Store
+node_modules/
+frontend/node_modules/
+frontend/build/
+frontend/.react-router/
+frontend/playwright-report/
+frontend/test-results/
+frontend/coverage/
+backend/.gradle/
+backend/build/
+infra/data/
+*.log
+*.tsbuildinfo
+.idea/
+.vscode/

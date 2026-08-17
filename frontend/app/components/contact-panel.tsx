@@ -1,0 +1,4 @@
+import { ArrowUpRight } from "lucide-react";
+import { Link } from "react-router";
+import { profile } from "~/content/profile";
+export function ContactPanel(){return <section className="section" aria-labelledby="contact-title"><div className="shell contact-panel"><div><h2 id="contact-title">Construisons la prochaine étape.</h2><p>Une alternance, un produit à faire avancer ou simplement une discussion sur une application utile : Jonathan est ouvert aux échanges professionnels.</p></div><div>{profile.email?<a className="button button-secondary" href={`mailto:${profile.email}`}>Écrire à Jonathan <ArrowUpRight size={18} aria-hidden/></a>:<><Link className="button button-secondary" to="/contact">Voir les moyens de contact</Link><p className="text-sm font-bold">Adresse de contact à renseigner.</p></>}</div></div></section>}
