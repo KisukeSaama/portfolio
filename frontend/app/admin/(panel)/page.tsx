@@ -1,17 +1,25 @@
-import { AlertCircle, ArrowRight, ImageOff, Plus } from "lucide-react";
+import { AlertCircle, ArrowRight, Plus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { count, publicationStatusLabels } from "~/lib/admin-labels";
 import { requireAdmin } from "~/lib/require-admin";
 import { serverApi } from "~/lib/server-api";
 import type { Dashboard } from "~/types/api";
 
-export const metadata: Metadata = { title: "Dashboard — Administration" };
+export const metadata: Metadata = { title: "Dashboard | Administration" };
 
 export default async function AdminDashboardPage() {
   await requireAdmin();
   const dashboard = await serverApi<Dashboard>("/admin/projects/dashboard", {
     authenticated: true,
   });
+  const gaps = [
+    dashboard.withoutCover > 0 &&
+      `${count(dashboard.withoutCover, "project")} without a cover image`,
+    dashboard.incomplete > 0 &&
+      `${count(dashboard.incomplete, "short description")} still to write`,
+  ].filter(Boolean);
+
   return (
     <>
       <header className="admin-head">
@@ -46,19 +54,12 @@ export default async function AdminDashboardPage() {
           <span>to complete</span>
         </div>
       </div>
-      {(dashboard.withoutCover > 0 || dashboard.incomplete > 0) && (
-        <div className="form-error" role="status">
-          <AlertCircle size={18} aria-hidden />{" "}
-          {dashboard.withoutCover > 0 && (
-            <span>
-              <ImageOff size={16} aria-hidden /> {dashboard.withoutCover}{" "}
-              project(s) without a cover.
-            </span>
-          )}{" "}
-          {dashboard.incomplete > 0 && (
-            <span>{dashboard.incomplete} short description(s).</span>
-          )}
-        </div>
+      {/* Work left to do, not a failure: it reads as a warning rather than an error. */}
+      {gaps.length > 0 && (
+        <p className="form-warning" role="status">
+          <AlertCircle size={17} aria-hidden />
+          <span>{gaps.join(". ")}.</span>
+        </p>
       )}
       <section className="admin-section">
         <div className="admin-section-head">
@@ -68,29 +69,48 @@ export default async function AdminDashboardPage() {
           </Link>
         </div>
         <div className="data-list">
-          {dashboard.recent.map((project) => (
-            <div className="data-row" key={project.id}>
-              <div className="data-title">
-                <Link href={`/admin/projects/${project.id}/edit`}>
-                  {project.title}
-                </Link>
-                <small>{project.slug}</small>
+          {dashboard.recent.length === 0 ? (
+            <p className="empty-state">
+              No project yet. Create the first one to start the portfolio.
+            </p>
+          ) : (
+            <>
+              <div className="data-head">
+                <span>Project</span>
+                <span>Publication</span>
+                <span>Order</span>
+                <span>Updated</span>
+                <span>Actions</span>
               </div>
-              <span data-label="State">{project.publicationStatus}</span>
-              <span data-label="Order">{project.displayOrder}</span>
-              <time data-label="Updated" dateTime={project.updatedAt}>
-                {new Intl.DateTimeFormat("en-US", {
-                  dateStyle: "medium",
-                }).format(new Date(project.updatedAt))}
-              </time>
-              <Link
-                className="button button-quiet"
-                href={`/admin/projects/${project.id}/edit`}
-              >
-                Edit
-              </Link>
-            </div>
-          ))}
+              {dashboard.recent.map((project) => (
+                <div className="data-row" key={project.id}>
+                  <div className="data-title">
+                    <Link href={`/admin/projects/${project.id}/edit`}>
+                      {project.title}
+                    </Link>
+                    <small>{project.slug}</small>
+                  </div>
+                  <span data-label="Publication">
+                    {publicationStatusLabels[project.publicationStatus]}
+                  </span>
+                  <span data-label="Order">{project.displayOrder}</span>
+                  <time data-label="Updated" dateTime={project.updatedAt}>
+                    {new Intl.DateTimeFormat("en-US", {
+                      dateStyle: "medium",
+                    }).format(new Date(project.updatedAt))}
+                  </time>
+                  <div className="row-actions" data-label="Actions">
+                    <Link
+                      className="button button-quiet"
+                      href={`/admin/projects/${project.id}/edit`}
+                    >
+                      Edit
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </>
+          )}
         </div>
       </section>
     </>

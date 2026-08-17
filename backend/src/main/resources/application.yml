@@ -23,6 +23,12 @@ spring:
     multipart:
       max-file-size: 40MB
       max-request-size: 42MB
+  data:
+    web:
+      pageable:
+        # Without a ceiling, ?size=1000000 turns a paged admin listing into a full-table read.
+        max-page-size: 100
+        default-page-size: 20
 server:
   forward-headers-strategy: ${SERVER_FORWARD_HEADERS_STRATEGY:framework}
   servlet:
@@ -47,6 +53,10 @@ management:
       probes:
         enabled: true
 app:
+  security:
+    # Number of reverse proxies between the internet and this service. It decides which
+    # X-Forwarded-For entry is the real client: everything left of that is caller-supplied.
+    trusted-proxy-count: ${TRUSTED_PROXY_COUNT:1}
   seed:
     enabled: ${PROJECT_SEED_ENABLED:true}
   storage:

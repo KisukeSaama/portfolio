@@ -9,7 +9,7 @@ import type { Session } from "~/types/api";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
-  title: "Sign in — Administration",
+  title: "Sign in | Administration",
   robots: { index: false, follow: false },
 };
 
@@ -23,7 +23,7 @@ export default async function AdminLoginPage() {
   return (
     <main id="main-content" className="login-page">
       <section className="login-panel" aria-labelledby="login-title">
-        <div className="flex items-center justify-between">
+        <div className="login-head">
           <span className="wordmark">
             <span className="wordmark-mark" aria-hidden />
             Administration
@@ -31,9 +31,7 @@ export default async function AdminLoginPage() {
           <ThemeToggle t={t} />
         </div>
         <h1 id="login-title">Sign in</h1>
-        <p>
-          Restricted to Jonathan. There is no public sign-up.
-        </p>
+        <p>Restricted to Jonathan. There is no public sign-up.</p>
         <AdminLoginForm />
       </section>
     </main>

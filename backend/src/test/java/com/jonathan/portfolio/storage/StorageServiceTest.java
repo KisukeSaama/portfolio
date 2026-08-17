@@ -28,6 +28,18 @@ class StorageServiceTest {
         assertThat(Files.exists(root.resolve(stored.key()))).isFalse();
     }
 
+    @Test void rejectsContentThatDoesNotMatchTheDeclaredType(@TempDir Path root){
+        // Both the filename and the Content-Type are caller-supplied, so a well-dressed payload
+        // gets that far; only the bytes give it away.
+        var file=new MockMultipartFile("file","cover.webp","image/webp","<script>alert(1)</script>".getBytes());
+        assertThatThrownBy(()->service(root).store(file)).isInstanceOf(InvalidOperationException.class).hasMessageContaining("does not match");
+    }
+
+    @Test void rejectsAnImageWearingAnotherImagesType(@TempDir Path root)throws Exception{
+        var file=new MockMultipartFile("file","cover.jpg","image/jpeg",pngBytes());
+        assertThatThrownBy(()->service(root).store(file)).isInstanceOf(InvalidOperationException.class).hasMessageContaining("does not match");
+    }
+
     @Test void rejectsKeysEscapingTheStorageRoot(@TempDir Path root){
         assertThatThrownBy(()->service(root).load("../../etc/passwd")).isInstanceOf(InvalidOperationException.class);
     }

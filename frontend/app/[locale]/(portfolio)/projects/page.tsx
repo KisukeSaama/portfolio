@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { FeaturedProjects, SecondaryProjects } from "~/components/project-list";
 import { getDictionary, localePath } from "~/i18n";
 import type { Locale } from "~/i18n/config";
-import { serverApi } from "~/lib/server-api";
+import { serverApiOrNull } from "~/lib/server-api";
 import type { Project } from "~/types/api";
 
 export const dynamic = "force-dynamic";
@@ -24,15 +24,13 @@ export async function generateMetadata({
 export default async function ProjectsPage({ params }: LocaleParams) {
   const { locale } = await params;
   const t = getDictionary(locale);
-  const projects = await serverApi<Project[]>("/public/projects", {
+  const projects = await serverApiOrNull<Project[]>("/public/projects", {
     revalidate: 0,
   });
-  const primary = projects.filter(
-    (project) => project.featureLevel === "PRIMARY",
-  );
-  const secondary = projects.filter(
-    (project) => project.featureLevel === "SECONDARY",
-  );
+  const primary =
+    projects?.filter((project) => project.featureLevel === "PRIMARY") ?? [];
+  const secondary =
+    projects?.filter((project) => project.featureLevel === "SECONDARY") ?? [];
   return (
     <>
       <header className="page-hero">
@@ -43,9 +41,28 @@ export default async function ProjectsPage({ params }: LocaleParams) {
       </header>
       <section className="section">
         <div className="shell">
-          <FeaturedProjects projects={primary} locale={locale} t={t} />
-          <h2 className="section-heading">{t.projectsPage.otherGrounds}</h2>
-          <SecondaryProjects projects={secondary} locale={locale} t={t} />
+          {projects ? (
+            <>
+              <FeaturedProjects projects={primary} locale={locale} t={t} />
+              {/* The heading only earns its place when there is something under it. */}
+              {secondary.length > 0 && (
+                <>
+                  <h2 className="section-heading">
+                    {t.projectsPage.otherGrounds}
+                  </h2>
+                  <SecondaryProjects
+                    projects={secondary}
+                    locale={locale}
+                    t={t}
+                  />
+                </>
+              )}
+            </>
+          ) : (
+            <p className="notice" role="status">
+              {t.home.projectsUnavailable}
+            </p>
+          )}
         </div>
       </section>
     </>

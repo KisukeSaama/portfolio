@@ -22,6 +22,8 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       SESSION_COOKIE_SECURE: "true"
+      # nginx is the only hop, and it overwrites X-Forwarded-For rather than appending to it.
+      TRUSTED_PROXY_COUNT: "1"
       MEDIA_DIR: /var/lib/portfolio/media
       PROJECT_SEED_ENABLED: ${PROJECT_SEED_ENABLED:-true}
     volumes: ["portfolio-media-prod:/var/lib/portfolio/media"]

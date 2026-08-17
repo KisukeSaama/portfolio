@@ -1,5 +1,5 @@
 ---
-target: portfolio public — accueil
+target: portfolio public, accueil
 total_score: 34
 p0_count: 0
 p1_count: 0

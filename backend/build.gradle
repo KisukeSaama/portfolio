@@ -20,6 +20,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.session:spring-session-jdbc'
+    // Same split as flyway below: without this module nothing auto-configures Spring Session, so
+    // spring-session-jdbc sits on the classpath unused and sessions stay in the servlet container's
+    // memory. Nothing fails, it just quietly stops being true that sessions live in PostgreSQL, and
+    // the admin CLI's "DELETE FROM SPRING_SESSION" stops revoking anything.
+    implementation 'org.springframework.boot:spring-boot-session-jdbc'
     // Spring Boot 4 moved each integration's auto-configuration into its own module: without
     // this one, flyway-core sits on the classpath and nothing ever runs a migration, so the
     // first schema validation fails on an empty database.

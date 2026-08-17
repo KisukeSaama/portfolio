@@ -6,11 +6,11 @@ brand
 
 ## Users
 
-The portfolio speaks to recruiters, technical leads and product teams evaluating a full-stack profile for an apprenticeship or a collaboration. They need to grasp quickly who Jonathan is, how he turns a concrete problem into an application, and how far his autonomy goes. The administration panel is a secondary surface in the `product` register, reserved for Jonathan.
+The portfolio speaks to recruiters, technical leads and hiring managers assessing a junior Java profile for a 14-month apprenticeship starting September 2026. A recruiter needs the contract terms in ten seconds. A technical lead needs to see decisions, not a technology list. Both need to know what Jonathan cannot do yet. The administration panel is a secondary surface in the `product` register, reserved for Jonathan.
 
 ## Product Purpose
 
-Present Jonathan Blanchard as a full-stack developer and application builder — human before technical. Personality, method and journey carry the narrative; Episort, Janus, Overkill and the mini social network act as concrete proof. The Next.js frontend makes that narrative public, and the Spring Boot backend keeps project management durable, secure and administrable.
+Present Jonathan Blanchard as a Java and Spring Boot developer who ships and then operates what he ships. The narrative is carried by three things: a career change made on purpose, decisions he would defend in review, and an honest statement of the experience he lacks. Janus and Episort are the proof, and they are connected: Episort reaches TMDB through Janus. Overkill and the mini social network are secondary, and stand for team and learning work. The Next.js frontend makes that narrative public, and the Spring Boot backend keeps project management durable, secure and administrable.
 
 ## Languages
 

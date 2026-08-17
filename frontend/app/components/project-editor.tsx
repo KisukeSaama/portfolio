@@ -21,7 +21,16 @@ import {
   type ProjectFormValues,
 } from "~/lib/project-form";
 import type { Project } from "~/types/api";
+import { publicationStatusLabels } from "~/lib/admin-labels";
 import { MediaManager } from "./media-manager";
+
+/**
+ * The media manager owns two forms of its own, and a form cannot be nested in another form. So the
+ * project fields live in this form, the media section sits outside it, and the action bar reaches
+ * back in through the `form` attribute. Nesting them produced invalid markup and a hydration error
+ * on every editor load.
+ */
+const FORM_ID = "project-editor-fields";
 
 function Field({
   name,
@@ -65,7 +74,7 @@ function Field({
           }
           {...register(name)}
         />
-      )}{" "}
+      )}
       {help && !error && (
         <span id={`${id}-help`} className="field-help">
           {help}
@@ -123,11 +132,7 @@ export function ProjectEditor({ project }: { project?: Project }) {
       const link = target.closest("a[href]");
       if (!(link instanceof HTMLAnchorElement) || link.target === "_blank")
         return;
-      if (
-        !window.confirm(
-          "Some changes are not saved. Leave this page?",
-        )
-      ) {
+      if (!window.confirm("Some changes are not saved. Leave this page?")) {
         event.preventDefault();
         event.stopPropagation();
       }
@@ -167,11 +172,7 @@ export function ProjectEditor({ project }: { project?: Project }) {
     }
   }
   return (
-    <form
-      className="editor-form"
-      onSubmit={(event) => void handleSubmit(submit)(event)}
-      noValidate
-    >
+    <div className="editor-form">
       {serverError && (
         <p className="form-error" role="alert">
           {serverError}
@@ -182,170 +183,276 @@ export function ProjectEditor({ project }: { project?: Project }) {
           {notice}
         </p>
       )}
-      <section className="editor-section">
-        <h2>General information</h2>
-        <div className="field-grid">
-          <Field
-            name="title"
-            label="Title"
-            register={register}
-            errors={errors}
-          />
-          <div
-            onFocus={() => {
-              slugEdited.current = true;
-            }}
-          >
+      <form
+        id={FORM_ID}
+        className="editor-fields"
+        onSubmit={(event) => void handleSubmit(submit)(event)}
+        noValidate
+      >
+        <section className="editor-section">
+          <h2>General information</h2>
+          <div className="field-grid">
             <Field
-              name="slug"
-              label="Slug"
+              name="title"
+              label="Title"
               register={register}
               errors={errors}
-              help="Unique, editable before publication."
+            />
+            <div
+              onFocus={() => {
+                slugEdited.current = true;
+              }}
+            >
+              <Field
+                name="slug"
+                label="Slug"
+                register={register}
+                errors={errors}
+                help="Unique, editable before publication."
+              />
+            </div>
+            <Field
+              name="shortDescription"
+              label="Short description"
+              register={register}
+              errors={errors}
+              textarea
+              className="field-span"
+            />
+            <Field
+              name="fullDescription"
+              label="Full description"
+              register={register}
+              errors={errors}
+              textarea
+              className="field-span"
+            />
+            <Field
+              name="role"
+              label="Jonathan's role"
+              register={register}
+              errors={errors}
+              textarea
+              className="field-span"
+            />
+            <div className="field">
+              <label htmlFor="status">Project state</label>
+              <select id="status" className="select" {...register("status")}>
+                <option value="CONCEPT">Concept</option>
+                <option value="IN_PROGRESS">In development</option>
+                <option value="MAINTAINED">Maintained</option>
+                <option value="COMPLETED">Completed</option>
+              </select>
+            </div>
+            <div className="field">
+              <label htmlFor="projectType">Type</label>
+              <select
+                id="projectType"
+                className="select"
+                {...register("projectType")}
+              >
+                <option value="PERSONAL">Personal</option>
+                <option value="TEAM">Team</option>
+                <option value="LEARNING">Learning</option>
+              </select>
+            </div>
+          </div>
+        </section>
+        <section className="editor-section">
+          <h2>Problem and solution</h2>
+          <div className="field-grid">
+            <Field
+              name="problem"
+              label="Concrete problem"
+              register={register}
+              errors={errors}
+              textarea
+              className="field-span"
+            />
+            <Field
+              name="context"
+              label="Context"
+              register={register}
+              errors={errors}
+              textarea
+            />
+            <Field
+              name="solution"
+              label="Solution"
+              register={register}
+              errors={errors}
+              textarea
+            />
+            <Field
+              name="objectives"
+              label="Objectives (one per line)"
+              register={register}
+              errors={errors}
+              textarea
+              className="field-span"
             />
           </div>
-          <Field
-            name="shortDescription"
-            label="Short description"
-            register={register}
-            errors={errors}
-            textarea
-            className="field-span"
-          />
-          <Field
-            name="fullDescription"
-            label="Full description"
-            register={register}
-            errors={errors}
-            textarea
-            className="field-span"
-          />
-          <Field
-            name="role"
-            label="Jonathan's role"
-            register={register}
-            errors={errors}
-            textarea
-            className="field-span"
-          />
-          <div className="field">
-            <label htmlFor="status">Project state</label>
-            <select id="status" className="select" {...register("status")}>
-              <option value="CONCEPT">Concept</option>
-              <option value="IN_PROGRESS">In development</option>
-              <option value="MAINTAINED">Maintained</option>
-              <option value="COMPLETED">Completed</option>
-            </select>
+        </section>
+        <section className="editor-section">
+          <h2>Case study</h2>
+          <div className="field-grid">
+            <Field
+              name="architecture"
+              label="Architecture"
+              register={register}
+              errors={errors}
+              textarea
+              className="field-span"
+            />
+            <Field
+              name="decisions"
+              label="Key decisions (one per line)"
+              register={register}
+              errors={errors}
+              textarea
+            />
+            <Field
+              name="challenges"
+              label="Challenges (one per line)"
+              register={register}
+              errors={errors}
+              textarea
+            />
+            <Field
+              name="learnings"
+              label="Learnings (one per line)"
+              register={register}
+              errors={errors}
+              textarea
+            />
+            <Field
+              name="nextSteps"
+              label="Next steps (one per line)"
+              register={register}
+              errors={errors}
+              textarea
+            />
           </div>
-          <div className="field">
-            <label htmlFor="projectType">Type</label>
-            <select
-              id="projectType"
-              className="select"
-              {...register("projectType")}
-            >
-              <option value="PERSONAL">Personal</option>
-              <option value="TEAM">Team</option>
-              <option value="LEARNING">Learning</option>
-            </select>
+        </section>
+        <section className="editor-section">
+          <h2>Technologies and features</h2>
+          <div className="field-grid">
+            <Field
+              name="technologies"
+              label="Technologies (one per line)"
+              register={register}
+              errors={errors}
+              textarea
+            />
+            <Field
+              name="features"
+              label="Features (one per line)"
+              register={register}
+              errors={errors}
+              textarea
+            />
           </div>
-        </div>
-      </section>
-      <section className="editor-section">
-        <h2>Problem and solution</h2>
-        <div className="field-grid">
-          <Field
-            name="problem"
-            label="Concrete problem"
-            register={register}
-            errors={errors}
-            textarea
-            className="field-span"
-          />
-          <Field
-            name="context"
-            label="Context"
-            register={register}
-            errors={errors}
-            textarea
-          />
-          <Field
-            name="solution"
-            label="Solution"
-            register={register}
-            errors={errors}
-            textarea
-          />
-          <Field
-            name="objectives"
-            label="Objectives — one per line"
-            register={register}
-            errors={errors}
-            textarea
-            className="field-span"
-          />
-        </div>
-      </section>
-      <section className="editor-section">
-        <h2>Case study</h2>
-        <div className="field-grid">
-          <Field
-            name="architecture"
-            label="Architecture"
-            register={register}
-            errors={errors}
-            textarea
-            className="field-span"
-          />
-          <Field
-            name="decisions"
-            label="Key decisions — one per line"
-            register={register}
-            errors={errors}
-            textarea
-          />
-          <Field
-            name="challenges"
-            label="Challenges — one per line"
-            register={register}
-            errors={errors}
-            textarea
-          />
-          <Field
-            name="learnings"
-            label="Learnings — one per line"
-            register={register}
-            errors={errors}
-            textarea
-          />
-          <Field
-            name="nextSteps"
-            label="Next steps — one per line"
-            register={register}
-            errors={errors}
-            textarea
-          />
-        </div>
-      </section>
-      <section className="editor-section">
-        <h2>Technologies and features</h2>
-        <div className="field-grid">
-          <Field
-            name="technologies"
-            label="Technologies — one per line"
-            register={register}
-            errors={errors}
-            textarea
-          />
-          <Field
-            name="features"
-            label="Features — one per line"
-            register={register}
-            errors={errors}
-            textarea
-          />
-        </div>
-      </section>
+        </section>
+        <section className="editor-section">
+          <h2>Links</h2>
+          <div className="field-grid">
+            <Field
+              name="githubUrl"
+              label="GitHub URL (optional)"
+              register={register}
+              errors={errors}
+            />
+            <Field
+              name="demoUrl"
+              label="Demo URL (optional)"
+              register={register}
+              errors={errors}
+            />
+          </div>
+        </section>
+        <section className="editor-section">
+          <h2>Publication and hierarchy</h2>
+          <div className="field-grid">
+            <div className="field">
+              <label htmlFor="featureLevel">Feature level</label>
+              <select
+                id="featureLevel"
+                className="select"
+                {...register("featureLevel")}
+              >
+                <option value="PRIMARY">Primary</option>
+                <option value="SECONDARY">Secondary</option>
+              </select>
+            </div>
+            <div className="field">
+              <label htmlFor="displayOrder">Display order</label>
+              <input
+                id="displayOrder"
+                type="number"
+                min="0"
+                max="9999"
+                className="input"
+                {...register("displayOrder", { valueAsNumber: true })}
+              />
+              {errors.displayOrder && (
+                <span className="field-error">
+                  {errors.displayOrder.message}
+                </span>
+              )}
+            </div>
+            <div className="field">
+              <label htmlFor="visibility">Target visibility</label>
+              <select
+                id="visibility"
+                className="select"
+                {...register("visibility")}
+              >
+                <option value="PRIVATE">Private</option>
+                <option value="PUBLIC">Public</option>
+              </select>
+            </div>
+            <label className="checkbox">
+              <input type="checkbox" {...register("featured")} />
+              Featured project
+            </label>
+          </div>
+          {project && (
+            <p className="field-help">
+              Current editorial state:{" "}
+              <strong>
+                {publicationStatusLabels[project.publicationStatus]}
+              </strong>
+              . Publish or archive it from the project list.
+            </p>
+          )}
+        </section>
+        <section className="editor-section">
+          <h2>SEO</h2>
+          <div className="field-grid">
+            <Field
+              name="seoTitle"
+              label="SEO title (70 characters maximum)"
+              register={register}
+              errors={errors}
+            />
+            <Field
+              name="seoDescription"
+              label="SEO description (170 characters maximum)"
+              register={register}
+              errors={errors}
+              textarea
+            />
+            <Field
+              name="openGraphImageUrl"
+              label="Open Graph image (URL)"
+              register={register}
+              errors={errors}
+              className="field-span"
+            />
+          </div>
+        </section>
+      </form>
+
       <section className="editor-section">
         <h2>Media</h2>
         {project ? (
@@ -356,102 +463,13 @@ export function ProjectEditor({ project }: { project?: Project }) {
           </p>
         )}
       </section>
-      <section className="editor-section">
-        <h2>Links</h2>
-        <div className="field-grid">
-          <Field
-            name="githubUrl"
-            label="GitHub URL (optional)"
-            register={register}
-            errors={errors}
-          />
-          <Field
-            name="demoUrl"
-            label="Demo URL (optional)"
-            register={register}
-            errors={errors}
-          />
-        </div>
-      </section>
-      <section className="editor-section">
-        <h2>Publication and hierarchy</h2>
-        <div className="field-grid">
-          <div className="field">
-            <label htmlFor="featureLevel">Feature level</label>
-            <select
-              id="featureLevel"
-              className="select"
-              {...register("featureLevel")}
-            >
-              <option value="PRIMARY">Primary</option>
-              <option value="SECONDARY">Secondary</option>
-            </select>
-          </div>
-          <div className="field">
-            <label htmlFor="displayOrder">Display order</label>
-            <input
-              id="displayOrder"
-              type="number"
-              min="0"
-              max="9999"
-              className="input"
-              {...register("displayOrder", { valueAsNumber: true })}
-            />
-            {errors.displayOrder && (
-              <span className="field-error">{errors.displayOrder.message}</span>
-            )}
-          </div>
-          <div className="field">
-            <label htmlFor="visibility">Target visibility</label>
-            <select
-              id="visibility"
-              className="select"
-              {...register("visibility")}
-            >
-              <option value="PRIVATE">Private</option>
-              <option value="PUBLIC">Public</option>
-            </select>
-          </div>
-          <label className="checkbox">
-            <input type="checkbox" {...register("featured")} />
-            Featured project
-          </label>
-        </div>
-        {project && (
-          <p className="field-help">
-            Current editorial state:{" "}
-            <strong>{project.publicationStatus}</strong>. Publish or archive it
-            from the project list.
-          </p>
-        )}
-      </section>
-      <section className="editor-section">
-        <h2>SEO</h2>
-        <div className="field-grid">
-          <Field
-            name="seoTitle"
-            label="SEO title — 70 characters maximum"
-            register={register}
-            errors={errors}
-          />
-          <Field
-            name="seoDescription"
-            label="SEO description — 170 characters maximum"
-            register={register}
-            errors={errors}
-            textarea
-          />
-          <Field
-            name="openGraphImageUrl"
-            label="Open Graph image (URL)"
-            register={register}
-            errors={errors}
-            className="field-span"
-          />
-        </div>
-      </section>
+
       <div className="editor-actions">
-        <button className="button button-primary" disabled={isSubmitting}>
+        <button
+          form={FORM_ID}
+          className="button button-primary"
+          disabled={isSubmitting}
+        >
           <Save size={17} aria-hidden />
           {isSubmitting ? "Saving…" : "Save"}
         </button>
@@ -466,11 +484,9 @@ export function ProjectEditor({ project }: { project?: Project }) {
           </Link>
         )}
         <span className="unsaved" aria-live="polite">
-          {isDirty
-            ? "Unsaved changes"
-            : "All changes are saved"}
+          {isDirty ? "Unsaved changes" : "All changes are saved"}
         </span>
       </div>
-    </form>
+    </div>
   );
 }

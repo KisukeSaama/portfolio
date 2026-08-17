@@ -18,3 +18,7 @@ backend/data/
 *.tsbuildinfo
 .idea/
 .vscode/
+.claude/
+.codex/
+.impeccable/
+CV_Jonathan_Blanchard.pdf

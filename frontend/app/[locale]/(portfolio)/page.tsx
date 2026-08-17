@@ -1,5 +1,6 @@
 import { ArrowRight, FileText } from "lucide-react";
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 import { ContactPanel } from "~/components/contact-panel";
@@ -7,7 +8,9 @@ import { FeaturedProjects, SecondaryProjects } from "~/components/project-list";
 import { profile } from "~/content/profile";
 import { getDictionary, localePath } from "~/i18n";
 import type { Locale } from "~/i18n/config";
-import { serverApi } from "~/lib/server-api";
+import { NONCE_HEADER } from "~/lib/csp";
+import { jsonLd } from "~/lib/json-ld";
+import { serverApiOrNull } from "~/lib/server-api";
 import type { Project } from "~/types/api";
 
 export const dynamic = "force-dynamic";
@@ -29,15 +32,14 @@ export async function generateMetadata({
 export default async function HomePage({ params }: LocaleParams) {
   const { locale } = await params;
   const t = getDictionary(locale);
-  const projects = await serverApi<Project[]>("/public/projects", {
+  const nonce = (await headers()).get(NONCE_HEADER) ?? undefined;
+  const projects = await serverApiOrNull<Project[]>("/public/projects", {
     revalidate: 0,
   });
-  const primary = projects.filter(
-    (project) => project.featureLevel === "PRIMARY",
-  );
-  const secondary = projects.filter(
-    (project) => project.featureLevel === "SECONDARY",
-  );
+  const primary =
+    projects?.filter((project) => project.featureLevel === "PRIMARY") ?? [];
+  const secondary =
+    projects?.filter((project) => project.featureLevel === "SECONDARY") ?? [];
 
   return (
     <>
@@ -50,27 +52,21 @@ export default async function HomePage({ params }: LocaleParams) {
             <p className="hero-availability">{t.profile.availability}</p>
             <div className="hero-actions">
               <Link
-                href={localePath(locale, "/about")}
+                href={localePath(locale, "/contact")}
                 className="button button-primary"
               >
-                {t.home.discoverApproach} <ArrowRight size={18} aria-hidden />
+                {t.home.contactMe} <ArrowRight size={18} aria-hidden />
               </Link>
-              {profile.cvAvailable ? (
+              {profile.cvAvailable && (
                 <a
                   href={profile.cvUrl}
                   className="button button-secondary"
                   target="_blank"
                   rel="noreferrer"
+                  hrefLang={profile.cvLanguage}
                 >
                   <FileText size={18} aria-hidden /> {t.home.viewResume}
                 </a>
-              ) : (
-                <Link
-                  href={localePath(locale, "/contact")}
-                  className="button button-secondary"
-                >
-                  {t.home.contactMe}
-                </Link>
               )}
             </div>
           </div>
@@ -83,6 +79,28 @@ export default async function HomePage({ params }: LocaleParams) {
               priority
               sizes="(max-width: 760px) 82vw, 38vw"
             />
+            {!profile.portraitAvailable && (
+              <p className="portrait-note">{t.profile.portraitNote}</p>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <section className="section-compact" aria-labelledby="availability-title">
+        <div className="shell">
+          <div className="availability-card">
+            <div className="availability-intro">
+              <h2 id="availability-title">{t.availability.title}</h2>
+              <p>{t.availability.lede}</p>
+            </div>
+            <dl className="availability-facts">
+              {t.availability.facts.map((fact) => (
+                <div className="availability-fact" key={fact.label}>
+                  <dt>{fact.label}</dt>
+                  <dd>{fact.value}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
         </div>
       </section>
@@ -117,51 +135,30 @@ export default async function HomePage({ params }: LocaleParams) {
         </div>
       </section>
 
-      <section className="section" aria-labelledby="journey-title">
-        <div className="shell">
-          <h2 id="journey-title" className="section-heading">
-            {t.home.journeyTitle}
-          </h2>
-          <ol className="journey-list">
-            {t.journey.map((item, index) => (
-              <li className="journey-item" key={item.title}>
-                <span className="journey-period">{item.period}</span>
-                <div>
-                  <h3>{item.title}</h3>
-                  <p>{item.description}</p>
-                  {index === 0 && (
-                    <span className="placeholder-note">
-                      {t.home.journeyPlaceholder}
-                    </span>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ol>
-          <p>
-            <Link href={localePath(locale, "/journey")} className="text-link">
-              {t.home.fullJourney} <ArrowRight size={16} aria-hidden />
-            </Link>
-          </p>
-        </div>
-      </section>
-
       <section className="section" aria-labelledby="projects-title">
         <div className="shell">
           <h2 id="projects-title" className="section-heading">
             {t.home.projectsTitle}
           </h2>
           <p className="section-lede">{t.home.projectsLede}</p>
-          <FeaturedProjects projects={primary} locale={locale} t={t} />
-          <SecondaryProjects projects={secondary} locale={locale} t={t} />
-          <p>
-            <Link
-              href={localePath(locale, "/projects")}
-              className="button button-secondary"
-            >
-              {t.home.allProjects}
-            </Link>
-          </p>
+          {projects ? (
+            <>
+              <FeaturedProjects projects={primary} locale={locale} t={t} />
+              <SecondaryProjects projects={secondary} locale={locale} t={t} />
+              <p>
+                <Link
+                  href={localePath(locale, "/projects")}
+                  className="button button-secondary"
+                >
+                  {t.home.allProjects}
+                </Link>
+              </p>
+            </>
+          ) : (
+            <p className="notice" role="status">
+              {t.home.projectsUnavailable}
+            </p>
+          )}
         </div>
       </section>
 
@@ -184,16 +181,72 @@ export default async function HomePage({ params }: LocaleParams) {
           </div>
         </div>
       </section>
+
+      <section className="section" aria-labelledby="journey-title">
+        <div className="shell">
+          <h2 id="journey-title" className="section-heading">
+            {t.home.journeyTitle}
+          </h2>
+          <ol className="journey-list">
+            {t.journey.map((item) => (
+              <li className="journey-item" key={item.title}>
+                <span className="journey-period">{item.period}</span>
+                <div>
+                  <h3>{item.title}</h3>
+                  <p className="journey-org">{item.org}</p>
+                  <p>{item.description}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+          <p>
+            <Link href={localePath(locale, "/journey")} className="text-link">
+              {t.home.fullJourney} <ArrowRight size={16} aria-hidden />
+            </Link>
+          </p>
+        </div>
+      </section>
+
+      <section className="section-compact" aria-labelledby="ai-note-title">
+        <div className="shell">
+          <aside className="note-card">
+            <h2 id="ai-note-title">{t.aiNote.title}</h2>
+            <p>{t.aiNote.body}</p>
+          </aside>
+        </div>
+      </section>
+
       <ContactPanel locale={locale} t={t} />
       <script
         type="application/ld+json"
+        nonce={nonce}
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: jsonLd({
             "@context": "https://schema.org",
             "@type": "Person",
             name: profile.name,
             jobTitle: t.site.jobTitle,
             description: t.profile.tagline,
+            email: `mailto:${profile.email}`,
+            telephone: profile.phoneHref.replace("tel:", ""),
+            sameAs: [profile.githubUrl, profile.linkedinUrl],
+            address: {
+              "@type": "PostalAddress",
+              addressLocality: "Paris",
+              addressCountry: "FR",
+            },
+            alumniOf: {
+              "@type": "EducationalOrganization",
+              name: "Web@cadémie by EPITECH",
+            },
+            knowsAbout: t.skillGroups.flatMap((group) => group.skills),
+            knowsLanguage: t.languages.items.map((item) => item.name),
+            seeks: {
+              "@type": "Demand",
+              name: t.availability.facts
+                .map((fact) => `${fact.label}: ${fact.value}`)
+                .join(". "),
+            },
           }),
         }}
       />

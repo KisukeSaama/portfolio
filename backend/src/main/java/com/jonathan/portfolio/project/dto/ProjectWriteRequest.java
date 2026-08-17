@@ -28,9 +28,17 @@ public record ProjectWriteRequest(
     @NotNull @Size(max=30) List<@NotBlank @Size(max=800) String> challenges,
     @NotNull @Size(max=30) List<@NotBlank @Size(max=800) String> learnings,
     @NotNull @Size(max=30) List<@NotBlank @Size(max=800) String> nextSteps,
-    @URL @Size(max=2048) String githubUrl,
-    @URL @Size(max=2048) String demoUrl,
+    @URL @Pattern(regexp=WEB_URL,message=WEB_URL_MESSAGE) @Size(max=2048) String githubUrl,
+    @URL @Pattern(regexp=WEB_URL,message=WEB_URL_MESSAGE) @Size(max=2048) String demoUrl,
     @Size(max=70) String seoTitle,
     @Size(max=170) String seoDescription,
-    @URL @Size(max=2048) String openGraphImageUrl
-) {}
+    @URL @Pattern(regexp=WEB_URL,message=WEB_URL_MESSAGE) @Size(max=2048) String openGraphImageUrl
+) {
+    /**
+     * These end up in {@code href} and {@code src} attributes on the public site. Hibernate's
+     * {@code @URL} accepts every scheme the JDK has a handler for, so on its own it lets through
+     * {@code file:} and {@code jar:} URLs; the site only ever needs http and https.
+     */
+    public static final String WEB_URL = "^(?:https?://[^\\s<>\"']+)?$";
+    static final String WEB_URL_MESSAGE = "Enter an http or https URL.";
+}

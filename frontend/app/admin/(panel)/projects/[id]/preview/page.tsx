@@ -1,9 +1,10 @@
 import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ProjectMedia } from "~/components/project-media";
+import { CaseIntro, CaseStudyBody } from "~/components/case-study";
 import { defaultLocale } from "~/i18n/config";
 import { getDictionary } from "~/i18n";
+import { publicationStatusLabels } from "~/lib/admin-labels";
 import { requireAdmin } from "~/lib/require-admin";
 import { serverApi } from "~/lib/server-api";
 import type { Project } from "~/types/api";
@@ -25,12 +26,12 @@ export default async function AdminPreviewPage({
     `/admin/projects/${encodeURIComponent(id)}/preview`,
     { authenticated: true, notFoundOn404: true },
   );
-  const cover = project.media.find((media) => media.type === "COVER");
+
   return (
     <>
       <div className="draft-banner">
-        Private preview · {project.publicationStatus} · visible only with an
-        ADMIN session
+        Private preview · {publicationStatusLabels[project.publicationStatus]} ·
+        visible only with an administrator session
       </div>
       <article>
         <header className="case-header">
@@ -43,54 +44,12 @@ export default async function AdminPreviewPage({
               Back to the editor
             </Link>
             <h1>{project.title}</h1>
-            <div className="case-intro">
-              <p>{project.fullDescription}</p>
-              <dl className="case-facts">
-                <div>
-                  <dt>Status</dt>
-                  <dd>{project.status}</dd>
-                </div>
-                <div>
-                  <dt>Type</dt>
-                  <dd>{project.projectType}</dd>
-                </div>
-                <div>
-                  <dt>Role</dt>
-                  <dd>{project.role}</dd>
-                </div>
-              </dl>
-            </div>
+            <CaseIntro project={project} t={t} />
           </div>
         </header>
         <div className="shell">
-          <ProjectMedia
-            media={cover}
-            title={project.title}
-            t={t}
-            className="case-media"
-          />
-          <section className="case-section">
-            <h2>Problem</h2>
-            <div className="case-content">
-              <p>{project.problem}</p>
-            </div>
-          </section>
-          <section className="case-section">
-            <h2>Solution</h2>
-            <div className="case-content">
-              <p>{project.solution}</p>
-            </div>
-          </section>
-          <section className="case-section">
-            <h2>Features</h2>
-            <div className="case-content">
-              <ul>
-                {project.features.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </div>
-          </section>
+          {/* The same renderer the public page uses, so the preview cannot drift from it. */}
+          <CaseStudyBody project={project} t={t} locale={defaultLocale} />
         </div>
       </article>
     </>

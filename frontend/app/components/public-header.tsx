@@ -50,13 +50,7 @@ function NavLinks({
   });
 }
 
-export function PublicHeader({
-  locale,
-  t,
-}: {
-  locale: Locale;
-  t: Dictionary;
-}) {
+export function PublicHeader({ locale, t }: { locale: Locale; t: Dictionary }) {
   const mobileMenu = useRef<HTMLDetailsElement>(null);
   const closeMobileMenu = () => mobileMenu.current?.removeAttribute("open");
   return (
@@ -71,19 +65,24 @@ export function PublicHeader({
           {profile.name}
         </Link>
         <nav className="desktop-nav" aria-label={t.nav.primary}>
-          <NavLinks locale={locale} t={t} />
-          {profile.cvAvailable && (
-            <a
-              href={profile.cvUrl}
-              className="nav-link"
-              target="_blank"
-              rel="noreferrer"
-            >
-              {t.nav.resume}
-            </a>
-          )}
-          <LanguageSwitcher locale={locale} label={t.nav.language} />
-          <ThemeToggle t={t} />
+          <div className="nav-links">
+            <NavLinks locale={locale} t={t} />
+            {profile.cvAvailable && (
+              <a
+                href={profile.cvUrl}
+                className="nav-link"
+                target="_blank"
+                rel="noreferrer"
+                hrefLang={profile.cvLanguage}
+              >
+                {t.nav.resume}
+              </a>
+            )}
+          </div>
+          <div className="header-actions">
+            <LanguageSwitcher locale={locale} t={t} />
+            <ThemeToggle t={t} />
+          </div>
         </nav>
         <details className="mobile-nav" ref={mobileMenu}>
           <summary aria-label={t.nav.openMenu}>
@@ -103,7 +102,11 @@ export function PublicHeader({
             )}
             <div className="mobile-actions">
               <span className="muted">{t.nav.language}</span>
-              <LanguageSwitcher locale={locale} label={t.nav.language} />
+              <LanguageSwitcher
+                locale={locale}
+                t={t}
+                onSelect={closeMobileMenu}
+              />
             </div>
             <div className="mobile-actions">
               <span className="muted">{t.nav.theme}</span>

@@ -8,6 +8,12 @@ export const defaultLocale: Locale = "en";
 /** Remembers the visitor's explicit choice so the next visit skips Accept-Language guessing. */
 export const localeCookie = "portfolio-locale";
 
+/**
+ * How the proxy passes the active locale to server components that sit above the `[locale]` segment
+ * and so cannot read it from route params: the root layout, and the not-found boundary.
+ */
+export const localeHeader = "x-portfolio-locale";
+
 export const localeNames: Record<Locale, string> = {
   en: "English",
   fr: "Français",

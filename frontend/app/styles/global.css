@@ -1,22 +1,37 @@
 @import "tailwindcss";
 
+/**
+ * Surfaces carry no hue at all. The warm tint they used to carry read as coffee rather than as the
+ * graphite the direction asks for, and at these chroma levels a warm grey cannot look deliberate:
+ * it looks like a white that went off. Orange is now the only hue on the page, which is the point.
+ */
 :root {
   color-scheme: light;
-  --background: oklch(0.975 0.008 62);
-  --surface: oklch(0.995 0.004 62);
-  --surface-2: oklch(0.94 0.012 62);
+  --background: oklch(0.965 0 0);
+  --surface: oklch(0.995 0 0);
+  --surface-2: oklch(0.925 0 0);
   --elevated: oklch(1 0 0);
-  --ink: oklch(0.22 0.016 47);
-  --muted: oklch(0.43 0.018 47);
-  --border: oklch(0.84 0.018 57);
-  --orange: oklch(0.63 0.17 32);
-  --orange-action: oklch(0.5 0.16 32);
-  --orange-action-hover: oklch(0.44 0.15 30);
+  --ink: oklch(0.215 0 0);
+  --muted: oklch(0.44 0 0);
+  --border: oklch(0.85 0 0);
+  /**
+   * Section rules are decoration and stay quiet at `--border`. A diagram box is different: its
+   * outline is what makes it a box, so it is information and has to clear 3:1 on the page.
+   */
+  --border-strong: oklch(0.62 0 0);
+  /**
+   * Hue 58: a tool orange. The ramp used to sit at hue 30-48, which is terracotta — it read as
+   * salmon, and it is the same corner of the wheel every AI product's brand occupies. Nothing about
+   * a workbench is pink. Every value here clears its contrast bar and stays inside sRGB.
+   */
+  --orange: oklch(0.65 0.155 58);
+  --orange-action: oklch(0.56 0.13 58);
+  --orange-action-hover: oklch(0.5 0.12 58);
   --on-orange: oklch(0.99 0 0);
-  --orange-soft: oklch(0.78 0.11 42);
-  --orange-deep: oklch(0.47 0.15 30);
-  --orange-light: oklch(0.9 0.065 48);
-  --orange-muted: oklch(0.83 0.045 46);
+  --orange-soft: oklch(0.8 0.12 62);
+  --orange-deep: oklch(0.5 0.12 58);
+  --orange-light: oklch(0.93 0.045 62);
+  --orange-muted: oklch(0.86 0.055 60);
   --success: oklch(0.46 0.105 150);
   --success-bg: oklch(0.93 0.04 150);
   --warning: oklch(0.46 0.12 75);
@@ -24,8 +39,8 @@
   --danger: oklch(0.46 0.18 25);
   --danger-bg: oklch(0.94 0.045 25);
   --on-danger: oklch(0.99 0 0);
-  --focus: oklch(0.58 0.2 32);
-  --shadow: 0 4px 8px oklch(0.25 0.02 45/0.08);
+  --focus: oklch(0.63 0.15 58);
+  --shadow: 0 4px 8px oklch(0.2 0 0/0.09);
   --container: 73.75rem;
   --gutter: clamp(1rem, 3vw, 2.25rem);
   --radius: 0.75rem;
@@ -36,29 +51,30 @@
 }
 [data-theme="dark"] {
   color-scheme: dark;
-  --background: oklch(0.22 0.006 55);
-  --surface: oklch(0.27 0.008 55);
-  --surface-2: oklch(0.31 0.009 55);
-  --elevated: oklch(0.34 0.01 55);
-  --ink: oklch(0.94 0.01 62);
-  --muted: oklch(0.76 0.014 62);
-  --border: oklch(0.4 0.012 55);
-  --orange: oklch(0.72 0.16 38);
-  --orange-action: oklch(0.8 0.12 42);
-  --orange-action-hover: oklch(0.74 0.14 38);
-  --on-orange: oklch(0.2 0.012 47);
-  --orange-soft: oklch(0.8 0.11 44);
-  --orange-deep: oklch(0.76 0.12 42);
-  --orange-light: oklch(0.86 0.075 48);
-  --orange-muted: oklch(0.42 0.06 38);
+  --background: oklch(0.195 0 0);
+  --surface: oklch(0.245 0 0);
+  --surface-2: oklch(0.29 0 0);
+  --elevated: oklch(0.33 0 0);
+  --ink: oklch(0.945 0 0);
+  --muted: oklch(0.755 0 0);
+  --border: oklch(0.385 0 0);
+  --border-strong: oklch(0.55 0 0);
+  --orange: oklch(0.78 0.14 58);
+  --orange-action: oklch(0.82 0.12 60);
+  --orange-action-hover: oklch(0.76 0.14 58);
+  --on-orange: oklch(0.2 0 0);
+  --orange-soft: oklch(0.84 0.1 60);
+  --orange-deep: oklch(0.82 0.12 60);
+  --orange-light: oklch(0.88 0.08 62);
+  --orange-muted: oklch(0.45 0.09 58);
   --success: oklch(0.76 0.12 150);
   --success-bg: oklch(0.32 0.045 150);
   --warning: oklch(0.82 0.13 80);
   --warning-bg: oklch(0.32 0.055 75);
   --danger: oklch(0.77 0.15 25);
   --danger-bg: oklch(0.32 0.07 25);
-  --on-danger: oklch(0.2 0.012 47);
-  --focus: oklch(0.76 0.17 40);
+  --on-danger: oklch(0.2 0 0);
+  --focus: oklch(0.78 0.15 58);
   --shadow: 0 4px 8px oklch(0.05 0 0/0.28);
 }
 * {
@@ -67,6 +83,13 @@
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 6rem;
+  /* Surfaces the browser draws for us, themed from the palette rather than left at its defaults. */
+  scrollbar-color: var(--border) transparent;
+  /* Holds the gutter so locking the scroll behind a modal does not shift the page sideways. */
+  scrollbar-gutter: stable;
+  accent-color: var(--orange);
+  /* `--orange-deep` is already redefined per theme, so the caret follows without a second rule. */
+  caret-color: var(--orange-deep);
 }
 body {
   margin: 0;
@@ -231,8 +254,8 @@ button:disabled,
   position: sticky;
   top: 0;
   z-index: var(--z-sticky);
-  background: color-mix(in oklch, var(--background) 94%, transparent);
-  border-bottom: 1px solid color-mix(in oklch, var(--border) 72%, transparent);
+  background: var(--background);
+  border-bottom: 1px solid var(--border);
 }
 .header-inner {
   min-height: 4.5rem;
@@ -259,7 +282,17 @@ button:disabled,
 .desktop-nav {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 1.6rem;
+}
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.35rem;
+}
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
 }
 .nav-link {
   display: inline-flex;
@@ -283,6 +316,48 @@ button:disabled,
 .nav-link.active {
   box-shadow: inset 0 -2px 0 var(--orange);
 }
+/*
+ * In the public header the links are read as a line of words, not as a row of controls: no fill, no
+ * rounded box, just the label and a rule that grows underneath it. The row treatment above stays for
+ * the administration sidebar and the mobile panel, where a menu entry is the right affordance.
+ */
+.desktop-nav .nav-link {
+  position: relative;
+  padding-inline: 0.1rem;
+  border-radius: 0;
+  transition: color 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.desktop-nav .nav-link::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0.5rem;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--orange);
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition:
+    transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.desktop-nav .nav-link:hover,
+.desktop-nav .nav-link:focus-visible,
+.desktop-nav .nav-link[data-active="true"] {
+  background: transparent;
+  box-shadow: none;
+  color: var(--ink);
+}
+.desktop-nav .nav-link:hover::after {
+  opacity: 0.45;
+  transform: scaleX(1);
+}
+.desktop-nav .nav-link[data-active="true"]::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+.icon-button,
 .theme-toggle {
   width: 2.75rem;
   height: 2.75rem;
@@ -293,38 +368,10 @@ button:disabled,
   background: transparent;
   color: var(--ink);
   cursor: pointer;
+  transition: background-color 160ms cubic-bezier(0.16, 1, 0.3, 1);
 }
+.icon-button:hover,
 .theme-toggle:hover {
-  background: var(--surface-2);
-}
-.language-switcher {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.125rem;
-}
-.language-option {
-  min-width: 2.25rem;
-  min-height: 2.75rem;
-  padding: 0 0.375rem;
-  border: 0;
-  border-radius: 0.5rem;
-  background: transparent;
-  color: var(--muted);
-  font: inherit;
-  font-size: 0.8125rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  cursor: pointer;
-}
-.language-option abbr {
-  text-decoration: none;
-}
-.language-option:hover {
-  background: var(--surface-2);
-  color: var(--ink);
-}
-.language-option[data-active="true"] {
-  color: var(--ink);
   background: var(--surface-2);
 }
 .mobile-nav {
@@ -355,6 +402,11 @@ button:disabled,
 }
 .mobile-panel .nav-link {
   width: 100%;
+}
+/* A dropped panel is a menu, so the current entry is marked down its edge rather than underlined. */
+.mobile-panel .nav-link[data-active="true"],
+.mobile-panel .nav-link.active {
+  box-shadow: inset 2px 0 0 var(--orange);
 }
 .mobile-actions {
   display: flex;
@@ -412,10 +464,15 @@ button:disabled,
   position: relative;
   box-shadow: var(--shadow);
 }
-.portrait-frame:after {
-  content: "Professional portrait to replace";
+/**
+ * The caption used to be a `content:` string on this pseudo-element, which meant it could not be
+ * translated and stayed on the page after a real portrait was set. It is rendered from the
+ * dictionary now, and only while `profile.portraitAvailable` is false.
+ */
+.portrait-note {
   position: absolute;
   inset: auto 1rem 1rem;
+  margin: 0;
   background: var(--elevated);
   color: var(--ink);
   padding: 0.7rem 0.8rem;
@@ -500,81 +557,217 @@ button:disabled,
   color: var(--muted);
   max-width: 65ch;
 }
-.placeholder-note {
-  display: inline-block;
-  margin-top: 0.7rem;
-  color: var(--warning);
-  font-size: 0.875rem;
+/* Scoped to beat `.journey-item p` on specificity instead of on `!important`. */
+.journey-item p.journey-org {
   font-weight: 700;
+  color: var(--ink);
+  margin-top: 0.35rem;
+}
+.journey-points {
+  list-style: disc;
+  margin: 1rem 0 0;
+  padding-left: 1.1rem;
+  color: var(--muted);
+  max-width: 65ch;
+}
+.journey-points li + li {
+  margin-top: 0.5rem;
+}
+.journey-list-quiet .journey-item h3 {
+  font-size: 1.25rem;
+}
+
+/* Recruiter-facing summary: the contract terms, readable before any prose. */
+.availability-card {
+  display: grid;
+  grid-template-columns: minmax(14rem, 0.7fr) minmax(0, 1.3fr);
+  gap: clamp(1.5rem, 4vw, 3rem);
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.availability-intro h2 {
+  font-size: clamp(1.4rem, 2.6vw, 1.9rem);
+}
+.availability-intro p {
+  margin: 0.6rem 0 0;
+  color: var(--muted);
+}
+.availability-facts {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 2rem;
+}
+.availability-fact {
+  padding: 0.7rem 0;
+  border-top: 1px solid var(--border);
+}
+.availability-fact dt {
+  font-size: 0.8125rem;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--orange-deep);
+}
+.availability-fact dd {
+  margin: 0.2rem 0 0;
+  font-weight: 600;
+}
+
+/**
+ * A single aside that must read as an answer, not as decoration. The orange rule is 1px, matching
+ * `.hero-availability`: one idiom for "this is set aside from the main column", and a heavy colored
+ * edge would be decoration doing a heading's job.
+ */
+.note-card {
+  box-shadow: inset 1px 0 0 var(--orange);
+  padding: 0.25rem 0 0.25rem clamp(1rem, 3vw, 1.75rem);
+  max-width: 68ch;
+}
+.note-card h2 {
+  font-size: clamp(1.25rem, 2.4vw, 1.6rem);
+}
+.note-card p {
+  margin: 0.6rem 0 0;
+  color: var(--muted);
+}
+
+.fact-rows {
+  margin: 2rem 0 0;
+}
+.fact-row {
+  display: grid;
+  grid-template-columns: minmax(7rem, 0.3fr) minmax(0, 1fr);
+  gap: 1rem;
+  padding: 0.8rem 0;
+  border-top: 1px solid var(--border);
+}
+.fact-row:last-child {
+  border-bottom: 1px solid var(--border);
+}
+.fact-row dt {
+  font-weight: 750;
+}
+.fact-row dd {
+  margin: 0;
+  color: var(--muted);
+}
+.fact-row-stacked {
+  grid-template-columns: 1fr;
+  gap: 0.3rem;
+}
+.side-by-side {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: start;
+}
+.contact-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+.contact-panel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 .projects-featured {
   margin-top: 3.5rem;
 }
-.project-chapter {
-  display: grid;
-  grid-template-columns: minmax(0, 1.12fr) minmax(18rem, 0.88fr);
-  gap: clamp(1.75rem, 5vw, 4rem);
-  padding-block: clamp(2rem, 5vw, 4rem);
+/**
+ * A featured project is a full-width band, not a two-column card. The visual slot holds the
+ * mechanism of the project, and a mechanism wants the whole measure rather than a 4:3 crop beside a
+ * paragraph.
+ */
+.project-showcase {
+  padding-block: clamp(2.5rem, 6vw, 5rem);
   border-top: 1px solid var(--border);
-  align-items: center;
 }
-.project-chapter:last-child {
+.project-showcase:last-child {
   border-bottom: 1px solid var(--border);
 }
-.project-chapter:nth-child(even) .project-visual {
-  order: -1;
-}
-.project-index {
-  color: var(--orange-deep);
-  font-variant-numeric: tabular-nums;
-  font-weight: 800;
-}
-.project-title {
-  margin-top: 0.65rem;
-  font-size: clamp(2rem, 4vw, 3.5rem);
-}
-.project-description {
-  margin: 1rem 0 0;
-  color: var(--muted);
-  font-size: 1.08rem;
-}
-.project-problem {
-  margin: 1.35rem 0 0;
-  padding: 1rem 0;
-  border-block: 1px solid var(--border);
-  font-weight: 650;
-}
-.project-meta {
+.showcase-head {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 1.2rem;
+  align-items: baseline;
+  gap: 0.75rem 1.25rem;
 }
-.tag {
-  display: inline-flex;
-  align-items: center;
-  min-height: 1.9rem;
-  padding: 0.25rem 0.6rem;
+.project-title {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+}
+/* Pills are for statuses only, and this is the one fact that separates shipped from finished. */
+.status-pill {
+  margin: 0;
+  padding: 0.3rem 0.7rem;
   border-radius: 999px;
-  background: var(--surface-2);
-  color: var(--muted);
-  font-size: 0.875rem;
-  font-weight: 750;
-}
-.status {
   background: var(--orange-light);
   color: var(--orange-deep);
+  font-size: 0.8125rem;
+  font-weight: 750;
+  line-height: 1.35;
 }
-[data-theme="dark"] .status {
+[data-theme="dark"] .status-pill {
   background: var(--orange-muted);
   color: var(--orange-light);
+}
+.project-lede {
+  margin: 1rem 0 0;
+  max-width: 58ch;
+  color: var(--muted);
+  font-size: clamp(1.08rem, 1.8vw, 1.3rem);
+}
+.showcase-media {
+  margin-top: 2rem;
+  aspect-ratio: 16/9;
+  background: var(--surface-2);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.showcase-media img,
+.showcase-media video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.showcase-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  gap: clamp(1.5rem, 5vw, 4rem);
+  margin-top: 2.5rem;
+  align-items: start;
+}
+.project-meta {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.55rem 0.9rem;
+  margin: 0;
+  font-size: 0.9375rem;
+}
+.project-meta dt {
+  color: var(--muted);
+  font-weight: 750;
+}
+.project-meta dd {
+  margin: 0;
+}
+/* The `note-card` treatment: one orange rule, for a statement the reader is already asking for. */
+.showcase-signal {
+  margin: 0;
+  padding: 0.15rem 0 0.15rem clamp(1rem, 2.5vw, 1.5rem);
+  box-shadow: inset 1px 0 0 var(--orange);
+  max-width: 62ch;
+  color: var(--muted);
 }
 .project-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
   align-items: center;
-  margin-top: 1.5rem;
+  margin-top: 2rem;
 }
 .project-visual {
   aspect-ratio: 4/3;
@@ -587,6 +780,158 @@ button:disabled,
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/**
+ * Diagrams are laid out in HTML rather than authored as SVG. An SVG wide enough to read on a desktop
+ * puts its labels at four or five pixels on a phone; boxes and rules reflow to a column instead and
+ * keep their labels as real text at real size.
+ */
+.diagram {
+  margin: 2.25rem 0 0;
+}
+.diagram figcaption {
+  margin-top: 1.75rem;
+  max-width: 70ch;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+.flow-node,
+.flow-step {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 0.625rem;
+  background: var(--surface);
+}
+.flow-node h4,
+.flow-step h4 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+.flow-node p,
+.flow-step p {
+  margin: 0.3rem 0 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+/* Janus is the actor in its own diagram, so it is the one box carrying the accent. */
+.flow-node-strong {
+  border-color: var(--orange);
+  background: var(--surface-2);
+}
+.flow-arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.35;
+  text-align: center;
+}
+.flow-arrow-glyph {
+  flex: none;
+  color: var(--orange);
+}
+.flow-janus {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) auto minmax(0, 1.5fr) auto minmax(0, 0.85fr);
+  gap: 0.9rem;
+  align-items: center;
+}
+/* The claim is spatial: the key is readable on one side of this line and nowhere else. */
+.flow-boundary {
+  display: grid;
+  gap: 0.7rem;
+  padding: 1rem;
+  border: 1px dashed var(--orange);
+  border-radius: var(--radius);
+}
+/* Left in the flow rather than positioned over the box, so a label that wraps pushes the box open
+   instead of landing on the first node. */
+.flow-boundary-label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+  color: var(--orange-deep);
+  font-size: 0.75rem;
+  font-weight: 750;
+  line-height: 1.3;
+}
+[data-theme="dark"] .flow-boundary-label {
+  color: var(--orange-soft);
+}
+.flow-boundary .flow-arrow-glyph {
+  transform: rotate(90deg);
+}
+/* The return leg carries the claim the diagram exists to make, so it gets the full width and reads
+   at the same size as the node notes rather than as fine print. */
+.flow-return {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1.1rem 0 0;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+.flow-return svg {
+  flex: none;
+  color: var(--orange);
+}
+.flow-episort {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: stage;
+}
+/* The order is the information here, so the stages are numbered. */
+.flow-step {
+  counter-increment: stage;
+}
+.flow-step h4::before {
+  content: counter(stage) " ";
+  color: var(--orange-deep);
+  font-variant-numeric: tabular-nums;
+}
+[data-theme="dark"] .flow-step h4::before {
+  color: var(--orange-soft);
+}
+/* Three levels, and none of them depends on hue alone: a stage that reads, one that stops and asks,
+   and the one that writes. The tag under each says which in words. */
+.flow-step-gate {
+  background: var(--surface-2);
+}
+.flow-step-write {
+  border-color: var(--orange);
+  background: var(--surface-2);
+}
+.flow-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin: 0.6rem 0 0;
+  color: var(--orange-deep);
+  font-size: 0.75rem;
+  font-weight: 750;
+  line-height: 1.3;
+}
+[data-theme="dark"] .flow-tag {
+  color: var(--orange-soft);
+}
+.flow-tag svg {
+  flex: none;
 }
 .secondary-projects {
   margin-top: 2rem;
@@ -629,9 +974,9 @@ button:disabled,
 .skill-proof {
   font-size: 0.875rem;
 }
-.skill-names {
+.skill-group p.skill-names {
   font-weight: 750;
-  color: var(--ink) !important;
+  color: var(--ink);
 }
 .contact-panel {
   background: var(--orange-action);
@@ -659,6 +1004,15 @@ button:disabled,
 .contact-panel .button-secondary:hover {
   background: var(--on-orange);
   color: var(--orange-action-hover);
+}
+/* The panel is already orange, so the primary action inverts instead of stacking orange on orange. */
+.contact-panel .button-primary {
+  background: var(--on-orange);
+  color: var(--orange-action-hover);
+}
+.contact-panel .button-primary:hover {
+  background: var(--on-orange);
+  color: var(--orange-action);
 }
 .page-hero {
   padding-block: clamp(3.5rem, 8vw, 7rem);
@@ -743,8 +1097,17 @@ button:disabled,
 .case-content > :first-child {
   margin-top: 0;
 }
+/**
+ * Tailwind's preflight strips `list-style` from every `ul`, so these read as loose lines of text
+ * with an indent and no marker. The indent was already here, waiting for the bullet.
+ */
 .case-list {
+  list-style: disc;
   padding-left: 1.2rem;
+}
+.case-list li::marker,
+.journey-points li::marker {
+  color: var(--orange);
 }
 .case-list li + li {
   margin-top: 0.7rem;
@@ -781,11 +1144,29 @@ button:disabled,
   color: var(--muted);
   font-size: 0.9rem;
 }
+/* An informational aside inside a section, for a state the visitor cannot act on. */
+.notice {
+  margin: 2rem 0 0;
+  max-width: 62ch;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--muted);
+}
 .error-page {
   min-height: 100vh;
   display: grid;
   place-items: center;
   padding: 2rem;
+  text-align: center;
+}
+/**
+ * Loading reused `.error-page`, which framed a routine wait as a failure and held a full viewport
+ * for it. It is a quiet line at the top of the content area instead.
+ */
+.loading-page {
+  padding: clamp(3rem, 10vw, 6rem) var(--gutter);
   text-align: center;
 }
 .error-page > div {
@@ -903,6 +1284,11 @@ button:disabled,
 .data-row + .data-row {
   border-top: 1px solid var(--border);
 }
+/* Order numbers and dates sit in columns, so their digits have to be the same width. */
+.data-row time,
+.data-row [data-label="Order"] {
+  font-variant-numeric: tabular-nums;
+}
 .data-title {
   min-width: 0;
 }
@@ -966,6 +1352,25 @@ button:disabled,
 .select:hover {
   border-color: var(--muted);
 }
+/* The file picker ships its own unstyled button; it belongs to the design system too. */
+.input[type="file"] {
+  padding: 0.4rem 0.5rem;
+}
+.input[type="file"]::file-selector-button {
+  margin-right: 0.75rem;
+  border: 0;
+  border-radius: 0.375rem;
+  padding: 0.45rem 0.7rem;
+  background: var(--surface-2);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+/* `--orange-muted` is composed per theme, so the label keeps its contrast in both. */
+.input[type="file"]::file-selector-button:hover {
+  background: var(--orange-muted);
+}
 .input[aria-invalid="true"],
 .textarea[aria-invalid="true"] {
   border-color: var(--danger);
@@ -988,7 +1393,21 @@ button:disabled,
   border-radius: 0.5rem;
   font-weight: 700;
 }
-.editor-form {
+/* Work still to do, which is not an error and must not borrow the danger colour. */
+.form-warning {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0;
+  background: var(--warning-bg);
+  color: var(--warning);
+  padding: 0.8rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+.editor-form,
+.editor-fields {
   display: grid;
   gap: 1rem;
 }
@@ -1052,6 +1471,13 @@ button:disabled,
   border-radius: 0.875rem;
   box-shadow: var(--shadow);
 }
+.login-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
 .login-panel h1 {
   font-size: 2rem;
 }
@@ -1092,6 +1518,22 @@ button:disabled,
   display: grid;
   gap: 1rem;
 }
+/* Two ways to add media, told apart by a heading each instead of by two identical field grids. */
+.media-group {
+  border-top: 1px solid var(--border);
+  padding-top: 1rem;
+}
+.media-group h3 {
+  font-size: 1rem;
+  margin-bottom: 0.9rem;
+}
+.media-meta strong {
+  display: block;
+}
+.media-meta p {
+  margin: 0.15rem 0 0;
+  font-size: 0.875rem;
+}
 .media-row {
   display: grid;
   grid-template-columns: 6rem 1fr auto;
@@ -1118,18 +1560,154 @@ dialog {
   color: var(--ink);
   width: min(calc(100% - 2rem), 31rem);
   box-shadow: 0 8px 20px oklch(0.05 0 0/0.3);
+  /**
+   * A modal dialog is centred by the `margin: auto` in the UA stylesheet, and Tailwind's preflight
+   * zeroes the margin on every element. Without this it opens in the top-left corner.
+   */
+  margin: auto;
 }
 dialog::backdrop {
   background: oklch(0.1 0 0/0.62);
 }
 .dialog-content {
+  display: grid;
+  gap: 1rem;
   padding: 1.4rem;
+}
+.dialog-title {
+  font-size: 1.25rem;
+}
+.dialog-body {
+  margin: 0;
+  color: var(--muted);
 }
 .dialog-actions {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: 0.7rem;
-  margin-top: 1.4rem;
+}
+/* A modal covers the page but does not stop the wheel, so the scroll is held while one is open. */
+html:has(dialog[open]) {
+  overflow: hidden;
+}
+.language-dialog {
+  width: min(calc(100% - 2rem), 21rem);
+  opacity: 0;
+  transform: translateY(0.4rem) scale(0.98);
+  transition:
+    opacity 200ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
+    overlay 200ms allow-discrete,
+    display 200ms allow-discrete;
+}
+.language-dialog[open] {
+  opacity: 1;
+  transform: none;
+}
+/* Gives the opening frame a state to travel from; without it only the closing side animates. */
+@starting-style {
+  .language-dialog[open] {
+    opacity: 0;
+    transform: translateY(0.4rem) scale(0.98);
+  }
+}
+.language-dialog::backdrop {
+  background: oklch(0.1 0 0/0);
+  transition:
+    background-color 200ms cubic-bezier(0.16, 1, 0.3, 1),
+    overlay 200ms allow-discrete,
+    display 200ms allow-discrete;
+}
+.language-dialog[open]::backdrop {
+  background: oklch(0.1 0 0/0.62);
+}
+@starting-style {
+  .language-dialog[open]::backdrop {
+    background: oklch(0.1 0 0/0);
+  }
+}
+.language-dialog-inner {
+  padding: 0.9rem;
+}
+.language-dialog-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.1rem 0 0.7rem 0.65rem;
+}
+.language-dialog-head h2 {
+  font-size: 1.05rem;
+  font-weight: 750;
+  letter-spacing: -0.015em;
+}
+.language-options {
+  display: grid;
+  gap: 0.15rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.language-option {
+  width: 100%;
+  min-height: 3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding-inline: 0.65rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--ink);
+  font-weight: 650;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 160ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.language-option:hover {
+  background: var(--surface-2);
+}
+.language-code {
+  min-width: 2.2rem;
+  padding: 0.15rem 0.35rem;
+  border-radius: 0.35rem;
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+.language-option[data-active="true"] .language-code {
+  background: var(--orange-light);
+  color: var(--orange-deep);
+}
+/* `--orange-deep` turns light in the dark theme, which leaves it too close to the badge behind it. */
+[data-theme="dark"] .language-option[data-active="true"] .language-code {
+  color: var(--on-orange);
+}
+.language-check {
+  margin-left: auto;
+  color: var(--orange-deep);
+}
+@media (prefers-reduced-motion: reduce) {
+  .language-dialog,
+  .language-dialog::backdrop {
+    transition-duration: 1ms;
+  }
+  .desktop-nav .nav-link::after {
+    transition-property: opacity;
+  }
+}
+/**
+ * Six stages fit one rail on a desktop. Below that they fold to two rows of three, which happens to
+ * split the pipeline where it means something: the three that read, then the two gates and the write.
+ */
+@media (max-width: 1080px) {
+  .flow-episort {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 @media (max-width: 900px) {
   .desktop-nav {
@@ -1145,11 +1723,19 @@ dialog::backdrop {
   .hero h1 {
     font-size: clamp(2.5rem, 7.5vw, 4.7rem);
   }
-  .project-chapter {
+  /* The flow turns vertical, so every arrow turns with it. */
+  .flow-janus,
+  .showcase-body {
     grid-template-columns: 1fr;
   }
-  .project-chapter:nth-child(even) .project-visual {
-    order: initial;
+  .flow-janus .flow-arrow-glyph {
+    transform: rotate(90deg);
+  }
+  .flow-arrow {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    text-align: left;
   }
   .case-intro,
   .case-section {
@@ -1159,6 +1745,10 @@ dialog::backdrop {
   .contact-panel {
     grid-template-columns: 1fr;
     align-items: start;
+  }
+  .availability-card,
+  .side-by-side {
+    grid-template-columns: 1fr;
   }
   .admin-shell {
     display: block;
@@ -1186,6 +1776,9 @@ dialog::backdrop {
   .section {
     padding-block: 4rem;
   }
+  .flow-episort {
+    grid-template-columns: 1fr;
+  }
   .hero {
     padding-block: 2.25rem 4rem;
   }
@@ -1212,12 +1805,17 @@ dialog::backdrop {
     grid-row: 6;
   }
   .principles,
-  .skills-list {
+  .skills-list,
+  .availability-facts {
     grid-template-columns: 1fr;
   }
   .journey-item {
     grid-template-columns: 1fr;
     gap: 0.35rem;
+  }
+  .fact-row {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
   }
   .secondary-project {
     grid-template-columns: 1fr auto;

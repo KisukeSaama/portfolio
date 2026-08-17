@@ -1,26 +1,10 @@
 import type { Metadata } from "next";
+import { auditActionLabels } from "~/lib/admin-labels";
 import { requireAdmin } from "~/lib/require-admin";
 import { serverApi } from "~/lib/server-api";
 import type { AuditEntry, Page } from "~/types/api";
 
 export const metadata: Metadata = { title: "Administration log" };
-const labels: Record<string, string> = {
-  LOGIN_SUCCESS: "Sign-in succeeded",
-  LOGIN_FAILURE: "Sign-in refused",
-  LOGOUT: "Sign-out",
-  PROJECT_CREATE: "Project created",
-  PROJECT_UPDATE: "Project updated",
-  PROJECT_DUPLICATE: "Project duplicated",
-  PROJECT_PUBLISH: "Project published",
-  PROJECT_UNPUBLISH: "Project unpublished",
-  PROJECT_ARCHIVE: "Project archived",
-  PROJECT_RESTORE: "Project restored",
-  PROJECT_DELETE: "Project deleted",
-  PROJECT_REORDER: "Order changed",
-  PROJECT_SLUG_CHANGE: "Slug changed",
-  MEDIA_ADD: "Media added",
-  MEDIA_DELETE: "Media deleted",
-};
 
 export default async function AdminAuditPage() {
   await requireAdmin();
@@ -43,7 +27,7 @@ export default async function AdminAuditPage() {
         ) : (
           data.content.map((entry) => (
             <li key={entry.id}>
-              <strong>{labels[entry.action] ?? entry.action}</strong>
+              <strong>{auditActionLabels[entry.action] ?? entry.action}</strong>
               <span>{entry.projectTitle ?? entry.actorEmail ?? "System"}</span>
               <time dateTime={entry.createdAt}>
                 {new Intl.DateTimeFormat("en-US", {

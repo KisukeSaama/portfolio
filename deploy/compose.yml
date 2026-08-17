@@ -43,6 +43,8 @@ services:
       - /tmp
     security_opt:
       - no-new-privileges:true
+    cap_drop:
+      - ALL
     labels:
       - traefik.enable=true
       - traefik.docker.network=${TRAEFIK_NETWORK}
@@ -59,9 +61,25 @@ services:
       - traefik.http.middlewares.${APP_SUBDOMAIN}-${DEPLOY_ENV}-headers.headers.stsSeconds=31536000
       - traefik.http.middlewares.${APP_SUBDOMAIN}-${DEPLOY_ENV}-headers.headers.stsIncludeSubdomains=true
       - traefik.http.middlewares.${APP_SUBDOMAIN}-${DEPLOY_ENV}-headers.headers.customResponseHeaders.Permissions-Policy=camera=(), microphone=(), geolocation=(), payment=()
-      # Quoted because the CSP contains "data: " and "https: " — unquoted, YAML reads the first
-      # colon-space as a mapping and compose rejects the label as a map instead of a string.
-      - "traefik.http.middlewares.${APP_SUBDOMAIN}-${DEPLOY_ENV}-headers.headers.contentSecurityPolicy=default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; img-src 'self' data: https:; media-src 'self' https:; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self'"
+      # No contentSecurityPolicy here. The application sets a per-request policy carrying a script
+      # nonce (frontend/app/lib/csp.ts); a browser enforces every policy it receives, so a second
+      # static one would have to allow 'unsafe-inline' and could only narrow the first.
+      #
+      # Sign-in rate limiting. nginx used to do this with limit_req, but nginx is not in this
+      # topology, so without a router of its own the endpoint has no limit in front of it at all.
+      # Traefik counts per source address, which it reads from the connection rather than from a
+      # header, so a caller cannot reset its own counter.
+      - traefik.http.middlewares.${APP_SUBDOMAIN}-${DEPLOY_ENV}-login-rate.ratelimit.average=10
+      - traefik.http.middlewares.${APP_SUBDOMAIN}-${DEPLOY_ENV}-login-rate.ratelimit.period=1m
+      - traefik.http.middlewares.${APP_SUBDOMAIN}-${DEPLOY_ENV}-login-rate.ratelimit.burst=5
+      - traefik.http.routers.${APP_SUBDOMAIN}-${DEPLOY_ENV}-login.rule=Host(`${APP_HOST}`) && Path(`/api/v1/auth/login`)
+      # Above the catch-all Host() router, which would otherwise match this path first.
+      - traefik.http.routers.${APP_SUBDOMAIN}-${DEPLOY_ENV}-login.priority=100
+      - traefik.http.routers.${APP_SUBDOMAIN}-${DEPLOY_ENV}-login.entrypoints=websecure
+      - traefik.http.routers.${APP_SUBDOMAIN}-${DEPLOY_ENV}-login.tls=true
+      - traefik.http.routers.${APP_SUBDOMAIN}-${DEPLOY_ENV}-login.tls.certresolver=letsencrypt
+      - traefik.http.routers.${APP_SUBDOMAIN}-${DEPLOY_ENV}-login.service=${APP_SUBDOMAIN}-${DEPLOY_ENV}
+      - traefik.http.routers.${APP_SUBDOMAIN}-${DEPLOY_ENV}-login.middlewares=${APP_SUBDOMAIN}-${DEPLOY_ENV}-headers,${APP_SUBDOMAIN}-${DEPLOY_ENV}-login-rate
 
   backend:
     image: ${CI_REGISTRY_IMAGE}/backend:${IMAGE_TAG}
@@ -73,6 +91,9 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       SESSION_COOKIE_SECURE: "true"
       SERVER_FORWARD_HEADERS_STRATEGY: framework
+      # Traefik is the only hop that rewrites X-Forwarded-For. Next.js forwards the header
+      # untouched on its /api rewrite, so the chain the backend sees is one entry long.
+      TRUSTED_PROXY_COUNT: "1"
       MEDIA_DIR: /var/lib/portfolio/media
       PROJECT_SEED_ENABLED: ${PROJECT_SEED_ENABLED:-true}
       CONTACT_EMAIL: ${CONTACT_EMAIL:-}
@@ -99,6 +120,8 @@ services:
       - /tmp
     security_opt:
       - no-new-privileges:true
+    cap_drop:
+      - ALL
 
   postgres:
     image: postgres:17-alpine

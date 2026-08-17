@@ -2,11 +2,12 @@ import { Plus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AdminProjectList } from "~/components/admin-project-list";
+import { count } from "~/lib/admin-labels";
 import { requireAdmin } from "~/lib/require-admin";
 import { serverApi } from "~/lib/server-api";
 import type { Page, Project } from "~/types/api";
 
-export const metadata: Metadata = { title: "Projects — Administration" };
+export const metadata: Metadata = { title: "Projects | Administration" };
 
 export default async function AdminProjectsPage({
   searchParams,
@@ -25,7 +26,8 @@ export default async function AdminProjectsPage({
         <div>
           <h1>Projects</h1>
           <p>
-            {data.totalElements} project(s), across every editorial state.
+            {count(data.totalElements, "project")}, across every editorial
+            state.
           </p>
         </div>
         <Link href="/admin/projects/new" className="button button-primary">

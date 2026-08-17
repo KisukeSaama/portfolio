@@ -168,6 +168,9 @@ test_frontend:
     - npm config set cache "$CI_PROJECT_DIR/.npm"
   script:
     - npm ci --no-audit --no-fund
+    # Separate from the install so a known-vulnerable dependency fails the pipeline by name
+    # instead of scrolling past in the install log.
+    - npm audit --audit-level=high
     - npm run lint
     - npm run typecheck
     - npm run test:frontend

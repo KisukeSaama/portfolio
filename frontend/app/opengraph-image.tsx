@@ -5,7 +5,7 @@ import { getDictionary } from "~/i18n";
 // One shared social card, rendered in the source language.
 const t = getDictionary(defaultLocale);
 
-export const alt = `Jonathan Blanchard — ${t.profile.title}`;
+export const alt = `Jonathan Blanchard | ${t.profile.title}`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 

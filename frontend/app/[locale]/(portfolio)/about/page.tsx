@@ -50,6 +50,42 @@ export default async function AboutPage({ params }: LocaleParams) {
           </div>
         </div>
       </section>
+
+      <section className="section" aria-labelledby="decisions-title">
+        <div className="shell">
+          <h2 id="decisions-title" className="section-heading">
+            {t.home.approachTitle}
+          </h2>
+          <p className="section-lede">{t.home.approachLede}</p>
+          <div className="principles">
+            {t.home.principles.map((principle) => (
+              <article className="principle" key={principle.title}>
+                <h3>{principle.title}</h3>
+                <p>{principle.body}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section-compact" aria-labelledby="ai-note-title">
+        <div className="shell">
+          <aside className="note-card">
+            <h2 id="ai-note-title">{t.aiNote.title}</h2>
+            <p>{t.aiNote.body}</p>
+          </aside>
+        </div>
+      </section>
+
+      <section className="section-compact" aria-labelledby="gap-title">
+        <div className="shell readable">
+          <h2 id="gap-title" className="section-heading">
+            {t.about.gapTitle}
+          </h2>
+          <p>{t.about.gapBody}</p>
+        </div>
+      </section>
+
       <ContactPanel locale={locale} t={t} />
     </>
   );

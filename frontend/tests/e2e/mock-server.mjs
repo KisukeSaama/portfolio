@@ -20,7 +20,7 @@ const base = {
   projectType: "PERSONAL",
   featureLevel: "PRIMARY",
   featured: true,
-  displayOrder: 1,
+  displayOrder: 2,
   visibility: "PUBLIC",
   publicationStatus: "PUBLISHED",
   technologies: ["Java", "JavaFX"],
@@ -57,7 +57,7 @@ const janus = {
     "A proxy service controls authorized applications, permissions, revocation and auditing.",
   role: "Product design, permission modeling and full-stack development.",
   architecture: "Spring Boot API, PostgreSQL and Docker Compose environments.",
-  displayOrder: 2,
+  displayOrder: 1,
   technologies: [
     "Java",
     "Spring Boot",
@@ -138,7 +138,9 @@ const social = {
   learnings: ["A rewrite pays off when the comparison is explicit"],
   nextSteps: ["Document the differences between versions"],
 };
-let projects = [base, janus, overkill, social];
+// Janus first, matching the order ProjectSeed.java ships: it is the project the site is positioned
+// around, and the public navigation test asserts on which case study leads.
+let projects = [janus, base, overkill, social];
 const body = (request) =>
   new Promise((resolve) => {
     let data = "";

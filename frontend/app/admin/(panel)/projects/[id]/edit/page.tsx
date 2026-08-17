@@ -5,7 +5,7 @@ import { serverApi } from "~/lib/server-api";
 import type { Project } from "~/types/api";
 
 export const metadata: Metadata = {
-  title: "Edit a project — Administration",
+  title: "Edit a project | Administration",
 };
 export default async function EditProjectPage({
   params,

@@ -2,21 +2,13 @@ import "@fontsource-variable/manrope";
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
 import type { ReactNode } from "react";
-import { defaultLocale, isLocale, type Locale } from "~/i18n/config";
 import { getDictionary } from "~/i18n";
+import { activeLocale } from "~/i18n/server";
+import { NONCE_HEADER } from "~/lib/csp";
 import "./styles/global.css";
 
 const siteUrl = process.env.PUBLIC_SITE_URL ?? "http://localhost:5173";
 const themeScript = `(()=>{try{const saved=localStorage.getItem('jonathan-theme');const theme=saved==='light'||saved==='dark'?saved:(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme}catch{}})()`;
-
-/**
- * Only the root layout may render <html>, and it sits above the [locale] segment, so the active
- * locale arrives through the header the middleware sets on every request.
- */
-async function activeLocale(): Promise<Locale> {
-  const value = (await headers()).get("x-portfolio-locale") ?? undefined;
-  return isLocale(value) ? value : defaultLocale;
-}
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await activeLocale();
@@ -62,10 +54,16 @@ export default async function RootLayout({
 }) {
   const locale = await activeLocale();
   const t = getDictionary(locale);
+  // Set by the proxy on every HTML request. It has to reach this inline script, which runs before
+  // first paint so the theme does not flash, and so cannot be moved into a bundled file.
+  const nonce = (await headers()).get(NONCE_HEADER) ?? undefined;
   return (
     <html lang={t.htmlLang} suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <script
+          nonce={nonce}
+          dangerouslySetInnerHTML={{ __html: themeScript }}
+        />
       </head>
       <body>
         <a className="skip-link" href="#main-content">

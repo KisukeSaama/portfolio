@@ -8,7 +8,7 @@ The public site is bilingual (English / French). Code, comments and documentatio
 
 - **Frontend**: Next.js 16 with the App Router and React 19, Server Components, strict TypeScript, Tailwind CSS 4, React Hook Form, Zod, Vitest, Testing Library, Playwright and axe-core.
 - **Backend**: Java 21, Spring Boot 4, Spring MVC, Spring Security, Spring Data JPA, Bean Validation, Flyway, PostgreSQL, Spring Session JDBC and OpenAPI.
-- **Infrastructure**: Docker Compose, PostgreSQL 17, local-disk media storage on a Docker volume, and non-root Nginx as a reverse proxy. Everything is self-hosted — no managed cloud object storage.
+- **Infrastructure**: Docker Compose, PostgreSQL 17, local-disk media storage on a Docker volume, and non-root Nginx as a reverse proxy. Everything is self-hosted, with no managed cloud object storage.
 - **Design**: a single self-hosted family, Manrope Variable, an orange OKLCH palette, a mineral light theme and a graphite dark theme.
 
 ```text
@@ -97,6 +97,7 @@ Copy `.env.example`, then replace every flagged value. No real secret is version
 | `DATABASE_URL`                                      | Spring/CLI JDBC URL                                           |
 | `SPRING_PROFILES_ACTIVE`                            | `dev`, `test` or `prod`                                       |
 | `SESSION_COOKIE_SECURE`                             | `true` behind HTTPS in production                             |
+| `TRUSTED_PROXY_COUNT`                               | Reverse proxies in front: 0 direct, 1 behind Traefik or Nginx |
 | `SESSION_TIMEOUT`                                   | Session duration, `12h` by default                            |
 | `ADMIN_INITIAL_EMAIL`, `ADMIN_INITIAL_PASSWORD`     | Only for the administration command                           |
 | `MEDIA_DIR`                                         | Directory where uploaded media is written on disk             |
@@ -186,12 +187,15 @@ Public endpoints only return `PUBLISHED + PUBLIC + not archived`. Every admin mu
 
 ## Security
 
-- session persisted in PostgreSQL, `HttpOnly` cookie, `SameSite=Lax`, `Secure` in production, invalidated on sign-out;
+- session persisted in PostgreSQL, `HttpOnly` cookie, `SameSite=Lax`, `Secure` in production, invalidated on sign-out. The admin CLI deletes an account's rows from `SPRING_SESSION`, which is what makes `reset`, `disable` and `delete` end sessions that are already open;
 - a CSRF cookie readable by the browser only so the token can be copied into `X-XSRF-TOKEN`;
-- BCrypt cost 12, non-revealing sign-in errors and per-IP/email rate limiting, reinforced by Nginx;
-- Bean Validation and business rules on every mutation;
-- parameterized JPA queries; case-study content is stored as text and never injected as HTML;
-- CSP, anti-framing, `nosniff`, referrer policy and restrictive permissions headers;
+- BCrypt cost 12, non-revealing sign-in errors, per-IP/email rate limiting in the database, and a per-source limit on `/api/v1/auth/login` at the reverse proxy;
+- `TRUSTED_PROXY_COUNT` says how many proxies stand in front. It picks the `X-Forwarded-For` entry a proxy wrote rather than the leftmost, which the caller writes. Set it whenever the number of hops changes, or rate limiting counts a value the caller chose;
+- Bean Validation and business rules on every mutation. Project links accept http and https only, and uploads are checked against their own first bytes, not the declared filename or `Content-Type`;
+- parameterized JPA queries; case-study content is stored as text and never injected as HTML. Structured data goes through `frontend/app/lib/json-ld.ts`, which escapes it so a case study cannot close the `<script>` block around it;
+- a Content Security Policy built per request with a script nonce, in `frontend/app/lib/csp.ts`. It is the only CSP in the stack, so nothing in front may add a second one;
+- anti-framing, `nosniff`, HSTS, referrer policy and restrictive permissions headers at the reverse proxy;
+- Swagger UI and the OpenAPI document are off under the `prod` profile;
 - a log free of passwords, tokens, cookies and secrets;
 - error correlation with no stack trace exposed in production.
 
@@ -206,9 +210,11 @@ In the admin editor, pick cover, video, poster or gallery, then provide alternat
 ## Personal content and placeholders
 
 - Profile identity, links and availability: `frontend/app/content/profile.ts` for locale-independent data, `frontend/app/i18n/dictionaries/*.ts` for the wording.
-- Journey and skills: `journey` and `skillGroups` in each dictionary.
-- Photo to replace: `frontend/public/images/profile-placeholder.svg`. Keep the path or update `profile.photo` and the `profile.photoAlt` entry in both dictionaries.
-- Resume to add: `frontend/public/documents/cv-jonathan-blanchard.pdf`, then switch `cvAvailable` to `true`.
+- Apprenticeship terms shown to recruiters: `availability.facts` in each dictionary. Change them there and the home page, the contact page and the JSON-LD all follow.
+- Journey, earlier path, skills, languages and interests: `journey`, `earlierPath`, `skillGroups`, `languages` and `interests` in each dictionary.
+- Photo still to replace: `frontend/public/images/profile-placeholder.svg`. Keep the path or update `profile.photo` and the `profile.photoAlt` entry in both dictionaries.
+- Resume: `frontend/public/documents/cv-jonathan-blanchard.pdf`, copied from `CV_Jonathan_Blanchard.pdf` at the repository root, which stays untracked. It is written in French, which `profile.cvLanguage` declares to the browser.
+- Case study content: seeded by `ProjectSeed`, then edited from `/admin`. The seed only inserts a project whose slug does not exist yet, so changing the seed text does not update a database that already holds it.
 - Project media: upload it from `/admin`; the `frontend/public/images/project-placeholder.svg` placeholder is not a fake screenshot.
 
 Actions with no data behind them are hidden or replaced by a non-clickable note: no personal link is ever invented.
@@ -263,9 +269,9 @@ The pipeline follows the DevOps group model (`docs/ci-cd-model.md`): a runner ta
 | ------------- | ------------------------------------ | --------------------------------------------------------------- |
 | `test_*`      | `develop`, merge requests, tags `v*` | Lint, typecheck, Vitest, Next.js build and Gradle tests          |
 | `build`       | `develop`, tags `v*`                 | Builds and pushes `backend` and `web` to the GitLab registry     |
-| `deploy_dev`  | `develop`                            | **Manual** → `https://portfolio-d.kisukesaama.com`               |
+| `deploy_dev`  | `develop`                            | **Manual** to `https://portfolio-d.kisukesaama.com`               |
 | `stop_dev`    | `develop`                            | Manual, stops DEV                                                |
-| `deploy_prod` | tag `v*`                             | **Automatic** → `https://kisukesaama.com`                        |
+| `deploy_prod` | tag `v*`                             | **Automatic** to `https://kisukesaama.com`                        |
 | `stop_prod`   | tag `v*`                             | Manual, stops PROD                                               |
 
 Production is served on the apex domain: the portfolio *is* `kisukesaama.com`. Deployment is triggered by tag only:
@@ -291,11 +297,9 @@ The deployment job writes `${DEPLOY_DIR}/{dev,prod}/app.env` with mode `600` fro
 ## Checklist before going live
 
 - [ ] Replace the temporary photo and its alternative text in both dictionaries.
-- [ ] Add the resume and switch `cvAvailable` on.
-- [ ] Fill in dates, education and experience in the `journey` entries of both dictionaries.
-- [ ] Fill in email, GitHub and LinkedIn without leaving a dead link.
+- [ ] Name the host in the legal notice, in both dictionaries, before the domain goes live.
 - [ ] Upload real covers, posters, short videos and galleries from `/admin`.
-- [ ] Review and enrich the case studies with Jonathan's real facts.
+- [ ] Re-apply the case study text to any database seeded before it was rewritten.
 - [ ] Set `PUBLIC_SITE_URL` and the PostgreSQL secrets in a secret vault.
 - [ ] Create the administrator, then remove `ADMIN_INITIAL_*` from the environment.
 - [ ] Enable HTTPS and keep `SESSION_COOKIE_SECURE=true`.

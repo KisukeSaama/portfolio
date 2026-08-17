@@ -12,3 +12,7 @@ backend/.gradle
 backend/build
 *.log
 *.tsbuildinfo
+.claude/
+.codex/
+.impeccable/
+CV_Jonathan_Blanchard.pdf

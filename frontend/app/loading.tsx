@@ -1,12 +1,11 @@
-import { defaultLocale } from "~/i18n/config";
 import { getDictionary } from "~/i18n";
+import { activeLocale } from "~/i18n/server";
 
-export default function Loading() {
+export default async function Loading() {
+  const t = getDictionary(await activeLocale());
   return (
-    <main id="main-content" className="error-page" aria-live="polite">
-      <div>
-        <p className="muted">{getDictionary(defaultLocale).errors.loading}</p>
-      </div>
+    <main id="main-content" className="loading-page" aria-live="polite">
+      <p className="muted">{t.errors.loading}</p>
     </main>
   );
 }

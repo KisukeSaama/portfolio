@@ -10,5 +10,5 @@ import org.springframework.stereotype.Component;
 public class CurrentAdmin {
     private final AdminUserRepository users;
     public CurrentAdmin(AdminUserRepository users){this.users=users;}
-    public UUID id(Authentication authentication){return users.findByEmailIgnoreCase(authentication.getName()).orElseThrow(()->new NotFoundException("Administrateur introuvable.")).getId();}
+    public UUID id(Authentication authentication){return users.findByEmailIgnoreCase(authentication.getName()).orElseThrow(()->new NotFoundException("Administrator not found.")).getId();}
 }

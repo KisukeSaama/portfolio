@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { ProjectEditor } from "~/components/project-editor";
 
-export const metadata: Metadata = { title: "New project — Administration" };
+export const metadata: Metadata = { title: "New project | Administration" };
 export default function NewProjectPage() {
   return (
     <>

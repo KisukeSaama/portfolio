@@ -13,7 +13,8 @@ test("public navigation, language switch and theme", async ({ page }) => {
     .getByRole("link", { name: /Read the case study/ })
     .first()
     .click();
-  await expect(page).toHaveURL(/\/en\/episort$/);
+  // Janus leads the seeded order: it is the back-end project the site is positioned around.
+  await expect(page).toHaveURL(/\/en\/janus$/);
 
   // On mobile both controls live in the same menu, and switching language navigates away, so the
   // theme is toggled first while the menu is still open.
@@ -23,7 +24,7 @@ test("public navigation, language switch and theme", async ({ page }) => {
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
 
   await page.getByRole("button", { name: "FR" }).click();
-  await expect(page).toHaveURL(/\/fr\/episort$/);
+  await expect(page).toHaveURL(/\/fr\/janus$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "fr");
   // The footer is outside the collapsible menu, so it proves the translation on every viewport.
   await expect(
@@ -69,15 +70,21 @@ test("administrator editorial cycle", async ({ page, context }) => {
   await preview.close();
   await page.goto("/admin/projects");
   const row = page.locator(".data-row").filter({ hasText: slug });
+  // Publishing adds visibility, so it applies without a confirmation step.
   await row.getByTitle("Publish").click();
-  await expect(row).toContainText("PUBLISHED");
+  await expect(row).toContainText("Published");
   await page.goto("/en/projects");
   await expect(page.getByRole("heading", { name: title })).toBeVisible();
   await page.goto("/admin/projects");
-  page.once("dialog", (dialog) => dialog.accept());
   const publishedRow = page.locator(".data-row").filter({ hasText: slug });
   await publishedRow.getByTitle("Unpublish").click();
-  await expect(publishedRow).toContainText("DRAFT");
+  // Taking a case study off the public site is confirmed in an in-page dialog.
+  const confirmation = page.locator("dialog[open]");
+  await expect(confirmation).toBeVisible();
+  await confirmation
+    .getByRole("button", { name: "Unpublish the project" })
+    .click();
+  await expect(publishedRow).toContainText("Draft");
   await page.goto("/en/projects");
   await expect(page.getByRole("heading", { name: title })).toHaveCount(0);
   await page.goto("/admin");

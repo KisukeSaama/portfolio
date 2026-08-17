@@ -6,7 +6,7 @@ export default function manifest(): MetadataRoute.Manifest {
   // The manifest is served once, outside any locale segment, so it uses the source language.
   const t = getDictionary(defaultLocale);
   return {
-    name: "Jonathan Blanchard — Portfolio",
+    name: "Jonathan Blanchard | Portfolio",
     short_name: "Jonathan Blanchard",
     description: t.profile.title,
     start_url: `/${defaultLocale}`,

@@ -1,17 +1,21 @@
 import Link from "next/link";
-import { defaultLocale } from "~/i18n/config";
 import { getDictionary } from "~/i18n";
+import { activeLocale } from "~/i18n/server";
 
-export default function NotFound() {
-  // Rendered outside the [locale] segment, so it falls back to the source language.
-  const t = getDictionary(defaultLocale);
+/**
+ * Reached for any unmatched path, including `/fr/...`, so it reads the locale the proxy resolved
+ * rather than defaulting a French visitor into English.
+ */
+export default async function NotFound() {
+  const locale = await activeLocale();
+  const t = getDictionary(locale);
   return (
     <main id="main-content" className="error-page">
       <div>
         <p className="error-code">404</p>
         <h1>{t.errors.notFoundTitle}</h1>
         <p>{t.errors.notFoundBody}</p>
-        <Link className="button button-primary" href={`/${defaultLocale}`}>
+        <Link className="button button-primary" href={`/${locale}`}>
           {t.errors.backHome}
         </Link>
       </div>
