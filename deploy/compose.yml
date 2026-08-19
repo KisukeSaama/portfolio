@@ -1,11 +1,4 @@
-# Deployed stack. There is no nginx here on purpose: Traefik is the only reverse proxy on the
-# host, and Next.js already rewrites /api/* to the backend (see frontend/next.config.ts), so the
-# public entrypoint is the web container alone. The security headers nginx used to add locally are
-# reproduced as a Traefik middleware below.
-#
-# Docker's default json-file driver keeps every line ever written; on a host that stays up for
-# months that file fills the disk before the database does. 10 MB across 3 files caps each service
-# at 30 MB and still leaves days of history for reading after an incident.
+# Single-service production stack. Traefik terminates TLS and routes the public hostname to Next.js.
 x-logging: &logging
   driver: json-file
   options:
@@ -19,14 +12,8 @@ services:
     environment:
       NODE_ENV: production
       PUBLIC_SITE_URL: https://${APP_HOST}
-      INTERNAL_API_BASE_URL: http://backend:8080/api/v1
-      API_PROXY_TARGET: http://backend:8080
     networks:
-      - application
       - traefik
-    depends_on:
-      backend:
-        condition: service_healthy
     expose:
       - "3000"
     healthcheck:
@@ -36,8 +23,6 @@ services:
       timeout: 5s
       retries: 5
     restart: unless-stopped
-    # The standalone server writes nothing outside /tmp: everything it serves was baked into the
-    # image, and uploads are written to the backend's media volume.
     read_only: true
     tmpfs:
       - /tmp
@@ -61,93 +46,8 @@ services:
       - traefik.http.middlewares.${APP_SUBDOMAIN}-${DEPLOY_ENV}-headers.headers.stsSeconds=31536000
       - traefik.http.middlewares.${APP_SUBDOMAIN}-${DEPLOY_ENV}-headers.headers.stsIncludeSubdomains=true
       - traefik.http.middlewares.${APP_SUBDOMAIN}-${DEPLOY_ENV}-headers.headers.customResponseHeaders.Permissions-Policy=camera=(), microphone=(), geolocation=(), payment=()
-      # No contentSecurityPolicy here. The application sets a per-request policy carrying a script
-      # nonce (frontend/app/lib/csp.ts); a browser enforces every policy it receives, so a second
-      # static one would have to allow 'unsafe-inline' and could only narrow the first.
-      #
-      # Sign-in rate limiting. nginx used to do this with limit_req, but nginx is not in this
-      # topology, so without a router of its own the endpoint has no limit in front of it at all.
-      # Traefik counts per source address, which it reads from the connection rather than from a
-      # header, so a caller cannot reset its own counter.
-      - traefik.http.middlewares.${APP_SUBDOMAIN}-${DEPLOY_ENV}-login-rate.ratelimit.average=10
-      - traefik.http.middlewares.${APP_SUBDOMAIN}-${DEPLOY_ENV}-login-rate.ratelimit.period=1m
-      - traefik.http.middlewares.${APP_SUBDOMAIN}-${DEPLOY_ENV}-login-rate.ratelimit.burst=5
-      - traefik.http.routers.${APP_SUBDOMAIN}-${DEPLOY_ENV}-login.rule=Host(`${APP_HOST}`) && Path(`/api/v1/auth/login`)
-      # Above the catch-all Host() router, which would otherwise match this path first.
-      - traefik.http.routers.${APP_SUBDOMAIN}-${DEPLOY_ENV}-login.priority=100
-      - traefik.http.routers.${APP_SUBDOMAIN}-${DEPLOY_ENV}-login.entrypoints=websecure
-      - traefik.http.routers.${APP_SUBDOMAIN}-${DEPLOY_ENV}-login.tls=true
-      - traefik.http.routers.${APP_SUBDOMAIN}-${DEPLOY_ENV}-login.tls.certresolver=letsencrypt
-      - traefik.http.routers.${APP_SUBDOMAIN}-${DEPLOY_ENV}-login.service=${APP_SUBDOMAIN}-${DEPLOY_ENV}
-      - traefik.http.routers.${APP_SUBDOMAIN}-${DEPLOY_ENV}-login.middlewares=${APP_SUBDOMAIN}-${DEPLOY_ENV}-headers,${APP_SUBDOMAIN}-${DEPLOY_ENV}-login-rate
-
-  backend:
-    image: ${CI_REGISTRY_IMAGE}/backend:${IMAGE_TAG}
-    logging: *logging
-    environment:
-      SPRING_PROFILES_ACTIVE: prod
-      DATABASE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      SESSION_COOKIE_SECURE: "true"
-      SERVER_FORWARD_HEADERS_STRATEGY: framework
-      # Traefik is the only hop that rewrites X-Forwarded-For. Next.js forwards the header
-      # untouched on its /api rewrite, so the chain the backend sees is one entry long.
-      TRUSTED_PROXY_COUNT: "1"
-      MEDIA_DIR: /var/lib/portfolio/media
-      PROJECT_SEED_ENABLED: ${PROJECT_SEED_ENABLED:-true}
-      CONTACT_EMAIL: ${CONTACT_EMAIL:-}
-    networks:
-      - application
-    volumes:
-      - ${DATA_DIR}/${DEPLOY_ENV}/media:/var/lib/portfolio/media
-    depends_on:
-      postgres:
-        condition: service_healthy
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "wget -qO- http://127.0.0.1:8080/actuator/health/readiness | grep -q UP",
-        ]
-      interval: 15s
-      timeout: 5s
-      retries: 20
-      start_period: 30s
-    restart: unless-stopped
-    read_only: true
-    tmpfs:
-      - /tmp
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-
-  postgres:
-    image: postgres:17-alpine
-    logging: *logging
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    volumes:
-      - ${DATA_DIR}/${DEPLOY_ENV}/postgres:/var/lib/postgresql/data
-    networks:
-      - application
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
-      interval: 10s
-      timeout: 5s
-      retries: 12
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
 
 networks:
-  # The database and the two applications talk on a network with no route out. Nothing here needs
-  # egress: media is stored on a local volume, so no service calls out to the internet.
-  application:
-    internal: true
   traefik:
     external: true
     name: ${TRAEFIK_NETWORK}

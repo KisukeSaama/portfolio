@@ -2,19 +2,42 @@
   "name": "jonathan-blanchard-portfolio",
   "version": "1.0.0",
   "private": true,
-  "workspaces": ["frontend"],
+  "type": "module",
   "scripts": {
-    "dev:frontend": "npm --prefix frontend run dev",
-    "dev:backend": "node scripts/gradle.mjs bootRun --args=--spring.profiles.active=dev",
-    "lint": "npm --prefix frontend run lint",
-    "typecheck": "npm --prefix frontend run typecheck",
-    "test:frontend": "npm --prefix frontend run test",
-    "test:e2e": "npm --prefix frontend run e2e",
-    "test:backend": "node scripts/gradle.mjs test",
-    "build:frontend": "npm --prefix frontend run build",
-    "build:backend": "node scripts/gradle.mjs build",
-    "admin": "node scripts/gradle.mjs adminCli",
-    "verify": "npm run lint && npm run typecheck && npm run test:frontend && npm run test:backend && npm run build:frontend && npm run build:backend"
+    "dev": "next dev -p 5173",
+    "build": "next build",
+    "start": "next start -p 3000",
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "verify": "npm run lint && npm run typecheck && npm test && npm run build"
   },
-  "engines": { "node": ">=24" }
+  "dependencies": {
+    "@fontsource-variable/manrope": "^5.2.8",
+    "lucide-react": "1.31.0",
+    "next": "16.3.1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@playwright/test": "1.62.1",
+    "@tailwindcss/postcss": "4.3.3",
+    "@testing-library/jest-dom": "7.0.1",
+    "@testing-library/react": "16.3.2",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.3.1",
+    "jsdom": "30.0.1",
+    "tailwindcss": "4.3.3",
+    "typescript": "6.0.3",
+    "vitest": "4.1.10"
+  },
+  "engines": {
+    "node": ">=24"
+  }
 }

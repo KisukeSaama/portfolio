@@ -1,16 +1,9 @@
 image: docker:29
 
-# Portfolio CI/CD, following the DevOps group model (docs: ci-cd-model.md):
-# - tests run on `develop`, on merge requests and on tags `v*`;
-# - images are built and pushed on `develop` and on tags `v*`;
-# - DEV deploys manually from `develop`  -> https://portfolio-d.kisukesaama.com
-# - PROD deploys automatically on tag v* -> https://kisukesaama.com
-#
-# Required GitLab CI/CD variables (scope them per environment, protect the prod ones):
-#   PORTFOLIO_POSTGRES_PASSWORD
-# Optional (defaults come from deploy/app.env):
-#   PORTFOLIO_PROJECT_SEED_ENABLED, PORTFOLIO_CONTACT_EMAIL
-
+# Frontend-only portfolio pipeline:
+# - checks run on develop, merge requests and version tags;
+# - one Next.js image is built on develop and version tags;
+# - DEV deploys manually from develop, PROD automatically from version tags.
 stages:
   - test
   - build
@@ -25,8 +18,7 @@ variables:
 
 .docker_defaults: &docker_defaults
   image: docker:29
-  tags:
-    - devops
+  tags: [devops]
   before_script:
     - set -euo pipefail
     - docker info
@@ -41,8 +33,7 @@ variables:
 
 .deploy_defaults: &deploy_defaults
   image: docker:29
-  tags:
-    - devops
+  tags: [devops]
   before_script:
     - set -euo pipefail
     - docker info
@@ -54,8 +45,6 @@ variables:
     - export CI_REGISTRY_IMAGE="${CI_REGISTRY_IMAGE:-${CI_REGISTRY}/${CI_PROJECT_PATH}}"
     - export IMAGE_TAG="${CI_COMMIT_TAG:-${CI_COMMIT_REF_SLUG}}"
     - set -a; source deploy/paths.env; set +a
-    # PROD is the apex domain: this site is what kisukesaama.com serves. DEV keeps the
-    # standard `<subdomain>-d` host so it never collides with it.
     - |
       if [[ -n "${CI_COMMIT_TAG:-}" ]]; then
         export DEPLOY_ENV=prod
@@ -65,77 +54,37 @@ variables:
         export APP_HOST="${APP_SUBDOMAIN}-d.kisukesaama.com"
       fi
     - export TARGET_DIR="${DEPLOY_DIR}/${DEPLOY_ENV}"
-    - export ENV_DATA_DIR="${DATA_DIR}/${DEPLOY_ENV}"
     - |
-      validate_paths() {
-        case "${DEPLOY_DIR:-}" in
-          /home/kisuke/*) ;;
-          *) echo "DEPLOY_DIR must stay under /home/kisuke/." >&2; exit 1 ;;
-        esac
-        case "${DATA_DIR:-}" in
-          /home/kisuke/*) ;;
-          *) echo "DATA_DIR must stay under /home/kisuke/." >&2; exit 1 ;;
-        esac
-        case "${DEPLOY_DIR}${DATA_DIR}" in
-          *..*) echo "Deployment paths cannot contain '..'." >&2; exit 1 ;;
-        esac
-      }
+      case "${DEPLOY_DIR:-}" in
+        /home/kisuke/*) ;;
+        *) echo "DEPLOY_DIR must stay under /home/kisuke/." >&2; exit 1 ;;
+      esac
+      case "${DEPLOY_DIR}" in
+        *..*) echo "DEPLOY_DIR cannot contain '..'." >&2; exit 1 ;;
+      esac
 
-      write_runtime_files() {
-        local target="$1"
-        local env_name="${CI_ENVIRONMENT_NAME:-this environment}"
-        : "${PORTFOLIO_POSTGRES_PASSWORD:?Set PORTFOLIO_POSTGRES_PASSWORD for ${env_name}}"
+      mkdir -p "${TARGET_DIR}"
+      cp deploy/compose.yml "${TARGET_DIR}/compose.yml"
+      cp deploy/paths.env "${TARGET_DIR}/paths.env"
+      printf '%s\n' \
+        "DEPLOY_ENV=${DEPLOY_ENV}" \
+        "APP_HOST=${APP_HOST}" \
+        "CI_REGISTRY_IMAGE=${CI_REGISTRY_IMAGE}" \
+        "IMAGE_TAG=${IMAGE_TAG}" \
+        > "${TARGET_DIR}/app.env"
 
-        mkdir -p "${target}"
-        cp deploy/compose.yml "${target}/compose.yml"
-        cp deploy/paths.env "${target}/paths.env"
-        # Spring reads its database credentials from the environment, so app.env carries them and
-        # is the one file in the deployment that must not be world-readable.
-        (umask 077; printf '%s\n' \
-          "DEPLOY_ENV=${DEPLOY_ENV}" \
-          "APP_HOST=${APP_HOST}" \
-          "CI_REGISTRY_IMAGE=${CI_REGISTRY_IMAGE}" \
-          "IMAGE_TAG=${IMAGE_TAG}" \
-          "POSTGRES_DB=${PORTFOLIO_POSTGRES_DB:-portfolio}" \
-          "POSTGRES_USER=${PORTFOLIO_POSTGRES_USER:-portfolio}" \
-          "POSTGRES_PASSWORD=${PORTFOLIO_POSTGRES_PASSWORD}" \
-          "PROJECT_SEED_ENABLED=${PORTFOLIO_PROJECT_SEED_ENABLED:-true}" \
-          "CONTACT_EMAIL=${PORTFOLIO_CONTACT_EMAIL:-}" \
-          > "${target}/app.env")
-      }
-
-      stage_on_host() {
-        local source_dir="$1"
-        local target_rel="${TARGET_DIR#/home/kisuke/}"
-        local data_rel="${DATA_DIR#/home/kisuke/}"
-
-        # The Docker runner mounts the host socket, but not /home/kisuke. Copy through a
-        # short-lived container so the Compose bind paths exist on the host itself.
-        tar -C "${source_dir}" -cf - . | docker run --rm -i \
-          -e TARGET_REL="${target_rel}" \
-          -e DATA_REL="${data_rel}" \
-          -e DEPLOY_ENV="${DEPLOY_ENV}" \
-          -v /home/kisuke:/host-home \
-          alpine:3.24 sh -euc '
-            case "$TARGET_REL" in ""|/*|*..*) exit 1 ;; esac
-            case "$DATA_REL" in ""|/*|*..*) exit 1 ;; esac
-            host_target="/host-home/$TARGET_REL"
-            host_data="/host-home/$DATA_REL/$DEPLOY_ENV"
-            mkdir -p "$host_target" "$host_data/postgres" "$host_data/media"
-            tar -C "$host_target" -xf -
-            chmod 750 "$host_target" "$host_data" "$host_data/postgres" "$host_data/media"
-            # The backend runs as uid 10001 (see backend/Dockerfile) on a read-only rootfs; this
-            # bind mount is the only path it writes to, so it has to own it.
-            chown -R 10001:10001 "$host_data/media"
-            chmod 640 "$host_target/compose.yml" "$host_target/paths.env"
-            chmod 600 "$host_target/app.env"
-          '
-      }
-
-      validate_paths
-      mkdir -p "${TARGET_DIR}" "${ENV_DATA_DIR}/postgres" "${ENV_DATA_DIR}/media"
-      write_runtime_files "${TARGET_DIR}"
-      stage_on_host "${TARGET_DIR}"
+      target_rel="${TARGET_DIR#/home/kisuke/}"
+      tar -C "${TARGET_DIR}" -cf - . | docker run --rm -i \
+        -e TARGET_REL="${target_rel}" \
+        -v /home/kisuke:/host-home \
+        alpine:3.24 sh -euc '
+          case "$TARGET_REL" in ""|/*|*..*) exit 1 ;; esac
+          host_target="/host-home/$TARGET_REL"
+          mkdir -p "$host_target"
+          tar -C "$host_target" -xf -
+          chmod 750 "$host_target"
+          chmod 640 "$host_target/compose.yml" "$host_target/paths.env" "$host_target/app.env"
+        '
     - echo "${CI_REGISTRY_PASSWORD:-${CI_JOB_TOKEN}}" | docker login --username "${CI_REGISTRY_USER:-gitlab-ci-token}" --password-stdin "${CI_REGISTRY}"
     - |
       compose() {
@@ -143,99 +92,53 @@ variables:
           --env-file paths.env --env-file app.env -f compose.yml "$@"
       }
 
-      # A rollout that fails a health condition says only "dependency failed to start"; why is in
-      # the container's own log, on a host the runner cannot open a shell on. Print it here, or
-      # every failure costs a trip to the server before anyone knows which service refused to come up.
       deploy() {
         compose pull
         compose up -d --remove-orphans && return 0
-        echo "Deployment failed. Container state and recent logs follow." >&2
         compose ps -a >&2 || true
         compose logs --no-color --tail 200 >&2 || true
         return 1
       }
 
-# ---- test -----------------------------------------------------------------
-test_frontend:
+test:
   stage: test
   tags: [devops]
-  image: node:24-alpine
+  image: mcr.microsoft.com/playwright:v1.62.1-noble
   cache:
     key: portfolio-npm
-    paths:
-      - .npm
+    paths: [.npm]
   before_script:
     - npm config set cache "$CI_PROJECT_DIR/.npm"
   script:
     - npm ci --no-audit --no-fund
-    # Separate from the install so a known-vulnerable dependency fails the pipeline by name
-    # instead of scrolling past in the install log.
     - npm audit --audit-level=high
     - npm run lint
     - npm run typecheck
-    - npm run test:frontend
-    - npm run build:frontend
+    - npm test
+    - npm run test:e2e
   rules:
     - if: '$CI_COMMIT_BRANCH == "develop"'
     - if: '$CI_COMMIT_TAG =~ /^v.*/'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
 
-test_backend:
-  stage: test
-  tags: [devops]
-  image: eclipse-temurin:25-jdk
-  variables:
-    GRADLE_USER_HOME: $CI_PROJECT_DIR/.gradle
-    # The integration test starts a Postgres through Testcontainers. On this runner the daemon is
-    # the host's, so the database container is a sibling: it publishes its port on the host, and
-    # "localhost" from inside this job is not that host. The bridge gateway is.
-    TESTCONTAINERS_HOST_OVERRIDE: "172.17.0.1"
-    TESTCONTAINERS_RYUK_DISABLED: "true"
-  cache:
-    key: portfolio-gradle
-    paths:
-      - .gradle/caches
-      - .gradle/wrapper
-  script:
-    - cd backend
-    - chmod +x gradlew
-    - ./gradlew --no-daemon test
-  artifacts:
-    when: always
-    reports:
-      junit: backend/build/test-results/test/TEST-*.xml
-    expire_in: 1 week
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "develop"'
-    - if: '$CI_COMMIT_TAG =~ /^v.*/'
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-
-# ---- build ----------------------------------------------------------------
 build:
   stage: build
   <<: *docker_defaults
-  needs:
-    - job: test_backend
-      artifacts: false
-    - job: test_frontend
-      artifacts: false
+  needs: [test]
   script:
-    - docker build --pull -t "${CI_REGISTRY_IMAGE}/backend:${IMAGE_TAG}" -f backend/Dockerfile backend
     - >-
       docker build --pull
       --build-arg PUBLIC_SITE_URL="https://${PROD_HOST}"
-      -t "${CI_REGISTRY_IMAGE}/web:${IMAGE_TAG}" -f frontend/Dockerfile .
-    - docker push "${CI_REGISTRY_IMAGE}/backend:${IMAGE_TAG}"
+      -t "${CI_REGISTRY_IMAGE}/web:${IMAGE_TAG}" -f Dockerfile .
     - docker push "${CI_REGISTRY_IMAGE}/web:${IMAGE_TAG}"
   rules:
     - if: '$CI_COMMIT_BRANCH == "develop"'
     - if: '$CI_COMMIT_TAG =~ /^v.*/'
 
-# ---- deploy DEV (manual from develop) -------------------------------------
 deploy_dev:
   stage: deploy
   <<: *deploy_defaults
-  needs: ["build"]
+  needs: [build]
   resource_group: portfolio-dev
   environment:
     name: dev
@@ -262,11 +165,10 @@ stop_dev:
     - cd "${TARGET_DIR}"
     - compose down
 
-# ---- deploy PROD (automatic from v* tags) ---------------------------------
 deploy_prod:
   stage: deploy
   <<: *deploy_defaults
-  needs: ["build"]
+  needs: [build]
   resource_group: portfolio-prod
   environment:
     name: production

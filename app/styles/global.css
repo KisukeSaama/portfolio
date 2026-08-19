@@ -1,0 +1,1293 @@
+@import "tailwindcss";
+
+/**
+ * Surfaces carry no hue at all. The warm tint they used to carry read as coffee rather than as the
+ * graphite the direction asks for, and at these chroma levels a warm grey cannot look deliberate:
+ * it looks like a white that went off. Orange is now the only hue on the page, which is the point.
+ */
+:root {
+  color-scheme: light;
+  --background: oklch(0.965 0 0);
+  --surface: oklch(0.995 0 0);
+  --surface-2: oklch(0.925 0 0);
+  --elevated: oklch(1 0 0);
+  --ink: oklch(0.215 0 0);
+  --muted: oklch(0.44 0 0);
+  --border: oklch(0.85 0 0);
+  /**
+   * Section rules are decoration and stay quiet at `--border`. A diagram box is different: its
+   * outline is what makes it a box, so it is information and has to clear 3:1 on the page.
+   */
+  --border-strong: oklch(0.62 0 0);
+  /**
+   * Hue 58: a tool orange. The ramp used to sit at hue 30-48, which is terracotta â€” it read as
+   * salmon, and it is the same corner of the wheel every AI product's brand occupies. Nothing about
+   * a workbench is pink. Every value here clears its contrast bar and stays inside sRGB.
+   */
+  --orange: oklch(0.615 0.142 58);
+  --orange-action: oklch(0.56 0.13 58);
+  --orange-action-hover: oklch(0.5 0.12 58);
+  --on-orange: oklch(0.99 0 0);
+  --orange-soft: oklch(0.8 0.12 62);
+  --orange-deep: oklch(0.5 0.12 58);
+  --orange-light: oklch(0.93 0.045 62);
+  --orange-muted: oklch(0.86 0.055 60);
+  --success: oklch(0.46 0.105 150);
+  --success-bg: oklch(0.93 0.04 150);
+  --warning: oklch(0.46 0.12 75);
+  --warning-bg: oklch(0.94 0.05 80);
+  --danger: oklch(0.46 0.18 25);
+  --danger-bg: oklch(0.94 0.045 25);
+  --on-danger: oklch(0.99 0 0);
+  --focus: oklch(0.63 0.15 58);
+  --shadow: 0 4px 8px oklch(0.2 0 0/0.09);
+  --container: 73.75rem;
+  --gutter: clamp(1rem, 3vw, 2.25rem);
+  --radius: 0.75rem;
+  --z-menu: 20;
+  --z-sticky: 30;
+  --z-backdrop: 40;
+  --z-modal: 50;
+}
+/**
+ * A dark theme, not a black one. The ramp used to start at 0.195, which renders as near-black: the
+ * page read as a void with text floating on it, and every surface above it had to crowd into the
+ * fifty levels left before mid-grey. Starting at 0.255 leaves room for four distinct planes, and a
+ * dark grey is what the direction asked for in the first place.
+ */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --background: oklch(0.275 0 0);
+  --surface: oklch(0.32 0 0);
+  --surface-2: oklch(0.365 0 0);
+  --elevated: oklch(0.41 0 0);
+  --ink: oklch(0.965 0 0);
+  --muted: oklch(0.8 0 0);
+  --border: oklch(0.465 0 0);
+  --border-strong: oklch(0.63 0 0);
+  /* The whole ramp moved up with the surfaces it sits on, and was re-checked against each of them. */
+  --orange: oklch(0.8 0.13 58);
+  --orange-action: oklch(0.82 0.12 60);
+  --orange-action-hover: oklch(0.76 0.14 58);
+  --on-orange: oklch(0.2 0 0);
+  --orange-soft: oklch(0.85 0.1 60);
+  --orange-deep: oklch(0.83 0.115 60);
+  --orange-light: oklch(0.9 0.065 62);
+  --orange-muted: oklch(0.4 0.085 58);
+  --success: oklch(0.78 0.12 150);
+  --success-bg: oklch(0.36 0.05 150);
+  --warning: oklch(0.84 0.13 80);
+  --warning-bg: oklch(0.36 0.06 75);
+  --danger: oklch(0.78 0.15 25);
+  --danger-bg: oklch(0.36 0.075 25);
+  --on-danger: oklch(0.2 0 0);
+  --focus: oklch(0.8 0.125 58);
+  --shadow: 0 4px 8px oklch(0.05 0 0/0.32);
+}
+* {
+  box-sizing: border-box;
+}
+/**
+ * No `scroll-behavior: smooth` here, and that is deliberate. The router scrolls to the top on every
+ * navigation by setting the scroll position; a smooth root turns that set into an animation, which
+ * hydration and the next layout pass then interrupt. The result was landing on the home page already
+ * scrolled several hundred pixels down, every time, as if a stale anchor had been followed.
+ * `scroll-padding-top` stays: it is what keeps the skip link's target clear of the sticky header.
+ */
+html {
+  scroll-padding-top: 6rem;
+  /* Surfaces the browser draws for us, themed from the palette rather than left at its defaults. */
+  scrollbar-color: var(--border) transparent;
+  /* Holds the gutter so locking the scroll behind a modal does not shift the page sideways. */
+  scrollbar-gutter: stable;
+  accent-color: var(--orange);
+  /* `--orange-deep` is already redefined per theme, so the caret follows without a second rule. */
+  caret-color: var(--orange-deep);
+}
+body {
+  margin: 0;
+  overflow-x: hidden;
+  background: var(--background);
+  color: var(--ink);
+  font-family: "Manrope Variable", ui-sans-serif, system-ui, sans-serif;
+  line-height: 1.65;
+  text-rendering: optimizeLegibility;
+  transition:
+    background-color 180ms cubic-bezier(0.16, 1, 0.3, 1),
+    color 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+/**
+ * Form controls do not inherit the page font on their own, so they are told to. `body` used to be in
+ * this list, and that quietly undid the rule above it: `font: inherit` on `body` means "take whatever
+ * `html` has", which is the browser reset's stack. The site shipped in the system font the whole
+ * time, with Manrope downloaded and never drawn. It is one selector, and it cost the typography.
+ */
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+a {
+  color: inherit;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.2em;
+}
+img,
+video {
+  display: block;
+  max-width: 100%;
+}
+h1,
+h2,
+h3 {
+  margin: 0;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+p {
+  text-wrap: pretty;
+}
+::selection {
+  background: var(--orange-light);
+  color: var(--ink);
+}
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+.skip-link {
+  position: fixed;
+  left: 1rem;
+  top: 1rem;
+  z-index: 60;
+  transform: translateY(-160%);
+  background: var(--ink);
+  color: var(--background);
+  padding: 0.7rem 1rem;
+  border-radius: 0.5rem;
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+.shell {
+  width: min(100% - 2 * var(--gutter), var(--container));
+  margin-inline: auto;
+}
+.readable {
+  max-width: 68ch;
+}
+.muted {
+  color: var(--muted);
+}
+.accent {
+  color: var(--orange-deep);
+}
+[data-theme="dark"] .accent {
+  color: var(--orange-soft);
+}
+/**
+ * The page used to alternate between 16 rem of empty band and a block of tightly set small text, so
+ * it read as disconnected islands rather than as one document. Sections are closer together and the
+ * display sizes came down to meet the body: the gap between a heading and the paragraph under it now
+ * costs less than the gap between two sections, which is the only rule this rhythm has to obey.
+ */
+.section {
+  padding-block: clamp(3.25rem, 5.5vw, 5.5rem);
+}
+.section-compact {
+  padding-block: clamp(2.25rem, 4vw, 3.5rem);
+}
+.section-heading {
+  font-size: clamp(1.85rem, 3vw, 2.75rem);
+  max-width: 22ch;
+}
+.section-lede {
+  margin: 1rem 0 0;
+  max-width: 62ch;
+  color: var(--muted);
+  font-size: clamp(1rem, 1.2vw, 1.125rem);
+}
+.button {
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  border-radius: 0.5rem;
+  border: 0;
+  padding: 0.7rem 1rem;
+  font-weight: 750;
+  line-height: 1.2;
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background-color 180ms cubic-bezier(0.16, 1, 0.3, 1),
+    color 180ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.button:hover {
+  transform: translateY(-1px);
+}
+.button:active {
+  transform: none;
+}
+.button-primary {
+  background: var(--orange-action);
+  color: var(--on-orange);
+}
+.button-primary:hover {
+  background: var(--orange-action-hover);
+}
+.button-secondary {
+  background: transparent;
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+.button-secondary:hover,
+.button-quiet:hover {
+  background: var(--surface-2);
+}
+.button-quiet {
+  background: transparent;
+  color: var(--muted);
+  padding-inline: 0.65rem;
+}
+.button-danger {
+  background: var(--danger);
+  color: var(--on-danger);
+}
+button:disabled,
+.button[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+}
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--orange-deep);
+  font-weight: 750;
+}
+[data-theme="dark"] .text-link {
+  color: var(--orange-soft);
+}
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  background: var(--background);
+  border-bottom: 1px solid var(--border);
+}
+.header-inner {
+  min-height: 4.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+}
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-weight: 800;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.wordmark-mark {
+  width: 0.75rem;
+  height: 0.75rem;
+  background: var(--orange);
+  border-radius: 0.2rem;
+  transform: rotate(9deg);
+}
+.desktop-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.6rem;
+}
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.35rem;
+}
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+.nav-link {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: 0.5rem;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 650;
+}
+.nav-link:hover,
+.nav-link[data-active="true"],
+.nav-link.active {
+  color: var(--ink);
+  background: var(--surface-2);
+}
+.nav-link[data-active="true"],
+.nav-link.active {
+  box-shadow: inset 0 -2px 0 var(--orange);
+}
+/*
+ * In the public header the links are read as a line of words, not as a row of controls: no fill, no
+ * rounded box, just the label and a rule that grows underneath it.
+ */
+.desktop-nav .nav-link {
+  position: relative;
+  padding-inline: 0.1rem;
+  border-radius: 0;
+  transition: color 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.desktop-nav .nav-link::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0.5rem;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--orange);
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition:
+    transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.desktop-nav .nav-link:hover,
+.desktop-nav .nav-link:focus-visible,
+.desktop-nav .nav-link[data-active="true"] {
+  background: transparent;
+  box-shadow: none;
+  color: var(--ink);
+}
+.desktop-nav .nav-link:hover::after {
+  opacity: 0.45;
+  transform: scaleX(1);
+}
+.desktop-nav .nav-link[data-active="true"]::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+.icon-button,
+.theme-toggle {
+  width: 2.75rem;
+  height: 2.75rem;
+  display: inline-grid;
+  place-items: center;
+  border: 0;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background-color 160ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.icon-button:hover,
+.theme-toggle:hover {
+  background: var(--surface-2);
+}
+.mobile-nav {
+  display: none;
+  position: relative;
+}
+.mobile-nav summary {
+  list-style: none;
+  cursor: pointer;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  display: grid;
+  place-items: center;
+  border-radius: 0.5rem;
+}
+.mobile-nav summary::-webkit-details-marker {
+  display: none;
+}
+.mobile-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.7rem);
+  width: min(19rem, calc(100vw - 2rem));
+  padding: 0.7rem;
+  background: var(--elevated);
+  box-shadow: var(--shadow);
+  border-radius: var(--radius);
+}
+.mobile-panel .nav-link {
+  width: 100%;
+}
+/* A dropped panel is a menu, so the current entry is marked down its edge rather than underlined. */
+.mobile-panel .nav-link[data-active="true"],
+.mobile-panel .nav-link.active {
+  box-shadow: inset 2px 0 0 var(--orange);
+}
+.mobile-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--border);
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+}
+.hero {
+  padding-block: clamp(2.75rem, 6vw, 5.5rem);
+}
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(17rem, 0.68fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: center;
+}
+.hero-name {
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  color: var(--orange-deep);
+  font-weight: 800;
+  margin: 0 0 1rem;
+}
+.hero h1 {
+  font-size: clamp(2.35rem, 5vw, 4.35rem);
+  max-width: 15ch;
+}
+.hero-statement {
+  font-size: clamp(1.08rem, 1.5vw, 1.3rem);
+  max-width: 58ch;
+  margin: 1.35rem 0 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+.hero-availability {
+  margin: 1.35rem 0 0;
+  max-width: 60ch;
+  padding-left: 1rem;
+  box-shadow: inset 1px 0 0 var(--orange);
+}
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+.portrait-frame {
+  aspect-ratio: 4/5;
+  max-height: 34rem;
+  width: 100%;
+  background: var(--surface-2);
+  border-radius: 0.875rem;
+  overflow: hidden;
+  position: relative;
+  box-shadow: var(--shadow);
+}
+/**
+ * The caption used to be a `content:` string on this pseudo-element, which meant it could not be
+ * translated and stayed on the page after a real portrait was set. It is rendered from the
+ * dictionary now, and only while `profile.portraitAvailable` is false.
+ */
+.portrait-note {
+  position: absolute;
+  inset: auto 1rem 1rem;
+  margin: 0;
+  background: var(--elevated);
+  color: var(--ink);
+  padding: 0.7rem 0.8rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 750;
+}
+.portrait-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/**
+ * This band used to be a near-black slab in the light theme: a hole punched through the page two
+ * screens from the top, and the single loudest thing on a site that is otherwise quiet. It is a
+ * raised grey panel now. Still a change of ground, no longer a void.
+ */
+.intro-section {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+[data-theme="dark"] .intro-section {
+  background: var(--elevated);
+}
+.intro-grid {
+  display: grid;
+  grid-template-columns: minmax(14rem, 0.65fr) minmax(0, 1.35fr);
+  gap: clamp(2rem, 7vw, 7rem);
+}
+.intro-title {
+  font-size: clamp(1.75rem, 2.9vw, 2.6rem);
+  color: var(--orange-deep);
+}
+[data-theme="dark"] .intro-title {
+  color: var(--orange-soft);
+}
+.intro-copy {
+  display: grid;
+  gap: 1.15rem;
+  max-width: 66ch;
+  font-size: clamp(1rem, 1.15vw, 1.1rem);
+}
+.intro-copy p {
+  margin: 0;
+}
+.principles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 4rem;
+  margin-top: 3.5rem;
+  border-top: 1px solid var(--border);
+}
+.principle {
+  padding-block: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.principle h3 {
+  font-size: 1.1rem;
+  letter-spacing: -0.02em;
+}
+.principle p {
+  color: var(--muted);
+  margin: 0.5rem 0 0;
+  font-size: 0.9375rem;
+}
+.journey-list {
+  margin: 3rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.journey-item {
+  display: grid;
+  grid-template-columns: minmax(10rem, 0.45fr) minmax(0, 1.5fr);
+  gap: 2rem;
+  padding-block: 1.75rem;
+  border-top: 1px solid var(--border);
+}
+.journey-item:last-child {
+  border-bottom: 1px solid var(--border);
+}
+.journey-period {
+  color: var(--orange-deep);
+  font-weight: 750;
+}
+.journey-item h3 {
+  font-size: clamp(1.15rem, 1.6vw, 1.45rem);
+}
+.journey-item p {
+  margin: 0.55rem 0 0;
+  color: var(--muted);
+  max-width: 65ch;
+  font-size: 0.9375rem;
+}
+/* Scoped to beat `.journey-item p` on specificity instead of on `!important`. */
+.journey-item p.journey-org {
+  font-weight: 700;
+  color: var(--ink);
+  margin-top: 0.35rem;
+}
+.journey-points {
+  list-style: disc;
+  margin: 1rem 0 0;
+  padding-left: 1.1rem;
+  color: var(--muted);
+  max-width: 65ch;
+}
+.journey-points li + li {
+  margin-top: 0.5rem;
+}
+.journey-list-quiet .journey-item h3 {
+  font-size: 1.25rem;
+}
+
+/* Recruiter-facing summary: the contract terms, readable before any prose. */
+.availability-card {
+  display: grid;
+  grid-template-columns: minmax(14rem, 0.7fr) minmax(0, 1.3fr);
+  gap: clamp(1.5rem, 4vw, 3rem);
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.availability-intro h2 {
+  font-size: clamp(1.4rem, 2.6vw, 1.9rem);
+}
+.availability-intro p {
+  margin: 0.6rem 0 0;
+  color: var(--muted);
+}
+.availability-facts {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 2rem;
+}
+.availability-fact {
+  padding: 0.7rem 0;
+  border-top: 1px solid var(--border);
+}
+.availability-fact dt {
+  font-size: 0.8125rem;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--orange-deep);
+}
+.availability-fact dd {
+  margin: 0.2rem 0 0;
+  font-weight: 600;
+}
+
+/**
+ * A single aside that must read as an answer, not as decoration. The orange rule is 1px, matching
+ * `.hero-availability`: one idiom for "this is set aside from the main column", and a heavy colored
+ * edge would be decoration doing a heading's job.
+ */
+.note-card {
+  box-shadow: inset 1px 0 0 var(--orange);
+  padding: 0.25rem 0 0.25rem clamp(1rem, 3vw, 1.75rem);
+  max-width: 68ch;
+}
+.note-card h2 {
+  font-size: clamp(1.25rem, 2.4vw, 1.6rem);
+}
+.note-card p {
+  margin: 0.6rem 0 0;
+  color: var(--muted);
+}
+
+.fact-rows {
+  margin: 2rem 0 0;
+}
+.fact-row {
+  display: grid;
+  grid-template-columns: minmax(7rem, 0.3fr) minmax(0, 1fr);
+  gap: 1rem;
+  padding: 0.8rem 0;
+  border-top: 1px solid var(--border);
+}
+.fact-row:last-child {
+  border-bottom: 1px solid var(--border);
+}
+.fact-row dt {
+  font-weight: 750;
+}
+.fact-row dd {
+  margin: 0;
+  color: var(--muted);
+}
+.fact-row-stacked {
+  grid-template-columns: 1fr;
+  gap: 0.3rem;
+}
+.side-by-side {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: start;
+}
+.contact-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+.contact-panel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+/**
+ * A listing entry, and only that. Each card answers what the project is, what it is built with, and
+ * whether it is finished, then hands the reader a link. The diagrams and the reasoning used to live
+ * here and pushed two projects across four screens of a page whose job was to summarize.
+ */
+.projects-featured {
+  margin-top: 2.5rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1rem, 2vw, 1.5rem);
+}
+.project-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: clamp(1.25rem, 2.5vw, 1.75rem);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+/* The projects page sets a second heading straight after the cards, which otherwise touched them. */
+.projects-featured + .section-heading {
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+}
+.project-stack {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+/* Pushed to the bottom edge so two cards of unequal prose still line their actions up. */
+.project-card .project-actions {
+  margin-top: auto;
+  padding-top: 0.4rem;
+}
+.showcase-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.75rem 1.25rem;
+}
+.project-title {
+  font-size: clamp(1.5rem, 2.2vw, 2rem);
+}
+/* Pills are for statuses only, and this is the one fact that separates shipped from finished. */
+.status-pill {
+  margin: 0;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  background: var(--orange-light);
+  color: var(--orange-deep);
+  font-size: 0.8125rem;
+  font-weight: 750;
+  line-height: 1.35;
+}
+[data-theme="dark"] .status-pill {
+  background: var(--orange-muted);
+  color: var(--orange-light);
+}
+.project-lede {
+  margin: 0;
+  max-width: 52ch;
+  color: var(--muted);
+}
+/* The `note-card` treatment: one orange rule, for a statement the reader is already asking for. */
+.showcase-signal {
+  margin: 2rem 0 0;
+  padding: 0.15rem 0 0.15rem clamp(1rem, 2.5vw, 1.5rem);
+  box-shadow: inset 1px 0 0 var(--orange);
+  max-width: 68ch;
+  color: var(--muted);
+}
+.project-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  margin-top: 2rem;
+}
+/* Shared by every placeholder slot, so the note…1315 tokens truncated…p p.skill-names {
+  margin-top: 0.9rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.skill-proof {
+  font-size: 0.8125rem;
+}
+.contact-panel {
+  background: var(--orange-action);
+  color: var(--on-orange);
+  padding: clamp(2rem, 6vw, 5rem);
+  border-radius: 0.875rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) auto;
+  gap: 2rem;
+  align-items: end;
+}
+.contact-panel h2 {
+  font-size: clamp(1.9rem, 3.4vw, 3.1rem);
+  max-width: 16ch;
+}
+.contact-panel p {
+  max-width: 58ch;
+  margin: 1rem 0 0;
+  color: var(--on-orange);
+}
+.contact-panel .button-secondary {
+  color: var(--on-orange);
+  box-shadow: inset 0 0 0 1px var(--on-orange);
+}
+.contact-panel .button-secondary:hover {
+  background: var(--on-orange);
+  color: var(--orange-action-hover);
+}
+/* The panel is already orange, so the primary action inverts instead of stacking orange on orange. */
+.contact-panel .button-primary {
+  background: var(--on-orange);
+  color: var(--orange-action-hover);
+}
+.contact-panel .button-primary:hover {
+  background: var(--on-orange);
+  color: var(--orange-action);
+}
+.page-hero {
+  padding-block: clamp(2.75rem, 5vw, 4.5rem);
+  border-bottom: 1px solid var(--border);
+}
+.page-hero h1 {
+  font-size: clamp(2.2rem, 3.6vw, 3.3rem);
+  max-width: 20ch;
+}
+.page-hero p {
+  font-size: clamp(1rem, 1.25vw, 1.175rem);
+  color: var(--muted);
+  max-width: 62ch;
+  margin: 1rem 0 0;
+}
+.case-header {
+  padding-block: clamp(2.75rem, 5vw, 4.5rem);
+}
+.case-back {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+.case-header h1 {
+  font-size: clamp(2.4rem, 4.5vw, 4rem);
+  max-width: 16ch;
+}
+.case-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(14rem, 0.7fr);
+  gap: clamp(1.75rem, 4vw, 3rem);
+  margin-top: 1.75rem;
+}
+.case-intro > p {
+  font-size: clamp(1.05rem, 1.4vw, 1.25rem);
+  color: var(--muted);
+  margin: 0;
+}
+.case-facts {
+  margin: 0;
+}
+.case-facts div {
+  display: grid;
+  grid-template-columns: 7rem 1fr;
+  gap: 1rem;
+  padding: 0.7rem 0;
+  border-top: 1px solid var(--border);
+}
+.case-facts dt {
+  color: var(--muted);
+}
+.case-facts dd {
+  margin: 0;
+  font-weight: 700;
+}
+.case-media {
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+.case-media img,
+.case-media video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.case-section {
+  padding-block: clamp(2.25rem, 4vw, 3.5rem);
+  border-top: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: minmax(11rem, 0.5fr) minmax(0, 1.5fr);
+  gap: clamp(1.5rem, 4vw, 4rem);
+}
+.case-section h2 {
+  font-size: clamp(1.35rem, 2vw, 1.9rem);
+}
+/* A diagram is the one thing on this page that needs the whole measure, so it drops the side column. */
+.case-section-wide {
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+.case-section-wide .case-content {
+  max-width: none;
+}
+.case-content {
+  max-width: 68ch;
+}
+.case-content > :first-child {
+  margin-top: 0;
+}
+/**
+ * Tailwind's preflight strips `list-style` from every `ul`, so these read as loose lines of text
+ * with an indent and no marker. The indent was already here, waiting for the bullet.
+ */
+.case-list {
+  list-style: disc;
+  padding-left: 1.2rem;
+}
+.case-list li::marker,
+.journey-points li::marker {
+  color: var(--orange);
+}
+.case-list li + li {
+  margin-top: 0.7rem;
+}
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+.gallery figure {
+  margin: 0;
+}
+.gallery figcaption {
+  color: var(--muted);
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+.draft-banner {
+  background: var(--warning-bg);
+  color: var(--warning);
+  padding: 0.75rem var(--gutter);
+  text-align: center;
+  font-weight: 750;
+}
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding-block: 2rem;
+}
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+/* An informational aside inside a section, for a state the visitor cannot act on. */
+.notice {
+  margin: 2rem 0 0;
+  max-width: 62ch;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--muted);
+}
+/**
+ * A 404 is a page of the site, not an interstitial. It used to be centered in a full viewport with
+ * no type scale of its own, so the heading rendered at body size under a 160px number and nothing
+ * else on screen looked like this site. It reads left, in the shell, at the page scale.
+ */
+.error-page {
+  padding-block: clamp(3rem, 7vw, 6rem);
+}
+.error-page h1 {
+  font-size: clamp(1.85rem, 3vw, 2.75rem);
+  margin-top: 0.5rem;
+  max-width: 20ch;
+}
+.error-body {
+  margin: 0.9rem 0 0;
+  max-width: 52ch;
+  color: var(--muted);
+  font-size: clamp(1rem, 1.2vw, 1.125rem);
+}
+.error-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  margin-top: 2rem;
+}
+/* The error boundaries keep the old centered treatment: the layout around them may be what broke. */
+.error-boundary {
+  min-height: 60vh;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+  text-align: center;
+}
+.error-boundary > div {
+  max-width: 40rem;
+}
+.error-boundary h1 {
+  font-size: clamp(1.5rem, 2.4vw, 2.1rem);
+  margin-top: 0.5rem;
+}
+.error-boundary p:not(.error-code) {
+  margin: 0.75rem 0 1.5rem;
+  color: var(--muted);
+}
+.error-code {
+  font-size: clamp(2.75rem, 6vw, 4.5rem);
+  line-height: 1;
+  margin: 0;
+  color: var(--orange);
+  font-weight: 800;
+}
+dialog {
+  border: 0;
+  border-radius: var(--radius);
+  padding: 0;
+  background: var(--elevated);
+  color: var(--ink);
+  width: min(calc(100% - 2rem), 31rem);
+  box-shadow: 0 8px 20px oklch(0.05 0 0/0.3);
+  /**
+   * A modal dialog is centred by the `margin: auto` in the UA stylesheet, and Tailwind's preflight
+   * zeroes the margin on every element. Without this it opens in the top-left corner.
+   */
+  margin: auto;
+}
+dialog::backdrop {
+  background: oklch(0.1 0 0/0.62);
+}
+/* A modal covers the page but does not stop the wheel, so the scroll is held while one is open. */
+html:has(dialog[open]) {
+  overflow: hidden;
+}
+.language-dialog {
+  width: min(calc(100% - 2rem), 21rem);
+  opacity: 0;
+  transform: translateY(0.4rem) scale(0.98);
+  transition:
+    opacity 200ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
+    overlay 200ms allow-discrete,
+    display 200ms allow-discrete;
+}
+.language-dialog[open] {
+  opacity: 1;
+  transform: none;
+}
+/* Gives the opening frame a state to travel from; without it only the closing side animates. */
+@starting-style {
+  .language-dialog[open] {
+    opacity: 0;
+    transform: translateY(0.4rem) scale(0.98);
+  }
+}
+.language-dialog::backdrop {
+  background: oklch(0.1 0 0/0);
+  transition:
+    background-color 200ms cubic-bezier(0.16, 1, 0.3, 1),
+    overlay 200ms allow-discrete,
+    display 200ms allow-discrete;
+}
+.language-dialog[open]::backdrop {
+  background: oklch(0.1 0 0/0.62);
+}
+@starting-style {
+  .language-dialog[open]::backdrop {
+    background: oklch(0.1 0 0/0);
+  }
+}
+.language-dialog-inner {
+  padding: 0.9rem;
+}
+.language-dialog-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.1rem 0 0.7rem 0.65rem;
+}
+.language-dialog-head h2 {
+  font-size: 1.05rem;
+  font-weight: 750;
+  letter-spacing: -0.015em;
+}
+.language-options {
+  display: grid;
+  gap: 0.15rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.language-option {
+  width: 100%;
+  min-height: 3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding-inline: 0.65rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--ink);
+  font-weight: 650;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 160ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.language-option:hover {
+  background: var(--surface-2);
+}
+.language-code {
+  min-width: 2.2rem;
+  padding: 0.15rem 0.35rem;
+  border-radius: 0.35rem;
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+.language-option[data-active="true"] .language-code {
+  background: var(--orange-light);
+  color: var(--orange-deep);
+}
+/* `--orange-deep` turns light in the dark theme, which leaves it too close to the badge behind it. */
+[data-theme="dark"] .language-option[data-active="true"] .language-code {
+  color: var(--on-orange);
+}
+.language-check {
+  margin-left: auto;
+  color: var(--orange-deep);
+}
+@media (prefers-reduced-motion: reduce) {
+  .language-dialog,
+  .language-dialog::backdrop {
+    transition-duration: 1ms;
+  }
+  .desktop-nav .nav-link::after {
+    transition-property: opacity;
+  }
+}
+/**
+ * Six stages fit one rail on a desktop. Below that they fold to two rows of three, which happens to
+ * split the pipeline where it means something: the three that read, then the two gates and the write.
+ */
+@media (max-width: 1080px) {
+  .flow-episort {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 900px) {
+  .desktop-nav {
+    display: none;
+  }
+  .mobile-nav {
+    display: block;
+  }
+  .hero-grid {
+    grid-template-columns: minmax(0, 1.2fr) minmax(13rem, 0.6fr);
+    gap: 2rem;
+  }
+  .hero h1 {
+    font-size: clamp(2.5rem, 7.5vw, 4.7rem);
+  }
+  /* The flow turns vertical, so every arrow turns with it. */
+  .flow-janus {
+    grid-template-columns: 1fr;
+  }
+  .projects-featured {
+    grid-template-columns: 1fr;
+  }
+  .flow-janus .flow-arrow-glyph {
+    transform: rotate(90deg);
+  }
+  .flow-arrow {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    text-align: left;
+  }
+  .case-intro,
+  .case-section {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .contact-panel {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+  .availability-card,
+  .side-by-side {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 680px) {
+  :root {
+    --gutter: 1rem;
+  }
+  .section {
+    padding-block: 3rem;
+  }
+  .flow-episort {
+    grid-template-columns: 1fr;
+  }
+  .hero {
+    padding-block: 2.25rem 4rem;
+  }
+  .hero-grid,
+  .intro-grid {
+    grid-template-columns: 1fr;
+  }
+  .hero-copy {
+    display: contents;
+  }
+  .portrait-frame {
+    grid-row: 3;
+    max-height: 25rem;
+    width: min(82%, 19rem);
+    margin-top: 0.5rem;
+  }
+  .hero-statement {
+    grid-row: 4;
+  }
+  .hero-availability {
+    grid-row: 5;
+  }
+  .hero-actions {
+    grid-row: 6;
+  }
+  .principles,
+  .skills-list,
+  .availability-facts {
+    grid-template-columns: 1fr;
+  }
+  .journey-item {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+  }
+  .fact-row {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+  .secondary-project {
+    grid-template-columns: 1fr auto;
+    gap: 0.7rem 1rem;
+  }
+  .secondary-project p {
+    grid-column: 1/-1;
+  }
+  .project-visual {
+    aspect-ratio: 16/10;
+  }
+  .contact-panel {
+    margin-inline: -0.25rem;
+  }
+  .hero-actions .button,
+  .contact-panel .button {
+    flex: 1 1 100%;
+  }
+  .footer-inner {
+    flex-direction: column;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *:before,
+  *:after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

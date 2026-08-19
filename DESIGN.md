@@ -2,7 +2,7 @@
 
 ## Direction
 
-Reference scene: a digital workbench lit in late afternoon, with an immediately recognizable orange tool resting on graphite and mineral surfaces. The portfolio uses a personal brand register; the administration area reuses the same materials at the density of a production tool.
+Reference scene: a digital workbench lit in late afternoon, with an immediately recognizable orange tool resting on graphite and mineral surfaces. The portfolio uses a personal brand register throughout.
 
 Voice words: **frank**, **mechanical**, **attentive**.
 
@@ -10,7 +10,7 @@ Voice words: **frank**, **mechanical**, **attentive**.
 
 **Orange is the only hue on the page.** Every surface, every rule and every piece of text is a neutral grey at zero chroma, so nothing competes with the accent. The surfaces used to carry a warm tint, which at that chroma could not read as the graphite the direction asks for: it read as coffee, or as a white that had gone off. Neutral is a decision, not an absence of one.
 
-`Committed` palette on the public side: orange carries actions, reading landmarks and key surfaces without taking over the interface. `Restrained` palette in the administration area: orange is reserved for actions, selections and focus. Every color is expressed in OKLCH, and the dark theme is composed separately.
+The committed palette uses orange for actions, reading landmarks and key surfaces without taking over the interface. Every color is expressed in OKLCH, and the dark theme is composed separately.
 
 ```css
 :root {
@@ -54,7 +54,7 @@ Voice words: **frank**, **mechanical**, **attentive**.
 
 One self-hosted family: Manrope Variable, and it took a while to actually be one. A `body, button, input, textarea, select { font: inherit }` rule sat below the `body` font declaration and silently reset it, so the site shipped in the browser's system stack with Manrope downloaded and never drawn. `body` is out of that selector now; the reset is for form controls, which is all it was ever for.
 
-Public headings use a `clamp()` scale capped at 2.75 rem for section headings and 4.35 rem for the hero. The previous scale ran to 5.8 rem against a 1 rem body, which left the page with a display register and a caption register and nothing in between. The administration area keeps a fixed, compact scale. Paragraphs stay under 68 characters.
+Public headings use a `clamp()` scale capped at 2.75 rem for section headings and 4.35 rem for the hero. The previous scale ran to 5.8 rem against a 1 rem body, which left the page with a display register and a caption register and nothing in between. Paragraphs stay under 68 characters.
 
 **Vertical rhythm follows one rule: the gap between a heading and its own paragraph is smaller than the gap between two sections.** Sections used to hold 16 rem of empty band around blocks of tightly set small text, which read as disconnected islands rather than as one document.
 
@@ -64,8 +64,8 @@ Public headings use a `clamp()` scale capped at 2.75 rem for section headings an
 - A surface uses either a border or a short shadow, never both as decoration.
 - Asymmetric text/portrait hero. Secondary projects are compact rows.
 - **A listing entry summarizes; the case study explains.** On the home and projects pages a primary project is a compact bordered card: title, status pill, one line of lede, the stack, and a link. The mechanism diagram and the line about how I work live on the case study page, under a `How it works` section that drops the heading column and takes the whole measure. Putting all of that on the listing made two projects fill four screens of a page whose job was to summarize.
-- **Diagrams are laid out in HTML and CSS, never authored as SVG.** An SVG wide enough to read on a desktop puts its labels at four or five pixels on a phone, and the usual answers are a sideways scrollbar or a second drawing to maintain. Boxes and rules reflow to a column instead, and their labels stay real text at real size, translatable and selectable. Janus draws its credential boundary as a bordered region, because the claim is spatial. Episort draws six numbered stages, folding six to three to one, and the fold at three splits the pipeline where it means something. Only projects with a drawing get one; anything else published from the administration area renders without it.
-- Compact public navigation, including the EN/FR language switch; a simple sidebar in the admin area, replaced by a mobile bar.
+- **Diagrams are laid out in HTML and CSS, never authored as SVG.** An SVG wide enough to read on a desktop puts its labels at four or five pixels on a phone, and the usual answers are a sideways scrollbar or a second drawing to maintain. Boxes and rules reflow to a column instead, and their labels stay real text at real size, translatable and selectable. Janus draws its credential boundary as a bordered region, because the claim is spatial. Episort draws six numbered stages, folding six to three to one, and the fold at three splits the pipeline where it means something. Only projects with a bespoke drawing get one.
+- Compact public navigation, including the EN/FR language switch and a mobile menu.
 - Solid orange primary button, outlined secondary, fields with persistent labels, explicit states.
 - Abstract, clearly temporary placeholders, never fake screenshots. Their captions are rendered from the dictionary and never baked into the SVG, because a bilingual site cannot ship a hardcoded language inside an image.
 - **The 404 is a page of the site, not an interstitial.** Header, footer, the page type scale, left-aligned in the shell, and three ways out rather than one. There is a not-found boundary inside the locale segment so it renders in the site's chrome, and the root one brings its own header and footer for paths that never reached a locale.
@@ -79,4 +79,4 @@ Transitions from 160 to 220 ms with a frank exit, only to explain a state change
 
 ## Responsive
 
-The structure genuinely changes with the available space: the portrait moves into the mobile narrative, projects collapse to one column, the sidebar transforms, and admin tables become labeled rows. No critical feature is hidden.
+The structure genuinely changes with the available space: the portrait moves into the mobile narrative and projects collapse to one column. No critical feature is hidden.
