@@ -45,9 +45,13 @@ function signalFor(slug: string, t: Dictionary) {
 }
 
 /**
- * The mechanism, drawn, and the one line about how I work that goes with it. This is the first thing
- * under the cover on the two flagship case studies, because a reader who opened the page is asking
- * how the thing works before asking anything else. Projects without a drawing skip it entirely.
+ * The mechanism, drawn, read back in a paragraph, and the one line about how I work that goes with
+ * it. This is the first thing under the cover on the two flagship case studies, because a reader who
+ * opened the page is asking how the thing works before asking anything else.
+ *
+ * The paragraph belongs here rather than beside the problem: a drawing shows the parts, and the
+ * prose is what says why they are arranged that way. It used to render only when a project had no
+ * drawing, so the two projects that have one were the two that never showed it.
  */
 function MechanismSection({
   project,
@@ -63,6 +67,9 @@ function MechanismSection({
   return (
     <CaseSection title={t.caseStudy.mechanism} wide>
       <ProjectDiagram slug={project.slug} t={t} locale={locale} />
+      {project.architecture.trim() && (
+        <p className="case-panel-wide">{project.architecture}</p>
+      )}
       {signal && <p className="showcase-signal">{signal}</p>}
     </CaseSection>
   );
