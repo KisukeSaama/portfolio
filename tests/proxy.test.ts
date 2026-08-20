@@ -67,4 +67,19 @@ describe("proxy", () => {
   it("does not echo the nonce back to the client", () => {
     expect(proxy(request("/en")).headers.get(NONCE_HEADER)).toBeNull();
   });
+
+  // These are served once, outside any locale segment. Redirecting them into one sent the browser
+  // to a URL that answers 404, which is what production did to the manifest and the sitemap.
+  it.each([
+    "/manifest.webmanifest",
+    "/robots.txt",
+    "/sitemap.xml",
+    "/opengraph-image?1c4e5b",
+  ])("serves %s without a locale redirect", (path) => {
+    const response = proxy(request(path));
+    expect(response.status).toBe(200);
+    expect(response.headers.get("location")).toBeNull();
+    expect(forwardedHeaders(response).get(LOCALE_HEADER)).toBeNull();
+  });
+
 });

@@ -1,7 +1,7 @@
 "use client";
 
 import { Moon, Sun } from "lucide-react";
-import { useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import type { Dictionary } from "~/i18n";
 import {
   applyTheme,
@@ -46,6 +46,16 @@ function snapshot(): Theme {
 
 export function ThemeToggle({ t }: { t: Dictionary }) {
   const theme = useSyncExternalStore(subscribe, snapshot, () => "light");
+  // React strips every attribute off `<html>` when it renders that element instead of hydrating it,
+  // and a hydration mismatch anywhere on the page makes it do exactly that. `data-theme` goes with
+  // them, long after the pre-paint script that set it has run, and the page turns light on a dark
+  // desktop. Reapplying it here is the one place that still knows what the theme should be.
+  useEffect(() => {
+    const resolved = readStoredTheme() ?? systemTheme();
+    const lost = document.documentElement.dataset.theme !== resolved;
+    applyTheme(resolved);
+    if (lost) window.dispatchEvent(new Event("portfolio-theme-change"));
+  }, []);
   function toggle() {
     const next = theme === "dark" ? "light" : "dark";
     applyTheme(next);

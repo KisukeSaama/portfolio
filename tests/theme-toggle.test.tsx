@@ -9,6 +9,8 @@ describe("theme", () => {
   let notifySystemThemeChange: () => void;
 
   beforeEach(() => {
+    // Reset per test: a test that leaves the OS on dark decides what the next one renders.
+    systemIsDark = false;
     const listeners = new Set<(event: MediaQueryListEvent) => void>();
     notifySystemThemeChange = () => {
       const event = { matches: systemIsDark } as MediaQueryListEvent;
@@ -93,6 +95,49 @@ describe("theme", () => {
     const metas = document.head.querySelectorAll('meta[name="theme-color"]');
     expect(metas).toHaveLength(1);
     expect(metas[0]?.getAttribute("content")).toBe("#282828");
+  });
+
+  /**
+   * React renders `<html>` instead of hydrating it after any hydration mismatch, and that render
+   * strips every attribute the element carries. In production a Cloudflare feature rewrote a
+   * `mailto:` link in the server HTML, which caused the mismatch, which left the page light on a
+   * dark desktop. The wipe is simulated here by clearing the attribute before mount, the order the
+   * real one happens in: React strips it while rendering, effects run after.
+   */
+  describe("when a client re-render wipes the html attributes", () => {
+    it("puts the saved choice back", () => {
+      localStorage.setItem("jonathan-theme", "dark");
+      document.documentElement.removeAttribute("data-theme");
+
+      render(<ThemeToggle t={getDictionary("en")} />);
+
+      expect(document.documentElement.dataset.theme).toBe("dark");
+      expect(document.documentElement.style.colorScheme).toBe("dark");
+      expect(
+        screen.getByRole("button", { name: "Switch to the light theme" }),
+      ).toBeTruthy();
+    });
+
+    it("falls back to the OS when no choice is saved", () => {
+      systemIsDark = true;
+      document.documentElement.removeAttribute("data-theme");
+
+      render(<ThemeToggle t={getDictionary("en")} />);
+
+      expect(document.documentElement.dataset.theme).toBe("dark");
+      expect(localStorage.getItem("jonathan-theme")).toBeNull();
+    });
+
+    it("restores the browser chrome color with it", () => {
+      localStorage.setItem("jonathan-theme", "dark");
+      document.documentElement.removeAttribute("data-theme");
+
+      render(<ThemeToggle t={getDictionary("en")} />);
+
+      const metas = document.head.querySelectorAll('meta[name="theme-color"]');
+      expect(metas).toHaveLength(1);
+      expect(metas[0]?.getAttribute("content")).toBe("#282828");
+    });
   });
 
   /**

@@ -17,6 +17,21 @@ import { applySecurityHeaders } from "./app/lib/security-headers";
 /** Files served straight from /public. They still get the response headers, never the redirect. */
 const STATIC = ["/images/", "/documents/", "/favicon.svg"];
 
+/**
+ * The routes Next.js builds from the file conventions in `app/`. They are served once, outside any
+ * locale segment, so the redirect below sent every one of them into `/en/`, where nothing answers:
+ * in production the manifest, the sitemap, the robots file and the social card were all a 307 to a
+ * 404. Next.js does call this proxy for them, it just serves them from its own cache afterwards and
+ * drops the response headers set here, so their security headers come from the reverse proxy in
+ * front. Skipping the redirect is the whole job.
+ */
+const METADATA = [
+  "/manifest.webmanifest",
+  "/robots.txt",
+  "/sitemap.xml",
+  "/opengraph-image",
+];
+
 /** Kept as a named export because the tests assert on it. Defined once, in the i18n config. */
 export const LOCALE_HEADER = localeHeader;
 
@@ -37,7 +52,11 @@ function fromAcceptLanguage(header: string | null): Locale | null {
 export default function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const passthrough = STATIC.some((prefix) => pathname.startsWith(prefix));
+  // `startsWith` for both: the static files sit under a prefix, and the social card is served at
+  // `/opengraph-image` with a cache-busting query and, on some Next.js versions, an extension.
+  const passthrough = [...STATIC, ...METADATA].some((prefix) =>
+    pathname.startsWith(prefix),
+  );
   const segment = pathname.split("/")[1];
   const prefixed = isLocale(segment);
 
@@ -79,11 +98,11 @@ export const config = {
   // Everything except the Next.js build output, which is immutable, same origin, and served with
   // the content type it was compiled to.
   //
-  // The generated metadata routes (robots.txt, sitemap.xml, the manifest, the social card) used to
-  // be named here as well, which read as a decision. It is not one: Next.js serves those ahead of
-  // the proxy and never calls it for them, so listing them changed nothing. It also means their
-  // security headers can only come from the reverse proxy in front, which is why deploy/compose.yml
-  // repeats the set and why the standalone stack requires a terminator that does the same.
+  // The generated metadata routes (robots.txt, sitemap.xml, the manifest, the social card) stay in
+  // the matcher, and `METADATA` above keeps the redirect off them. Their security headers still
+  // come from the reverse proxy in front, which is why deploy/compose.yml repeats the set and why
+  // the standalone stack requires a terminator that does the same: Next.js serves these four from
+  // its own cache and the headers set here do not survive it.
   matcher: ["/((?!_next/).*)"],
 };
 
