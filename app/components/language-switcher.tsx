@@ -20,10 +20,13 @@ export function LanguageSwitcher({
   locale,
   t,
   onSelect,
+  variant = "icon",
 }: {
   locale: Locale;
   t: Dictionary;
   onSelect?: () => void;
+  /** `icon` is the header globe. `row` is the full-width entry in the mobile menu. */
+  variant?: "icon" | "row";
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -56,16 +59,32 @@ export function LanguageSwitcher({
 
   return (
     <>
-      <button
-        type="button"
-        className="icon-button"
-        onClick={open}
-        aria-haspopup="dialog"
-        aria-label={`${t.language.change} (${localeNames[locale]})`}
-        title={t.language.change}
-      >
-        <Globe size={19} aria-hidden />
-      </button>
+      {variant === "row" ? (
+        <button
+          type="button"
+          className="menu-row"
+          onClick={open}
+          aria-haspopup="dialog"
+        >
+          <span className="menu-row-label">{t.nav.language}</span>
+          <span className="menu-row-value">
+            {localeNames[locale]}
+            <Globe size={19} aria-hidden />
+          </span>
+          <span className="visually-hidden">{t.language.change}</span>
+        </button>
+      ) : (
+        <button
+          type="button"
+          className="icon-button"
+          onClick={open}
+          aria-haspopup="dialog"
+          aria-label={`${t.language.change} (${localeNames[locale]})`}
+          title={t.language.change}
+        >
+          <Globe size={19} aria-hidden />
+        </button>
+      )}
       <dialog
         ref={dialog}
         className="language-dialog"

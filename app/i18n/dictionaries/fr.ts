@@ -25,6 +25,7 @@ export const fr: Dictionary = {
     primary: "Navigation principale",
     mobile: "Navigation mobile",
     openMenu: "Ouvrir le menu",
+    closeMenu: "Fermer le menu",
     theme: "Thème",
     language: "Langue",
   },
@@ -38,6 +39,8 @@ export const fr: Dictionary = {
   theme: {
     toLight: "Activer le thème clair",
     toDark: "Activer le thème sombre",
+    light: "Clair",
+    dark: "Sombre",
   },
 
   profile: {

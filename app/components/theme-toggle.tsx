@@ -44,7 +44,18 @@ function snapshot(): Theme {
   return document.documentElement.dataset.theme === "dark" ? "dark" : "light";
 }
 
-export function ThemeToggle({ t }: { t: Dictionary }) {
+/**
+ * `icon` is the header control, a bare 44 px square. `row` is the same control inside the mobile
+ * menu, where a 44 px square next to a dead label meant the visitor had to hit the glyph: the row
+ * is the button there, and it names the theme it is currently on.
+ */
+export function ThemeToggle({
+  t,
+  variant = "icon",
+}: {
+  t: Dictionary;
+  variant?: "icon" | "row";
+}) {
   const theme = useSyncExternalStore(subscribe, snapshot, () => "light");
   // React strips every attribute off `<html>` when it renders that element instead of hydrating it,
   // and a hydration mismatch anywhere on the page makes it do exactly that. `data-theme` goes with
@@ -63,6 +74,22 @@ export function ThemeToggle({ t }: { t: Dictionary }) {
     window.dispatchEvent(new Event("portfolio-theme-change"));
   }
   const label = theme === "dark" ? t.theme.toLight : t.theme.toDark;
+  const icon =
+    theme === "dark" ? <Sun size={19} aria-hidden /> : <Moon size={19} aria-hidden />;
+  if (variant === "row") {
+    // No `aria-label` here: it would replace the visible label instead of extending it. The action
+    // is appended as text the screen reader reads and the eye does not.
+    return (
+      <button className="menu-row" type="button" onClick={toggle}>
+        <span className="menu-row-label">{t.nav.theme}</span>
+        <span className="menu-row-value">
+          {theme === "dark" ? t.theme.dark : t.theme.light}
+          {icon}
+        </span>
+        <span className="visually-hidden">{label}</span>
+      </button>
+    );
+  }
   return (
     <button
       className="theme-toggle"
@@ -71,11 +98,7 @@ export function ThemeToggle({ t }: { t: Dictionary }) {
       aria-label={label}
       title={label}
     >
-      {theme === "dark" ? (
-        <Sun size={19} aria-hidden />
-      ) : (
-        <Moon size={19} aria-hidden />
-      )}
+      {icon}
     </button>
   );
 }

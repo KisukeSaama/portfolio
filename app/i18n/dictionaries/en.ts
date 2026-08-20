@@ -23,6 +23,7 @@ export const en = {
     primary: "Main navigation",
     mobile: "Mobile navigation",
     openMenu: "Open the menu",
+    closeMenu: "Close the menu",
     theme: "Theme",
     language: "Language",
   },
@@ -36,6 +37,8 @@ export const en = {
   theme: {
     toLight: "Switch to the light theme",
     toDark: "Switch to the dark theme",
+    light: "Light",
+    dark: "Dark",
   },
 
   profile: {

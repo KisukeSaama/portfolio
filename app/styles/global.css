@@ -35,7 +35,18 @@
   --focus: oklch(0.63 0.15 58);
   --shadow: 0 4px 8px oklch(0.2 0 0/0.09);
   --container: 73.75rem;
-  --gutter: clamp(1rem, 3vw, 2.25rem);
+  /**
+   * The page's side margin, and the one number that decides how close the text gets to the glass.
+   * It used to drop to 1 rem below 680 px, which on a 360 px phone put the copy sixteen pixels from
+   * the edge. `env()` widens it further on a device whose bezel eats into the viewport: the site
+   * ships `viewport-fit: cover`, so a phone held sideways would otherwise run text under the notch.
+   */
+  --gutter-base: clamp(1.25rem, 3vw, 2.25rem);
+  --gutter: max(
+    var(--gutter-base),
+    env(safe-area-inset-left, 0px),
+    env(safe-area-inset-right, 0px)
+  );
   --radius: 0.75rem;
   /**
    * One type ramp for the whole site. Every heading, lede and label on every page is set from this
@@ -219,6 +230,22 @@ p {
 .muted {
   color: var(--muted);
 }
+/**
+ * Text for the screen reader and not for the eye. Used where a control already carries a visible
+ * label and still has to say what pressing it does; an `aria-label` there would replace the visible
+ * words rather than extend them, which is the failure WCAG 2.5.3 is about.
+ */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
 .accent {
   color: var(--orange-deep);
 }
@@ -357,41 +384,33 @@ button:disabled,
   align-items: center;
   gap: 0.15rem;
 }
+/*
+ * Header links are read as a line of words, not as a row of controls: no fill, no rounded box, just
+ * the label and a rule that grows underneath it. The mobile panel used to opt out of this and keep
+ * the grey rounded button the desktop nav had already left behind, so one navigation looked like
+ * two, and the current page was marked one way on a laptop and another on a phone.
+ */
 .nav-link {
   display: inline-flex;
   min-height: 2.75rem;
   align-items: center;
   gap: 0.55rem;
-  padding: 0.55rem 0.7rem;
-  border-radius: 0.5rem;
   color: var(--muted);
   text-decoration: none;
   font-size: var(--type-small);
   font-weight: var(--weight-label);
-}
-.nav-link:hover,
-.nav-link[data-active="true"] {
-  color: var(--ink);
-  background: var(--surface-2);
-}
-.nav-link[data-active="true"] {
-  box-shadow: inset 0 -2px 0 var(--orange);
-}
-/*
- * In the public header the links are read as a line of words, not as a row of controls: no fill, no
- * rounded box, just the label and a rule that grows underneath it.
- */
-.desktop-nav .nav-link {
-  position: relative;
-  padding-inline: 0.1rem;
-  border-radius: 0;
   transition: color 180ms cubic-bezier(0.16, 1, 0.3, 1);
 }
-.desktop-nav .nav-link::after {
+/* The rule marks the word, so it is drawn on a box the width of the word and not of the row. */
+.nav-link-label {
+  position: relative;
+  display: inline-block;
+}
+.nav-link-label::after {
   content: "";
   position: absolute;
   inset-inline: 0;
-  bottom: 0.5rem;
+  bottom: -0.3rem;
   height: 2px;
   border-radius: 2px;
   background: var(--orange);
@@ -402,20 +421,23 @@ button:disabled,
     transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
     opacity 220ms cubic-bezier(0.16, 1, 0.3, 1);
 }
-.desktop-nav .nav-link:hover,
-.desktop-nav .nav-link:focus-visible,
-.desktop-nav .nav-link[data-active="true"] {
-  background: transparent;
-  box-shadow: none;
+.nav-link:focus-visible,
+.nav-link[data-active="true"] {
   color: var(--ink);
 }
-.desktop-nav .nav-link:hover::after {
-  opacity: 0.45;
-  transform: scaleX(1);
-}
-.desktop-nav .nav-link[data-active="true"]::after {
+.nav-link[data-active="true"] .nav-link-label::after {
   opacity: 1;
   transform: scaleX(1);
+}
+/* A finger cannot hover, and on a touch screen the state sticks to whatever was tapped last. */
+@media (hover: hover) {
+  .nav-link:hover {
+    color: var(--ink);
+  }
+  .nav-link:hover .nav-link-label::after {
+    opacity: 0.45;
+    transform: scaleX(1);
+  }
 }
 .icon-button,
 .theme-toggle {
@@ -430,13 +452,14 @@ button:disabled,
   cursor: pointer;
   transition: background-color 160ms cubic-bezier(0.16, 1, 0.3, 1);
 }
-.icon-button:hover,
-.theme-toggle:hover {
-  background: var(--surface-2);
+@media (hover: hover) {
+  .icon-button:hover,
+  .theme-toggle:hover {
+    background: var(--surface-2);
+  }
 }
 .mobile-nav {
   display: none;
-  position: relative;
 }
 .mobile-nav summary {
   list-style: none;
@@ -446,34 +469,114 @@ button:disabled,
   display: grid;
   place-items: center;
   border-radius: 0.5rem;
+  color: var(--ink);
 }
 .mobile-nav summary::-webkit-details-marker {
   display: none;
 }
+/**
+ * A sheet across the whole width of the header, not a card floating over one corner of it. At 360 px
+ * the card was a 19 rem island with the page showing down both sides, and the entries inside it were
+ * squeezed into a measure narrower than the header they hung from. It is positioned against
+ * `.site-header`, which is sticky and therefore the containing block, so it follows the header down
+ * the page and reaches both edges of the viewport.
+ */
 .mobile-panel {
   position: absolute;
-  right: 0;
-  top: calc(100% + 0.7rem);
-  width: min(19rem, calc(100vw - 2rem));
-  padding: 0.7rem;
-  background: var(--elevated);
+  inset-inline: 0;
+  top: calc(100% + 1px);
+  z-index: 2;
+  padding: 0.25rem var(--gutter) max(1rem, env(safe-area-inset-bottom, 0px));
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
   box-shadow: var(--shadow);
-  border-radius: var(--radius);
+  /* A long menu scrolls inside itself rather than pushing its own last entry off the screen. */
+  max-height: calc(100svh - 4.5rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+/**
+ * A closed `<details>` hides its panel without removing its box, and an absolutely positioned child
+ * of one reports geometry from a subtree that was never laid out: the closed menu measured as five
+ * links hanging forty pixels past the right edge of the page. It does not scroll the document, but
+ * it is the kind of phantom that an overflow audit reports and a reader then chases.
+ */
+.mobile-nav:not([open]) .mobile-panel {
+  display: none;
+}
+.mobile-links {
+  display: grid;
 }
 .mobile-panel .nav-link {
-  width: 100%;
+  min-height: 3.25rem;
+  font-size: var(--type-prose);
 }
-/* A dropped panel is a menu, so the current entry is marked down its edge rather than underlined. */
-.mobile-panel .nav-link[data-active="true"] {
-  box-shadow: inset 2px 0 0 var(--orange);
+.mobile-links .nav-link + .nav-link {
+  border-top: 1px solid var(--border);
 }
 .mobile-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  display: grid;
+  margin-top: 0.35rem;
   border-top: 1px solid var(--border);
-  margin-top: 0.5rem;
-  padding-top: 0.5rem;
+}
+/**
+ * The language and the theme, each as one row that is entirely the control. They used to be a dead
+ * label with a 44 px icon button parked at the far end, so two thirds of a row that looked pressable
+ * did nothing when pressed.
+ */
+.menu-row {
+  width: 100%;
+  min-height: 3.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: var(--type-small);
+  font-weight: var(--weight-label);
+  text-align: left;
+  cursor: pointer;
+  transition: color 160ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.menu-row + .menu-row {
+  border-top: 1px solid var(--border);
+}
+.menu-row-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: var(--ink);
+}
+@media (hover: hover) {
+  .menu-row:hover {
+    color: var(--ink);
+  }
+}
+.menu-row:active .menu-row-value {
+  color: var(--orange-deep);
+}
+/**
+ * Dims the page the panel covers, and catches the press that dismisses it. The menu is a `<details>`
+ * element, which only ever closed from its own summary: every tap that meant "never mind" left the
+ * panel standing. The press outside is handled in the header, so this is the affordance, not the
+ * mechanism.
+ */
+.mobile-scrim {
+  position: absolute;
+  inset-inline: 0;
+  top: 100%;
+  z-index: 1;
+  height: 100svh;
+  background: oklch(0.15 0 0 / 0.45);
+  animation: scrim-in 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes scrim-in {
+  from {
+    opacity: 0;
+  }
 }
 /**
  * Asymmetric padding, because the availability card belongs to the hero. Equal padding plus the
@@ -1996,6 +2099,10 @@ html:has(dialog[open]) {
   .mobile-nav {
     display: block;
   }
+  /* The panel covers the page but does not stop the wheel, the way the language dialog does not. */
+  html:has(.mobile-nav[open]) {
+    overflow: hidden;
+  }
   .hero-layout {
     grid-template-columns: minmax(0, 1.2fr) minmax(13rem, 0.6fr);
     column-gap: 2rem;
@@ -2115,10 +2222,33 @@ html:has(dialog[open]) {
     margin-top: 0.3rem;
   }
 }
-@media (max-width: 680px) {
-  :root {
-    --gutter: 1rem;
+@media (min-width: 901px) {
+  .mobile-scrim {
+    display: none;
   }
+}
+/**
+ * A phone held sideways has width to spare and no height at all: seven rows at 52 px filled the
+ * viewport and pushed the theme below a fold nothing announced. The entries pair up instead, and
+ * the hairlines between them go, because two columns of ruled rows read as a table.
+ */
+@media (max-width: 900px) and (max-height: 520px) {
+  .mobile-links,
+  .mobile-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: clamp(1.5rem, 6vw, 4rem);
+  }
+  .mobile-links .nav-link + .nav-link,
+  .menu-row + .menu-row {
+    border-top: 0;
+  }
+  .mobile-panel .nav-link,
+  .menu-row {
+    min-height: 2.75rem;
+    font-size: var(--type-small);
+  }
+}
+@media (max-width: 680px) {
   .section {
     padding-block: 2.5rem;
   }
@@ -2192,13 +2322,35 @@ html:has(dialog[open]) {
   .project-visual {
     aspect-ratio: 16/10;
   }
+  /**
+   * The panel used to pull itself four pixels wider than the shell with a negative inline margin.
+   * That margin also replaced the `auto` that centres `.shell`, so the panel sat flush against the
+   * left edge of a phone with the whole four pixels, plus the gutter, left over on the right. It
+   * lines up with every other block on the page now.
+   *
+   * It also kept the two-column head down to 360 px, where the fox took a third of the width and
+   * left the sentence beside it four words wide. One column, and the copy gets the measure.
+   */
   .contact-panel {
-    margin-inline: -0.25rem;
+    grid-template-columns: minmax(0, 1fr);
+    padding: 1.75rem;
+    gap: 1.5rem;
+  }
+  .contact-panel-brand {
+    grid-column: 1;
+    grid-row: 1;
+    justify-items: start;
+  }
+  .contact-panel-copy {
+    grid-column: 1;
+    grid-row: 2;
   }
   .contact-panel-brand img {
-    width: 5.25rem;
+    width: 4.5rem;
   }
   .contact-panel-actions {
+    grid-column: 1;
+    grid-row: 3;
     flex-direction: column;
   }
   .hero-actions .button,
@@ -2207,6 +2359,27 @@ html:has(dialog[open]) {
   }
   .footer-inner {
     flex-direction: column;
+  }
+}
+/**
+ * A pointer that is a finger, not a cursor. The inline links here are 25 to 26 pixels tall, which is
+ * the height of their own text: on a mouse that is a generous target and on a phone it is a coin
+ * toss between two links sitting one line apart. The hit area grows past the text instead of the
+ * text growing, so nothing on the page moves and no line breaks differently.
+ */
+@media (pointer: coarse) {
+  .wordmark,
+  .footer-inner a,
+  .project-link-actions a {
+    position: relative;
+  }
+  .wordmark::before,
+  .footer-inner a::before,
+  .project-link-actions a::before {
+    content: "";
+    position: absolute;
+    inset-inline: -0.4rem;
+    inset-block: -0.6rem;
   }
 }
 @media (prefers-reduced-motion: reduce) {
