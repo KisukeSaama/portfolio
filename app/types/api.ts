@@ -31,6 +31,7 @@ export interface Project {
   status: ProjectStatus;
   projectType: ProjectType;
   featureLevel: FeatureLevel;
+  startedAt?: string | null;
   technologies: string[];
   features: string[];
   decisions: string[];

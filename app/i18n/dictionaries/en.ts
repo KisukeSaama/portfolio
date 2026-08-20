@@ -14,7 +14,6 @@ export const en = {
 
   nav: {
     home: "Home",
-    about: "Method",
     journey: "Journey",
     projects: "Projects",
     contact: "Contact",
@@ -40,9 +39,9 @@ export const en = {
   },
 
   profile: {
-    title: "Full-stack developer. Java and Spring Boot first.",
+    title: "Full-stack developer. I am already thinking about tomorrow.",
     tagline:
-      "I build applications, then keep them running. Janus is in production on a Linux server I operate myself. When it breaks, I am the one reading the logs.",
+      "I turn the ideas around me into applications. I design them, deploy them on my own server, then evolve them as real needs emerge.",
     availability:
       "14-month apprenticeship, from September 2026. Six weeks in the company, two at school. Paris and Île-de-France.",
     photoAlt: "Portrait of Jonathan Blanchard smiling outdoors",
@@ -60,16 +59,16 @@ export const en = {
       { label: "Location", value: "Paris, mobile across Île-de-France" },
       {
         label: "Target role",
-        value: "Java back-end, features owned end to end",
+        value: "Full-stack developer, features owned end to end",
       },
     ],
   },
 
   introduction: [
-    "An application broke on a Sunday evening. I was the one who put it back up. Three years at Novelty, with no room for error. I learned that I would rather build the tools than repair them.",
-    "So I chose Java and React. That is what runs inside companies. Janus runs in production on a Linux server I operate myself, and Episort depends on it. I am my own on-call. It breaks, I read the logs, I fix, I roll back.",
-    "Twelve group projects at the Web@cadémie. Pairs, threes, one team of five. Peer review, and other people's code to take over. What I am missing is scale.",
-    "In fourteen months I want to be the Java back-end developer you hand a feature to, end to end.",
+    "For three years at Novelty, I dealt with incidents that had to be resolved quickly. But it was often afterward—digging into what had happened, testing different approaches and exploring what could have been done differently—that I wanted to move to the other side: building the tools I had been missing.",
+    "I chose to specialize in Java and React, technologies widely used to build robust, durable applications. Today, my projects rely on them and run in production on the Linux server I administer myself. I am my own on-call: when a problem occurs, I analyze the logs, identify the cause, fix it and, when necessary, roll back to the previous version.",
+    "At the Web@cadémie, I completed 12 team projects, working in pairs, groups of three and teams of up to five. I learned to review other people’s code, defend my technical decisions and take over a project I had not started. What I need now is scale: working on a more complex application, alongside an experienced team and under real production constraints.",
+    "By the end of this fourteen-month apprenticeship, I want to be the developer trusted to own a feature end to end, from its design through to production.",
   ],
 
   aiNote: {
@@ -205,26 +204,26 @@ export const en = {
     metaTitle: "Java and Spring Boot developer, apprenticeship September 2026",
     viewResume: "View my resume",
     contactMe: "Get in touch",
-    introTitle: "I came to code by repairing what others had built.",
-    approachTitle: "Four decisions I would defend in review.",
+    introTitle: "My journey",
+    approachTitle: "Four choices I can defend in code review.",
     approachLede:
-      "Not principles. Calls I made, in applications that are shipped and maintained.",
+      "Four concrete risks: losing data, exposing a secret, missing an integration problem, or shipping without knowing how to operate it.",
     principles: [
       {
-        title: "No destructive action without a way back",
-        body: "Episort never moves a file on its own. It proposes a plan, asks twice, journals the run, and can undo it all.",
+        title: "Plan the way back before writing",
+        body: "Episort shows every move before touching a file. The user approves the plan, the run is journalled, and the operation can be undone.",
       },
       {
-        title: "A secret travels no further than it must",
-        body: "In Janus, services call third-party APIs without ever holding the key. Rotation lives in OpenBao. The audit log records the access, not the secret.",
+        title: "Use a secret without distributing it",
+        body: "Janus retrieves the key from OpenBao when the call is made. Services use it without holding it, and the audit log records the access without recording the secret.",
       },
       {
-        title: "I am the first user of what I build",
-        body: "Episort reaches TMDB through Janus. My gateway holds the key, so Episort ships without one. When Janus throttles, Episort paces itself.",
+        title: "Test an architecture by actually using it",
+        body: "Episort calls TMDB through Janus. When the gateway throttles calls, Episort paces itself: the architecture is tested in real use, not only in isolated tests.",
       },
       {
-        title: "Shipping is not the end of the job",
-        body: "GitLab CI builds it. Traefik serves it. My server runs it. Operating them is part of writing them.",
+        title: "Make deployment part of the work",
+        body: "GitLab CI builds the application, Traefik serves it, and my server runs it. Designing that path from the start makes every release reproducible and observable.",
       },
     ],
     journeyTitle: "The path here, in order.",
@@ -237,37 +236,6 @@ export const en = {
     skillProof: "Proven in:",
   },
 
-  about: {
-    metaTitle: "Method",
-    metaDescription:
-      "Start from the failure. Keep every choice explainable. Operate what you ship.",
-    heroTitle: "I design for the day it goes wrong.",
-    heroBody:
-      "Three years of front-line incidents. An application is judged once something is already broken. That is where I start.",
-    sectionTitle: "From the idea to real behavior.",
-    pillars: [
-      {
-        title: "Product",
-        body: "Find the real friction first. The ambiguous case is not an edge case. It is the case.",
-      },
-      {
-        title: "Frontend",
-        body: "Make the state visible. What will happen. What happened. What can still be undone.",
-      },
-      {
-        title: "Backend",
-        body: "Model permissions, errors and transitions explicitly. Cover them with tests that run in CI.",
-      },
-      {
-        title: "Operations",
-        body: "Environments, logs and deployment are the product. I run mine, so I feel it when they are wrong.",
-      },
-    ],
-    gapTitle: "What I do not have yet.",
-    gapBody:
-      "No codebase older than I am. No production I did not build. No debt someone else contracted. That is exactly what I am coming for. I would rather say it now than let you find out in month two.",
-  },
-
   journeyPage: {
     metaTitle: "Journey",
     metaDescription:
@@ -275,6 +243,7 @@ export const en = {
     heroTitle: "A career change I chose.",
     heroBody:
       "I did not leave my previous job because it went badly. I left because I preferred building the tools to repairing them.",
+    storyTitle: "What I can do. What I am here to learn.",
   },
 
   projectsPage: {
@@ -284,7 +253,8 @@ export const en = {
     heroTitle: "Applications facing concrete problems.",
     heroBody:
       "Technologies matter when they make the solution clearer, safer, or easier to keep up.",
-    otherGrounds: "Team and learning projects",
+    personalProjects: "Personal projects",
+    schoolProjects: "School projects",
   },
 
   contact: {
@@ -328,9 +298,9 @@ export const en = {
 
   contactPanel: {
     title: "Let's talk about September 2026.",
-    body: "Hiring an apprentice for a Java team? I am one email away.",
+    body: "Hiring a full-stack apprentice? I am one email away.",
     write: "Write to me",
-    seeContact: "See how to reach me",
+    seeContact: "View my contact details",
   },
 
   projects: {
@@ -348,6 +318,7 @@ export const en = {
     statusLabel: "Status:",
     readCaseStudy: "Read the case study",
     caseStudyOf: "Read the {title} case study",
+    startedAt: "Started",
     discover: "Discover",
     demo: "Demo",
   },
@@ -416,7 +387,7 @@ export const en = {
     learnings: "Learnings",
     currentState: "Current state",
     currentStateBody:
-      "The project is currently: {status}. This reflects the state recorded with its case study.",
+      "The project is {status}.",
     nextSteps: "Next steps",
     demo: "Demo",
     media: "Media",

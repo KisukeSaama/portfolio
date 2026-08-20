@@ -73,7 +73,7 @@ export default async function ProjectPage({ params }: PageParams) {
           <CaseIntro project={project} t={t} />
         </div>
       </header>
-      <div className="shell">
+      <div className="shell case-study-body">
         <CaseStudyBody project={project} t={t} locale={locale} />
       </div>
       <script

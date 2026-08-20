@@ -1,6 +1,7 @@
 "use client";
 
 import { Menu } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRef } from "react";
@@ -14,7 +15,6 @@ import { ThemeToggle } from "./theme-toggle";
 function navLinks(t: Dictionary) {
   return [
     ["/", t.nav.home],
-    ["/about", t.nav.about],
     ["/journey", t.nav.journey],
     ["/projects", t.nav.projects],
     ["/contact", t.nav.contact],
@@ -31,7 +31,7 @@ function NavLinks({
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
-  // Compare without the locale prefix, so /fr/about highlights the same link as /en/about.
+  // Compare without the locale prefix, so localized routes highlight the same link.
   const path = pathname.replace(`/${locale}`, "") || "/";
   return navLinks(t).map(([href, label]) => {
     const active = href === "/" ? path === href : path.startsWith(href);
@@ -61,7 +61,16 @@ export function PublicHeader({ locale, t }: { locale: Locale; t: Dictionary }) {
           className="wordmark"
           aria-label={t.nav.homeAriaLabel}
         >
-          <span className="wordmark-mark" aria-hidden />
+          <Image
+            className="wordmark-logo"
+            src="/images/jonathan-blanchard-logo.webp"
+            width={512}
+            height={512}
+            sizes="32px"
+            alt=""
+            aria-hidden="true"
+            priority
+          />
           {profile.name}
         </Link>
         <nav className="desktop-nav" aria-label={t.nav.primary}>

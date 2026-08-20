@@ -32,7 +32,19 @@ export async function generateMetadata(): Promise<Metadata> {
       title: t.site.titleDefault,
       description: t.site.ogDescription,
     },
-    icons: { icon: "/favicon.svg" },
+    icons: {
+      icon: {
+        url: "/images/jonathan-blanchard-favicon.webp",
+        type: "image/webp",
+        sizes: "64x64",
+      },
+      shortcut: "/images/jonathan-blanchard-favicon.webp",
+      apple: {
+        url: "/images/jonathan-blanchard-apple-touch-icon.webp",
+        type: "image/webp",
+        sizes: "180x180",
+      },
+    },
     manifest: "/manifest.webmanifest",
   };
 }

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { FeaturedProjects, SecondaryProjects } from "~/components/project-list";
+import { ProjectCatalog } from "~/components/project-list";
 import { getProjects } from "~/content/projects";
 import { getDictionary, localePath } from "~/i18n";
 import type { Locale } from "~/i18n/config";
@@ -24,11 +24,11 @@ export default async function ProjectsPage({ params }: LocaleParams) {
   const { locale } = await params;
   const t = getDictionary(locale);
   const projects = getProjects(locale);
-  const primary = projects.filter(
-    (project) => project.featureLevel === "PRIMARY",
+  const personalProjects = projects.filter(
+    (project) => project.projectType === "PERSONAL",
   );
-  const secondary = projects.filter(
-    (project) => project.featureLevel === "SECONDARY",
+  const schoolProjects = projects.filter(
+    (project) => project.projectType !== "PERSONAL",
   );
   return (
     <>
@@ -38,20 +38,39 @@ export default async function ProjectsPage({ params }: LocaleParams) {
           <p>{t.projectsPage.heroBody}</p>
         </div>
       </header>
-      <section className="section">
+      <section
+        className="section projects-page projects-page-personal"
+        aria-labelledby="personal-projects"
+      >
         <div className="shell">
-          <FeaturedProjects projects={primary} locale={locale} t={t} />
-          {/* The heading only earns its place when there is something under it. */}
-          {secondary.length > 0 && (
-            <>
-              <h2 className="section-heading">
-                {t.projectsPage.otherGrounds}
-              </h2>
-              <SecondaryProjects projects={secondary} locale={locale} t={t} />
-            </>
-          )}
+          <h2 className="projects-group-heading" id="personal-projects">
+            {t.projectsPage.personalProjects}
+          </h2>
+          <ProjectCatalog
+            projects={personalProjects}
+            locale={locale}
+            t={t}
+          />
         </div>
       </section>
+      {schoolProjects.length > 0 && (
+        <section
+          className="section projects-page-school"
+          aria-labelledby="school-projects"
+        >
+          <div className="shell">
+            <h2 className="projects-group-heading" id="school-projects">
+              {t.projectsPage.schoolProjects}
+            </h2>
+            <ProjectCatalog
+              projects={schoolProjects}
+              locale={locale}
+              t={t}
+              compact
+            />
+          </div>
+        </section>
+      )}
     </>
   );
 }

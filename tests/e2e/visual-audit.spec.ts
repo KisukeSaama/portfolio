@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
-const pages = ["/en", "/fr", "/en/episort"] as const;
+const pages = ["/en", "/fr", "/en/journey", "/en/episort"] as const;
 
 for (const path of pages) {
   test(`visual audit without overflow: ${path}`, async ({
@@ -34,6 +34,14 @@ for (const path of pages) {
     await page.evaluate(() => {
       document.documentElement.dataset.theme = "dark";
     });
+    // Let the browser commit the theme tokens before Axe samples computed colors. Without this,
+    // mobile Chromium can catch the background and text on opposite sides of the same transition.
+    await page.evaluate(
+      () =>
+        new Promise<void>((resolve) => {
+          requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+        }),
+    );
     const darkAccessibility = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
       .analyze();

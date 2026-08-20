@@ -13,11 +13,12 @@
       "Livrer quelque chose qu’un non-développeur peut installer et lancer"
     ],
     "solution": "Un pipeline entièrement déterministe : scan, analyse par règles, résolution TMDB, revue des identités, revue du plan, application journalisée. Le même dossier produit toujours le même plan. Deux barrières explicites, et aucune ne peut être sautée. Conflits, doublons et chemins Windows dangereux bloquent l’exécution avant qu’elle ne commence.",
-    "role": "Développeur unique. Design produit, règles d’analyse, interface JavaFX et son système de design, packaging, et stratégie de sûreté des opérations de fichiers.",
+    "role": "Développeur unique — de la conception au packaging.",
     "architecture": "Six étapes distinctes, chacune inspectable. L’interface ne touche jamais un fichier : elle approuve un plan. Seule l’étape d’application écrit, à l’intérieur de l’espace de travail configuré, avec un journal qui permet de reprendre une exécution interrompue. TMDB est atteint via Janus, donc aucun secret TMDB n’existe dans ce projet.",
     "status": "MAINTAINED",
     "projectType": "PERSONAL",
     "featureLevel": "PRIMARY",
+    "startedAt": "2026-05-07",
     "technologies": [
       "Java 25",
       "JavaFX 25",
@@ -87,11 +88,12 @@
       "Donner à un déploiement auto-hébergé les contrôles qu’une passerelle managée facture"
     ],
     "solution": "Un proxy authentifié. L’appelant prouve son identité, Janus vérifie l’autorisation, applique le quota, lit le secret dans OpenBao et transmet la requête. Le secret ne repasse jamais dans l’autre sens : ni dans une réponse, ni dans un log, ni dans un message d’erreur. Chaque appel est audité sous un identifiant de corrélation.",
-    "role": "Développeur unique. Modèle de menaces, modèle de permissions, le service Spring Boot, la console React, et le déploiement en production.",
+    "role": "Développeur unique — du modèle de sécurité à la production.",
     "architecture": "Un monolithe modulaire, en couches du contrôleur au service puis au dépôt. La classe HTTP ne décide de rien, le service porte la transaction et l’enregistrement d’audit, et les entités font respecter leurs propres invariants. Deux chaînes de sécurité indépendantes : une pour la console, une pour la passerelle. PostgreSQL contient les identités, les connexions, les autorisations et les audits, jamais un secret en clair. Les appels proxifiés tournent sur des threads virtuels, donc la concurrence est bornée par le pool de la base plutôt que par le conteneur de servlets.",
     "status": "MAINTAINED",
     "projectType": "PERSONAL",
     "featureLevel": "PRIMARY",
+    "startedAt": "2026-08-10",
     "technologies": [
       "Java 25",
       "Spring Boot 4",
@@ -156,53 +158,34 @@
     "title": "Overkill",
     "slug": "overkill",
     "shortDescription": "Agréger et suivre les offres d’emploi en Île-de-France.",
-    "fullDescription": "Un projet d’équipe qui rassemble des offres dispersées, les rend plus faciles à comparer, et garde une trace claire des candidatures.",
+    "fullDescription": "Un projet personnel encore au stade de la réflexion : rassembler les offres dispersées, les rendre plus faciles à comparer et garder une trace claire des candidatures.",
     "problem": "Les offres sont réparties sur plusieurs plateformes. Chercher, comparer et relancer coûte plus de temps que de candidater.",
-    "context": "Un frontend React et un backend Symfony autour d’un modèle partagé d’offres et de suivi de candidatures. Conçu et livré en groupe.",
+    "context": "Le besoin est identifié, mais le périmètre et les sources de données sont encore en cours de cadrage. L’architecture et les choix techniques restent à valider avant le développement.",
     "objectives": [
       "Rassembler des offres dispersées",
       "Accélérer la comparaison",
       "Centraliser le suivi des candidatures"
     ],
-    "solution": "Une application web qui associe une interface de recherche et de suivi à une API et une base PostgreSQL.",
-    "role": "Contributeur full-stack au sein d’un projet d’équipe, sur l’API comme sur l’interface.",
-    "architecture": "React et Vite côté front, une API Symfony, PostgreSQL, et un environnement Docker partagé par l’équipe.",
-    "status": "COMPLETED",
-    "projectType": "TEAM",
+    "solution": "Une application web personnelle réunissant recherche, comparaison et suivi des candidatures dans un même parcours.",
+    "role": "Conception et développement en autonomie.",
+    "architecture": "",
+    "status": "CONCEPT",
+    "projectType": "PERSONAL",
     "featureLevel": "SECONDARY",
-    "technologies": [
-      "React",
-      "Vite",
-      "Tailwind CSS",
-      "Symfony",
-      "PostgreSQL",
-      "Docker"
-    ],
-    "features": [
-      "Agrégation d’offres",
-      "Recherche",
-      "Comparaison",
-      "Suivi des candidatures"
-    ],
-    "decisions": [
-      "Fixer le contrat d’API avant d’écrire l’un ou l’autre côté",
-      "Cadrer le travail sur ce qu’une équipe peut réellement porter"
-    ],
-    "challenges": [
-      "Coordonner les contributions sans se marcher dessus",
-      "Unifier des données venues de plusieurs sources"
-    ],
-    "learnings": [
-      "Un contrat d’API clair est ce qui permet de travailler en parallèle.",
-      "Lire le code de quelqu’un d’autre est une compétence à part entière, et elle se travaille."
-    ],
+    "technologies": [],
+    "features": [],
+    "decisions": [],
+    "challenges": [],
+    "learnings": [],
     "nextSteps": [
-      "Publier de vraies captures"
+      "Valider les sources de données disponibles",
+      "Définir le périmètre d’une première version",
+      "Choisir l’architecture après le cadrage"
     ],
     "githubUrl": null,
     "demoUrl": null,
     "seoTitle": "Overkill (étude de cas)",
-    "seoDescription": "Un projet d’équipe React et Symfony pour suivre les offres d’emploi en Île-de-France.",
+    "seoDescription": "Un projet personnel en réflexion pour agréger et suivre les offres d’emploi en Île-de-France.",
     "openGraphImageUrl": null,
     "updatedAt": "2026-08-19T19:04:18.430621Z",
     "media": []

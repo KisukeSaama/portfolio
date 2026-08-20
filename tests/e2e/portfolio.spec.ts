@@ -1,5 +1,32 @@
 import { expect, test } from "@playwright/test";
 
+test("uses the OS theme on first visit and persists a manual choice", async ({
+  page,
+}) => {
+  await page.emulateMedia({ colorScheme: "dark" });
+  await page.goto("/");
+
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect
+    .poll(() => page.evaluate(() => localStorage.getItem("jonathan-theme")))
+    .toBeNull();
+
+  if ((page.viewportSize()?.width ?? 1200) < 900)
+    await page.getByLabel("Open the menu").click();
+  await page
+    .getByRole("button", { name: "Switch to the light theme" })
+    .click();
+
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await expect
+    .poll(() => page.evaluate(() => localStorage.getItem("jonathan-theme")))
+    .toBe("light");
+
+  await page.reload();
+
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+});
+
 test("public navigation, language switch and theme", async ({ page }) => {
   await page.goto("/");
   // An unprefixed visit is redirected to a locale; the test client asks for English.

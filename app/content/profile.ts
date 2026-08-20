@@ -4,7 +4,7 @@
  */
 export const profile = {
   name: "Jonathan Blanchard",
-  photo: "/images/jonathan-blanchard.jpg",
+  photo: "/images/jonathan-blanchard.webp",
   /**
    * Drives the caption on the hero portrait. Set to `true` at the same time as `photo`, so the
    * "not published yet" note disappears with the placeholder it describes.

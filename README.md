@@ -44,11 +44,16 @@ npm run dev
 Open `http://localhost:5173`. An unprefixed URL is redirected to `/en` or `/fr` from the visitor’s
 language preference.
 
-The containerized build needs only Docker:
+The containerized development environment needs only Docker. The first command builds the
+development image; source files are then mounted into the container and Next.js reloads changes
+automatically:
 
 ```bash
 docker compose up --build
 ```
+
+For later starts, `docker compose up` is enough. Rebuild only after changing `package.json` or
+`package-lock.json`.
 
 The optional `PUBLIC_SITE_URL` environment variable sets canonical metadata and sitemap URLs. Copy
 `.env.example` to `.env` to override its local default.
@@ -60,7 +65,7 @@ The optional `PUBLIC_SITE_URL` environment variable sets canonical metadata and 
 - French interface copy: `app/i18n/dictionaries/fr.ts`.
 - English case studies: `app/content/projects.en.json`.
 - French case studies: `app/content/projects.fr.json`.
-- Profile photo: `public/images/jonathan-blanchard.jpg`.
+- Profile photo: `public/images/jonathan-blanchard.webp`.
 - Resume: `public/documents/cv-jonathan-blanchard.pdf`.
 
 The two project JSON files use the same slugs. Edit both when changing a case study, keep their order

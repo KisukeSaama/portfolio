@@ -13,11 +13,12 @@
       "Ship something a non-developer can install and run"
     ],
     "solution": "A fully deterministic pipeline: scan, rule-based parsing, TMDB resolution, identity review, plan review, journaled apply. The same folder always produces the same plan. Two explicit gates, and neither can be skipped. Conflicts, duplicates and unsafe Windows paths block the run before it starts.",
-    "role": "Sole developer. Product design, the parsing rules, the JavaFX interface and its design system, the packaging, and the safety strategy for file operations.",
+    "role": "Sole developer — from product design to packaging.",
     "architecture": "Six separate stages, each one inspectable. The interface never touches a file: it approves a plan. Only the apply stage writes, inside the configured workspace, with a journal that lets an interrupted run be recovered. TMDB is reached through Janus, so no TMDB secret exists anywhere in this project.",
     "status": "MAINTAINED",
     "projectType": "PERSONAL",
     "featureLevel": "PRIMARY",
+    "startedAt": "2026-05-07",
     "technologies": [
       "Java 25",
       "JavaFX 25",
@@ -87,11 +88,12 @@
       "Give a self-hosted deployment the controls a managed gateway sells"
     ],
     "solution": "An authenticated proxy. The caller proves its identity, Janus checks the grant, applies the quota, reads the secret from OpenBao, and forwards the request. The secret never crosses back: not in a response, not in a log, not in an error message. Every call is audited under a correlation ID.",
-    "role": "Sole developer. Threat model, permission model, the Spring Boot service, the React console, and the production deployment.",
+    "role": "Sole developer — from security model to production.",
     "architecture": "A modular monolith, layered controller to service to repository. The HTTP class decides nothing, the service owns the transaction and the audit record, and entities enforce their own invariants. Two independent security chains: one for the console, one for the gateway. PostgreSQL holds identities, connections, grants and audits, never a plaintext secret. Proxied calls run on virtual threads, so concurrency is bounded by the database pool rather than by the servlet container.",
     "status": "MAINTAINED",
     "projectType": "PERSONAL",
     "featureLevel": "PRIMARY",
+    "startedAt": "2026-08-10",
     "technologies": [
       "Java 25",
       "Spring Boot 4",
@@ -156,53 +158,34 @@
     "title": "Overkill",
     "slug": "overkill",
     "shortDescription": "Aggregate and track job offers across the Paris region.",
-    "fullDescription": "A team project bringing scattered job offers together, making them easier to compare, and keeping a clear record of applications.",
+    "fullDescription": "A personal project still at the concept stage: bringing scattered job offers together, making them easier to compare, and keeping a clear record of applications.",
     "problem": "Offers are spread across several platforms. Searching, comparing and following them up costs more time than applying.",
-    "context": "A React frontend and a Symfony backend around a shared model of offers and application tracking. Built and delivered as a group.",
+    "context": "The need is identified, but the scope and data sources are still being framed. The architecture and technical choices remain to be validated before development starts.",
     "objectives": [
       "Bring scattered offers together",
       "Speed up comparison",
       "Centralize application tracking"
     ],
-    "solution": "A web application pairing a search and tracking interface with an API and a PostgreSQL database.",
-    "role": "Full-stack contributor within a team project, on both the API and the interface.",
-    "architecture": "React and Vite on the front, a Symfony API, PostgreSQL, and a Docker environment shared by the team.",
-    "status": "COMPLETED",
-    "projectType": "TEAM",
+    "solution": "A personal web application combining search, comparison and application tracking in one flow.",
+    "role": "Sole designer and developer.",
+    "architecture": "",
+    "status": "CONCEPT",
+    "projectType": "PERSONAL",
     "featureLevel": "SECONDARY",
-    "technologies": [
-      "React",
-      "Vite",
-      "Tailwind CSS",
-      "Symfony",
-      "PostgreSQL",
-      "Docker"
-    ],
-    "features": [
-      "Offer aggregation",
-      "Search",
-      "Comparison",
-      "Application tracking"
-    ],
-    "decisions": [
-      "Agree the API contract before writing either side",
-      "Scope the work to what a team can actually carry"
-    ],
-    "challenges": [
-      "Coordinating contributions without stepping on each other",
-      "Unifying data from several sources"
-    ],
-    "learnings": [
-      "A clear API contract is what lets people work in parallel.",
-      "Reading someone else's code is a skill in itself, and it is trainable."
-    ],
+    "technologies": [],
+    "features": [],
+    "decisions": [],
+    "challenges": [],
+    "learnings": [],
     "nextSteps": [
-      "Publish real screenshots"
+      "Validate the available data sources",
+      "Define the scope of a first version",
+      "Choose the architecture after framing"
     ],
     "githubUrl": null,
     "demoUrl": null,
     "seoTitle": "Overkill (case study)",
-    "seoDescription": "A React and Symfony team project to track job offers in the Paris region.",
+    "seoDescription": "A personal project at the concept stage for aggregating and tracking job offers in the Paris region.",
     "openGraphImageUrl": null,
     "updatedAt": "2026-08-19T19:04:18.430621Z",
     "media": []

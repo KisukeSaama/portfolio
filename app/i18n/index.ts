@@ -18,7 +18,7 @@ export function format(
   );
 }
 
-/** Prefixes an in-site path with the active locale: `/about` becomes `/fr/about`. */
+/** Prefixes an in-site path with the active locale: `/journey` becomes `/fr/journey`. */
 export function localePath(locale: Locale, path: string) {
   return path === "/" ? `/${locale}` : `/${locale}${path}`;
 }

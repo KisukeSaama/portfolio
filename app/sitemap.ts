@@ -15,7 +15,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       locales.map((locale) => [locale, `${siteUrl}/${locale}${path}`]),
     );
 
-  const paths = ["", "/about", "/journey", "/projects", "/contact"];
+  const paths = ["", "/journey", "/projects", "/contact"];
   const staticPages: MetadataRoute.Sitemap = locales.flatMap((locale) =>
     paths.map((path) => ({
       url: `${siteUrl}/${locale}${path}`,

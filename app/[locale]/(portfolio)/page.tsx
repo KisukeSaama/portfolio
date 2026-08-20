@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 import { ContactPanel } from "~/components/contact-panel";
-import { FeaturedProjects, SecondaryProjects } from "~/components/project-list";
+import { FeaturedProjects } from "~/components/project-list";
 import { profile } from "~/content/profile";
 import { getProjects } from "~/content/projects";
 import { getDictionary, localePath } from "~/i18n";
@@ -36,17 +36,15 @@ export default async function HomePage({ params }: LocaleParams) {
   const primary = projects.filter(
     (project) => project.featureLevel === "PRIMARY",
   );
-  const secondary = projects.filter(
-    (project) => project.featureLevel === "SECONDARY",
-  );
 
   return (
     <>
       <section className="hero">
-        <div className="shell hero-grid">
-          <div className="hero-copy">
-            <p className="hero-name">{profile.name}</p>
+        <div className="shell hero-layout">
+          <div className="hero-heading">
             <h1>{t.profile.title}</h1>
+          </div>
+          <div className="hero-copy">
             <p className="hero-statement">{t.profile.tagline}</p>
             <p className="hero-availability">{t.profile.availability}</p>
             <div className="hero-actions">
@@ -109,27 +107,14 @@ export default async function HomePage({ params }: LocaleParams) {
           <h2 id="intro-title" className="intro-title">
             {t.home.introTitle}
           </h2>
-          <div className="intro-copy">
-            {t.introduction.map((text) => (
-              <p key={text}>{text}</p>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="section" aria-labelledby="approach-title">
-        <div className="shell">
-          <h2 id="approach-title" className="section-heading">
-            {t.home.approachTitle}
-          </h2>
-          <p className="section-lede">{t.home.approachLede}</p>
-          <div className="principles">
-            {t.home.principles.map((principle) => (
-              <div className="principle" key={principle.title}>
-                <h3>{principle.title}</h3>
-                <p>{principle.body}</p>
-              </div>
-            ))}
+          <div className="journey-teaser">
+            <p className="journey-teaser-statement">{t.introduction[0]}</p>
+            <Link
+              href={localePath(locale, "/journey")}
+              className="button button-secondary"
+            >
+              {t.home.fullJourney} <ArrowRight size={18} aria-hidden />
+            </Link>
           </div>
         </div>
       </section>
@@ -141,8 +126,7 @@ export default async function HomePage({ params }: LocaleParams) {
           </h2>
           <p className="section-lede">{t.home.projectsLede}</p>
           <FeaturedProjects projects={primary} locale={locale} t={t} />
-          <SecondaryProjects projects={secondary} locale={locale} t={t} />
-          <p>
+          <p className="all-projects-action">
             <Link
               href={localePath(locale, "/projects")}
               className="button button-secondary"
@@ -150,6 +134,23 @@ export default async function HomePage({ params }: LocaleParams) {
               {t.home.allProjects}
             </Link>
           </p>
+        </div>
+      </section>
+
+      <section className="section" aria-labelledby="approach-title">
+        <div className="shell">
+          <h2 id="approach-title" className="section-heading">
+            {t.home.approachTitle}
+          </h2>
+          <p className="section-lede">{t.home.approachLede}</p>
+          <div className="principles decision-list">
+            {t.home.principles.map((principle) => (
+              <div className="principle" key={principle.title}>
+                <h3>{principle.title}</h3>
+                <p>{principle.body}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -170,31 +171,6 @@ export default async function HomePage({ params }: LocaleParams) {
               </article>
             ))}
           </div>
-        </div>
-      </section>
-
-      <section className="section" aria-labelledby="journey-title">
-        <div className="shell">
-          <h2 id="journey-title" className="section-heading">
-            {t.home.journeyTitle}
-          </h2>
-          <ol className="journey-list">
-            {t.journey.map((item) => (
-              <li className="journey-item" key={item.title}>
-                <span className="journey-period">{item.period}</span>
-                <div>
-                  <h3>{item.title}</h3>
-                  <p className="journey-org">{item.org}</p>
-                  <p>{item.description}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-          <p>
-            <Link href={localePath(locale, "/journey")} className="text-link">
-              {t.home.fullJourney} <ArrowRight size={16} aria-hidden />
-            </Link>
-          </p>
         </div>
       </section>
 

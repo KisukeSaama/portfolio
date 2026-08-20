@@ -13,6 +13,17 @@ export default function manifest(): MetadataRoute.Manifest {
     display: "standalone",
     background_color: "#f5efe5",
     theme_color: "#e86f32",
-    icons: [{ src: "/favicon.svg", sizes: "any", type: "image/svg+xml" }],
+    icons: [
+      {
+        src: "/images/jonathan-blanchard-logo-192.webp",
+        sizes: "192x192",
+        type: "image/webp",
+      },
+      {
+        src: "/images/jonathan-blanchard-logo.webp",
+        sizes: "512x512",
+        type: "image/webp",
+      },
+    ],
   };
 }

@@ -16,7 +16,6 @@ export const fr: Dictionary = {
 
   nav: {
     home: "Accueil",
-    about: "Méthode",
     journey: "Parcours",
     projects: "Projets",
     contact: "Contact",
@@ -42,9 +41,9 @@ export const fr: Dictionary = {
   },
 
   profile: {
-    title: "Développeur full-stack. Java et Spring Boot d’abord.",
+    title: "Développeur full-stack. Je pense déjà à demain.",
     tagline:
-      "Je construis des applications, puis je les maintiens debout. Janus est en production sur un serveur Linux que j’exploite moi-même. Quand ça casse, c’est moi qui déroule les logs.",
+      "Je donne vie aux idées qui m’entourent en construisant des applications. Je les conçois, les déploie sur mon serveur, puis les fais évoluer au contact des usages réels.",
     availability:
       "Alternance de 14 mois, dès septembre 2026. Six semaines en entreprise, deux à l’école. Paris et Île-de-France.",
     photoAlt: "Portrait de Jonathan Blanchard souriant en extérieur",
@@ -65,16 +64,16 @@ export const fr: Dictionary = {
       },
       {
         label: "Poste visé",
-        value: "Back-end Java, fonctionnalités menées de bout en bout",
+        value: "Développeur full-stack, fonctionnalités menées de bout en bout",
       },
     ],
   },
 
   introduction: [
-    "Une application a cassé un dimanche soir. C’est moi qui l’ai remise debout. Trois ans chez Novelty, sans droit à l’erreur. J’y ai appris que je préférais construire les outils plutôt que les réparer.",
-    "J’ai donc choisi Java et React. C’est ce qui tourne en entreprise. Janus tourne en production sur un serveur Linux que j’exploite moi-même, et Episort en dépend. Je suis ma propre astreinte. Ça casse, je déroule les logs, je corrige, je rollback.",
-    "12 projets rendus en groupe à la Web@cadémie. Binômes, trinômes, une équipe de cinq. Relecture entre pairs, et code d’autrui à reprendre. Ce qui me manque, c’est l’échelle.",
-    "Au bout de quatorze mois, je veux être le développeur backend Java à qui on confie une fonctionnalité de bout en bout.",
+    "Chez Novelty, pendant trois ans, j’ai été confronté à des incidents à résoudre rapidement. Mais c’est souvent en creusant ces problèmes après coup, en testant différentes pistes et en explorant ce qui pouvait être fait autrement que j’ai eu envie de passer de l’autre côté : construire moi-même les outils qui me manquaient.",
+    "J’ai choisi de me spécialiser en Java et React, des technologies largement utilisées pour concevoir des applications robustes et durables. Aujourd’hui, mes projets reposent sur ces technologies et sont en production sur le serveur Linux que j’administre moi-même. Je suis ma propre astreinte : lorsqu’un problème survient, j’analyse les logs, j’en identifie la cause, je le corrige et, si nécessaire, je reviens à la version précédente.",
+    "À la Web@cadémie, j’ai réalisé 12 projets collectifs, en binôme, en trinôme et jusqu’à une équipe de cinq personnes. J’y ai appris à relire le code des autres, à défendre mes choix techniques et à reprendre un projet que je n’avais pas commencé. Ce qu’il me manque désormais, c’est l’échelle : travailler sur une application plus complexe, au sein d’une équipe expérimentée et avec de véritables contraintes de production.",
+    "Au terme de ces quatorze mois d’alternance, je veux être le développeur à qui l’on peut confier une fonctionnalité de bout en bout, de sa conception jusqu’à sa mise en production.",
   ],
 
   aiNote: {
@@ -213,27 +212,26 @@ export const fr: Dictionary = {
     metaTitle: "Développeur Java / Spring Boot, alternance septembre 2026",
     viewResume: "Consulter mon CV",
     contactMe: "Me contacter",
-    introTitle:
-      "Je suis venu au code en réparant ce que d’autres avaient construit.",
-    approachTitle: "Quatre décisions que je défendrais en revue.",
+    introTitle: "Mon parcours",
+    approachTitle: "Quatre choix que je peux défendre en revue de code.",
     approachLede:
-      "Pas des principes. Des arbitrages que j’ai faits, dans des applications livrées et maintenues.",
+      "Quatre risques concrets : perdre des données, exposer un secret, laisser passer un problème d’intégration ou livrer sans savoir l’exploiter.",
     principles: [
       {
-        title: "Aucune action destructive sans retour arrière",
-        body: "Episort ne déplace jamais un fichier de lui-même. Il propose un plan, demande deux fois, journalise l’exécution, et sait tout annuler.",
+        title: "Prévoir le retour en arrière avant d’écrire",
+        body: "Episort présente chaque déplacement avant de toucher aux fichiers. L’utilisateur valide le plan, l’exécution est journalisée et l’opération peut être annulée.",
       },
       {
-        title: "Un secret ne voyage pas plus loin que nécessaire",
-        body: "Dans Janus, les services appellent des API tierces sans jamais détenir la clé. La rotation vit dans OpenBao. Le journal d’audit enregistre l’accès, pas le secret.",
+        title: "Utiliser un secret sans le distribuer",
+        body: "Janus récupère la clé dans OpenBao au moment de l’appel. Les services l’utilisent sans la détenir, et le journal d’audit trace l’accès sans enregistrer le secret.",
       },
       {
-        title: "Je suis le premier utilisateur de ce que je construis",
-        body: "Episort atteint TMDB à travers Janus. Ma passerelle détient la clé, donc Episort est livré sans. Quand Janus limite, Episort ralentit de lui-même.",
+        title: "Tester une architecture en l’utilisant vraiment",
+        body: "Episort appelle TMDB à travers Janus. Quand la passerelle limite les appels, Episort adapte son rythme : l’architecture est éprouvée dans un usage réel, pas seulement dans des tests.",
       },
       {
-        title: "Livrer n’est pas la fin du travail",
-        body: "GitLab CI le construit. Traefik le sert. Mon serveur le fait tourner. Les exploiter fait partie de les écrire.",
+        title: "Inclure le déploiement dans le travail",
+        body: "GitLab CI construit l’application, Traefik la sert et mon serveur l’exécute. Concevoir ce chemin dès le départ rend chaque livraison reproductible et observable.",
       },
     ],
     journeyTitle: "Le chemin jusqu’ici, dans l’ordre.",
@@ -246,37 +244,6 @@ export const fr: Dictionary = {
     skillProof: "Éprouvé dans :",
   },
 
-  about: {
-    metaTitle: "Méthode",
-    metaDescription:
-      "Partir de la panne. Garder chaque choix explicable. Exploiter ce qu’on livre.",
-    heroTitle: "Je conçois pour le jour où ça tourne mal.",
-    heroBody:
-      "Trois ans d’incidents en première ligne. Une application se juge quand quelque chose est déjà cassé. C’est de là que je pars.",
-    sectionTitle: "De l’idée au comportement réel.",
-    pillars: [
-      {
-        title: "Produit",
-        body: "Trouver d’abord la gêne réelle. Le cas ambigu n’est pas un cas limite. C’est le cas.",
-      },
-      {
-        title: "Frontend",
-        body: "Rendre l’état visible. Ce qui va se passer. Ce qui s’est passé. Ce qui peut encore être annulé.",
-      },
-      {
-        title: "Backend",
-        body: "Modéliser explicitement les permissions, les erreurs et les transitions. Les couvrir par des tests qui tournent en CI.",
-      },
-      {
-        title: "Exploitation",
-        body: "Les environnements, les journaux et le déploiement font partie du produit. J’exploite les miens, donc je sens quand ils sont mal faits.",
-      },
-    ],
-    gapTitle: "Ce que je n’ai pas encore.",
-    gapBody:
-      "Aucune base de code plus vieille que moi. Aucune prod que je n’ai pas construite. Aucune dette contractée par quelqu’un d’autre. C’est exactement ce que je viens chercher. Je préfère le dire maintenant plutôt que vous le laisser découvrir au deuxième mois.",
-  },
-
   journeyPage: {
     metaTitle: "Parcours",
     metaDescription:
@@ -284,6 +251,7 @@ export const fr: Dictionary = {
     heroTitle: "Une reconversion choisie.",
     heroBody:
       "Je n’ai pas quitté mon métier précédent parce qu’il se passait mal. Je l’ai quitté parce que je préférais construire les outils plutôt que les réparer.",
+    storyTitle: "Ce que je sais faire. Ce que je viens chercher.",
   },
 
   projectsPage: {
@@ -293,7 +261,8 @@ export const fr: Dictionary = {
     heroTitle: "Des applications face à des problèmes concrets.",
     heroBody:
       "Les technologies comptent quand elles rendent la solution plus claire, plus sûre, ou plus facile à maintenir debout.",
-    otherGrounds: "Projets d’équipe et d’apprentissage",
+    personalProjects: "Projets personnels",
+    schoolProjects: "Projets d’école",
   },
 
   contact: {
@@ -338,9 +307,9 @@ export const fr: Dictionary = {
 
   contactPanel: {
     title: "Parlons de septembre 2026.",
-    body: "Vous recrutez un alternant pour une équipe Java ? Je suis à un e-mail.",
+    body: "Vous recrutez un alternant full-stack ? Je suis à un e-mail.",
     write: "M’écrire",
-    seeContact: "Voir comment me joindre",
+    seeContact: "Voir mes coordonnées",
   },
 
   projects: {
@@ -358,6 +327,7 @@ export const fr: Dictionary = {
     statusLabel: "Statut :",
     readCaseStudy: "Lire l’étude de cas",
     caseStudyOf: "Voir l’étude de cas {title}",
+    startedAt: "Débuté le",
     discover: "Découvrir",
     demo: "Démonstration",
   },
@@ -420,7 +390,7 @@ export const fr: Dictionary = {
     learnings: "Apprentissages",
     currentState: "État actuel",
     currentStateBody:
-      "Le projet est actuellement : {status}. Cette formulation reflète l’état enregistré avec son étude de cas.",
+      "Le projet est {status}.",
     nextSteps: "Prochaines étapes",
     demo: "Démonstration",
     media: "Médias",

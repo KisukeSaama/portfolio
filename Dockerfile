@@ -1,3 +1,12 @@
+FROM node:24-alpine AS development
+WORKDIR /workspace
+ENV NODE_ENV=development NEXT_TELEMETRY_DISABLED=1
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
+EXPOSE 5173
+CMD ["npm", "run", "dev", "--", "--hostname", "0.0.0.0"]
+
 FROM node:24-alpine AS build
 WORKDIR /workspace
 ARG PUBLIC_SITE_URL=http://localhost:3000

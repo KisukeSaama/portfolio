@@ -18,13 +18,13 @@ describe("public portfolio", () => {
       hero.compareDocumentPosition(project) & Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
     expect(
-      screen.getByText(/When it breaks, I am the one reading the logs/),
+      screen.getByText(/deploy them on my own server/),
     ).toBeInTheDocument();
     const portrait = screen.getByRole("img", {
       name: "Portrait of Jonathan Blanchard smiling outdoors",
     });
     expect(portrait.getAttribute("src")).toContain(
-      encodeURIComponent("/images/jonathan-blanchard.jpg"),
+      encodeURIComponent("/images/jonathan-blanchard.webp"),
     );
     expect(
       screen.queryByText("Portrait not published yet"),
@@ -36,11 +36,42 @@ describe("public portfolio", () => {
     render(await HomePage({ params: Promise.resolve({ locale: "en" }) }));
     // A recruiter decides on the contract terms, so they must precede the prose.
     const terms = screen.getByText("Apprenticeship, 14 months");
-    const intro = screen.getByRole("heading", { level: 2, name: /I came to code/ });
+    const intro = screen.getByRole("heading", {
+      level: 2,
+      name: /My journey/,
+    });
     expect(
       terms.compareDocumentPosition(intro) & Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
     expect(screen.getByText("September 2026")).toBeInTheDocument();
+  });
+
+  it("keeps the journey mysterious on the home page and links to the full story", async () => {
+    const { default: HomePage } = await import("~/[locale]/(portfolio)/page");
+    render(await HomePage({ params: Promise.resolve({ locale: "en" }) }));
+
+    expect(screen.getByText(/For three years at Novelty/)).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /See the full journey/ }),
+    ).toHaveAttribute("href", "/en/journey");
+    expect(
+      screen.queryByText(/I chose to specialize in Java and React/),
+    ).not.toBeInTheDocument();
+  });
+
+  it("continues the introduction on the journey page without repeating the home teaser", async () => {
+    const { default: JourneyPage } = await import(
+      "~/[locale]/(portfolio)/journey/page"
+    );
+    render(await JourneyPage({ params: Promise.resolve({ locale: "en" }) }));
+
+    expect(screen.queryByText(/For three years at Novelty/)).not.toBeInTheDocument();
+    expect(
+      screen.getByText(/I chose to specialize in Java and React/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/By the end of this fourteen-month apprenticeship/),
+    ).toBeInTheDocument();
   });
 
   it("renders the same page in French", async () => {

@@ -12,14 +12,25 @@ function CaseSection({
   title,
   children,
   wide,
+  split,
 }: {
   title: string;
   children: ReactNode;
   /** Drops the heading column so the content gets the whole measure. Only the diagram needs it. */
   wide?: boolean;
+  /** Uses the full measure for content that is deliberately arranged in columns. */
+  split?: boolean;
 }) {
+  const className = [
+    "case-section",
+    wide ? "case-section-wide" : "",
+    split ? "case-section-split" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
-    <section className={`case-section${wide ? " case-section-wide" : ""}`}>
+    <section className={className}>
       <h2>{title}</h2>
       <div className="case-content">{children}</div>
     </section>
@@ -57,30 +68,14 @@ function MechanismSection({
   );
 }
 
-/** A prose section, omitted when the field is empty rather than printing a bare heading. */
-function TextSection({ title, value }: { title: string; value: string }) {
-  return value.trim() ? (
-    <CaseSection title={title}>
-      <p>{value}</p>
-    </CaseSection>
-  ) : null;
-}
-
-/**
- * A list section, omitted when empty. It used to print "This part will be filled in as the project
- * moves forward." under every empty heading, which on a sparse project repeated five times and read
- * as an unfinished page rather than an honest one. What is still open belongs in Next steps.
- */
-function ListSection({ title, items }: { title: string; items: string[] }) {
-  return items.length ? (
-    <CaseSection title={title}>
-      <ul className="case-list">
-        {items.map((item) => (
-          <li key={item}>{item}</li>
-        ))}
-      </ul>
-    </CaseSection>
-  ) : null;
+function CompactList({ items }: { items: string[] }) {
+  return (
+    <ul className="case-list">
+      {items.map((item) => (
+        <li key={item}>{item}</li>
+      ))}
+    </ul>
+  );
 }
 
 /**
@@ -90,7 +85,6 @@ function ListSection({ title, items }: { title: string; items: string[] }) {
 export function CaseIntro({ project, t }: { project: Project; t: Dictionary }) {
   const facts = [
     [t.caseStudy.status, t.projects.status[project.status]],
-    [t.caseStudy.type, t.projects.type[project.projectType]],
     [t.caseStudy.role, project.role],
   ].filter(([, value]) => value?.trim());
 
@@ -124,6 +118,10 @@ export function CaseStudyBody({
   const gallery = project.media.filter((media) => media.type === "GALLERY");
   const [beforeStatus, afterStatus] =
     t.caseStudy.currentStateBody.split("{status}");
+  const decisions = project.decisions.slice(0, 3);
+  const challenges = project.challenges.slice(0, 2);
+  const nextSteps = project.nextSteps.slice(0, 2);
+  const hasMechanism = hasDiagram(project.slug);
 
   return (
     <>
@@ -135,33 +133,87 @@ export function CaseStudyBody({
         priority
       />
       <MechanismSection project={project} t={t} locale={locale} />
-      <TextSection title={t.caseStudy.problem} value={project.problem} />
-      <TextSection title={t.caseStudy.context} value={project.context} />
-      <ListSection title={t.caseStudy.objectives} items={project.objectives} />
-      <TextSection title={t.caseStudy.solution} value={project.solution} />
-      <ListSection title={t.caseStudy.features} items={project.features} />
-      <TextSection
-        title={t.caseStudy.architecture}
-        value={project.architecture}
-      />
-      {project.technologies.length > 0 && (
-        <CaseSection title={t.caseStudy.technologies}>
-          <p>{project.technologies.join(" · ")}</p>
+      <CaseSection title={t.caseStudy.problem} split>
+        <div className="case-split-grid case-problem-grid">
+          <p>{project.problem}</p>
+          <div className="case-subsection">
+            <h3>{t.caseStudy.solution}</h3>
+            <p>{project.solution}</p>
+          </div>
+          {!hasMechanism && project.architecture.trim() && (
+            <div className="case-subsection case-panel-wide">
+              <h3>{t.caseStudy.architecture}</h3>
+              <p>{project.architecture}</p>
+            </div>
+          )}
+        </div>
+      </CaseSection>
+      {(decisions.length > 0 || challenges.length > 0) && (
+        <CaseSection title={t.caseStudy.decisions} split>
+          <div className="case-split-grid case-decisions-grid">
+            {decisions.length > 0 && <CompactList items={decisions} />}
+            {challenges.length > 0 && (
+              <div className="case-subsection">
+                <h3>{t.caseStudy.challenges}</h3>
+                <CompactList items={challenges} />
+              </div>
+            )}
+          </div>
         </CaseSection>
       )}
-      <ListSection title={t.caseStudy.decisions} items={project.decisions} />
-      <ListSection title={t.caseStudy.challenges} items={project.challenges} />
-      <ListSection title={t.caseStudy.learnings} items={project.learnings} />
-      <CaseSection title={t.caseStudy.currentState}>
-        <p>
-          {beforeStatus}
-          <strong>
-            {t.projects.status[project.status].toLocaleLowerCase(locale)}
-          </strong>
-          {afterStatus}
-        </p>
+      <CaseSection title={t.caseStudy.currentState} split>
+        <div className="case-split-grid case-current-grid">
+          <div>
+            <p className="case-status">
+              {beforeStatus}
+              <strong>
+                {t.projects.status[project.status].toLocaleLowerCase(locale)}
+              </strong>
+              {afterStatus}
+            </p>
+            {nextSteps.length > 0 && (
+              <div className="case-subsection">
+                <h3>{t.caseStudy.nextSteps}</h3>
+                <CompactList items={nextSteps} />
+              </div>
+            )}
+          </div>
+          <div>
+            {project.technologies.length > 0 && (
+              <div className="case-subsection">
+                <h3>{t.caseStudy.technologies}</h3>
+                <p className="case-technologies">
+                  {project.technologies.join(" · ")}
+                </p>
+              </div>
+            )}
+            {(project.githubUrl || project.demoUrl) && (
+              <div className="project-actions case-actions">
+                {project.githubUrl && (
+                  <a
+                    className="button button-secondary"
+                    href={project.githubUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    GitHub <ExternalLink size={16} aria-hidden />
+                  </a>
+                )}
+                {project.demoUrl && (
+                  <a
+                    className="button button-primary"
+                    href={project.demoUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {t.caseStudy.demo} <ExternalLink size={16} aria-hidden />
+                  </a>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
       </CaseSection>
-      <ListSection title={t.caseStudy.nextSteps} items={project.nextSteps} />
       {video && (
         <CaseSection title={t.caseStudy.demo}>
           <ProjectMedia
@@ -182,32 +234,6 @@ export function CaseStudyBody({
                 {media.caption && <figcaption>{media.caption}</figcaption>}
               </figure>
             ))}
-          </div>
-        </CaseSection>
-      )}
-      {(project.githubUrl || project.demoUrl) && (
-        <CaseSection title={t.caseStudy.links}>
-          <div className="project-actions">
-            {project.githubUrl && (
-              <a
-                className="button button-secondary"
-                href={project.githubUrl}
-                target="_blank"
-                rel="noreferrer"
-              >
-                GitHub <ExternalLink size={16} aria-hidden />
-              </a>
-            )}
-            {project.demoUrl && (
-              <a
-                className="button button-primary"
-                href={project.demoUrl}
-                target="_blank"
-                rel="noreferrer"
-              >
-                {t.caseStudy.demo} <ExternalLink size={16} aria-hidden />
-              </a>
-            )}
           </div>
         </CaseSection>
       )}

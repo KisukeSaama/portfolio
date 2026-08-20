@@ -18,10 +18,15 @@
  */
 export const NONCE_HEADER = "x-nonce";
 
-export function contentSecurityPolicy(nonce: string): string {
+export function contentSecurityPolicy(
+  nonce: string,
+  development = process.env.NODE_ENV === "development",
+): string {
+  const developmentScriptSource = development ? " 'unsafe-eval'" : "";
+
   return [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`,
+    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${developmentScriptSource}`,
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: https:",
     "media-src 'self' https:",
