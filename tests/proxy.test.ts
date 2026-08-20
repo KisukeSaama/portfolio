@@ -77,6 +77,7 @@ describe("proxy", () => {
     "/opengraph-image?1c4e5b",
     // Asked for by the browser itself, at the root, with no link tag involved.
     "/favicon.ico",
+    "/videos/janus/janus_720p.mp4",
   ])("serves %s without a locale redirect", (path) => {
     const response = proxy(request(path));
     expect(response.status).toBe(200);

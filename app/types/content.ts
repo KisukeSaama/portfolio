@@ -12,6 +12,13 @@ export type ProjectType = "PERSONAL" | "TEAM" | "LEARNING";
 export type FeatureLevel = "PRIMARY" | "SECONDARY";
 export type MediaType = "COVER" | "VIDEO" | "POSTER" | "GALLERY";
 
+export interface ProjectVideoSource {
+  url: string;
+  media: string | null;
+  width: number;
+  height: number;
+}
+
 export interface ProjectMedia {
   type: MediaType;
   url: string;
@@ -19,6 +26,8 @@ export interface ProjectMedia {
   caption: string | null;
   width: number | null;
   height: number | null;
+  poster?: string | null;
+  sources?: ProjectVideoSource[];
 }
 
 /**

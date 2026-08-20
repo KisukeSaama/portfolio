@@ -22,7 +22,95 @@
     ],
     "seoTitle": "Episort, trieur de médias en JavaFX",
     "seoDescription": "Une application JavaFX qui trie une bibliothèque Plex de milliers de fichiers. Six étapes, deux validations, une exécution journalisée, reprenable et annulable.",
-    "media": []
+    "media": [
+      {
+        "type": "VIDEO",
+        "url": "/videos/episort/episort_1080p.mp4",
+        "alt": "Vue d’ensemble du parcours de tri dans Episort",
+        "caption": "Présentation",
+        "width": 1920,
+        "height": 1080,
+        "poster": "/videos/episort/episort-poster.webp",
+        "sources": [
+          {
+            "url": "/videos/episort/episort_360p.mp4",
+            "media": "(max-width: 520px)",
+            "width": 640,
+            "height": 360
+          },
+          {
+            "url": "/videos/episort/episort_480p.mp4",
+            "media": "(max-width: 960px)",
+            "width": 854,
+            "height": 480
+          },
+          {
+            "url": "/videos/episort/episort_720p.mp4",
+            "media": "(max-width: 1440px)",
+            "width": 1280,
+            "height": 720
+          }
+        ]
+      },
+      {
+        "type": "VIDEO",
+        "url": "/videos/episort/episort_correspondance_1080p.mp4",
+        "alt": "Revue des correspondances TMDB dans Episort",
+        "caption": "Correspondance",
+        "width": 1920,
+        "height": 1080,
+        "poster": "/videos/episort/episort_correspondance-poster.webp",
+        "sources": [
+          {
+            "url": "/videos/episort/episort_correspondance_360p.mp4",
+            "media": "(max-width: 520px)",
+            "width": 640,
+            "height": 360
+          },
+          {
+            "url": "/videos/episort/episort_correspondance_480p.mp4",
+            "media": "(max-width: 960px)",
+            "width": 854,
+            "height": 480
+          },
+          {
+            "url": "/videos/episort/episort_correspondance_720p.mp4",
+            "media": "(max-width: 1440px)",
+            "width": 1280,
+            "height": 720
+          }
+        ]
+      },
+      {
+        "type": "VIDEO",
+        "url": "/videos/episort/episort_conflit_1080p.mp4",
+        "alt": "Gestion des conflits avant application dans Episort",
+        "caption": "Conflit",
+        "width": 1920,
+        "height": 1080,
+        "poster": "/videos/episort/episort_conflit-poster.webp",
+        "sources": [
+          {
+            "url": "/videos/episort/episort_conflit_360p.mp4",
+            "media": "(max-width: 520px)",
+            "width": 640,
+            "height": 360
+          },
+          {
+            "url": "/videos/episort/episort_conflit_480p.mp4",
+            "media": "(max-width: 960px)",
+            "width": 854,
+            "height": 480
+          },
+          {
+            "url": "/videos/episort/episort_conflit_720p.mp4",
+            "media": "(max-width: 1440px)",
+            "width": 1280,
+            "height": 720
+          }
+        ]
+      }
+    ]
   },
   {
     "title": "Janus",
@@ -48,7 +136,44 @@
     ],
     "seoTitle": "Janus, passerelle d’API Spring Boot",
     "seoDescription": "Une passerelle Spring Boot auto-hébergée qui garde les clés d’API tierces hors des applications appelantes. Les secrets restent dans OpenBao, l’accès est tracé.",
-    "media": []
+    "media": [
+      {
+        "type": "VIDEO",
+        "url": "/videos/janus/janus_1080p.mp4",
+        "alt": "Démonstration de la console Janus et d’un appel API authentifié",
+        "caption": "Présentation",
+        "width": 1920,
+        "height": 1080,
+        "sources": [
+          {
+            "url": "/videos/janus/janus_360p.mp4",
+            "media": "(max-width: 520px)",
+            "width": 640,
+            "height": 360
+          },
+          {
+            "url": "/videos/janus/janus_480p.mp4",
+            "media": "(max-width: 960px)",
+            "width": 854,
+            "height": 480
+          },
+          {
+            "url": "/videos/janus/janus_720p.mp4",
+            "media": "(max-width: 1440px)",
+            "width": 1280,
+            "height": 720
+          }
+        ]
+      },
+      {
+        "type": "POSTER",
+        "url": "/videos/janus/janus-poster.webp",
+        "alt": "Console Janus à côté d’un appel API préparé dans Postman",
+        "caption": null,
+        "width": 1280,
+        "height": 720
+      }
+    ]
   },
   {
     "title": "Overkill",

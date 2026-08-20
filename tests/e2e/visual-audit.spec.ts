@@ -1,7 +1,13 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
-const pages = ["/en", "/fr", "/en/journey", "/en/episort"] as const;
+const pages = [
+  "/en",
+  "/fr",
+  "/en/journey",
+  "/en/episort",
+  "/fr/janus",
+] as const;
 
 for (const path of pages) {
   test(`visual audit without overflow: ${path}`, async ({

@@ -5,7 +5,7 @@ import type { Locale } from "~/i18n/config";
 import type { Project } from "~/types/content";
 import { safeUrl } from "~/lib/safe-url";
 import { hasDiagram, ProjectDiagram } from "./project-diagram";
-import { ProjectMedia } from "./project-media";
+import { ProjectMedia, ProjectMediaDock } from "./project-media";
 
 /** The shared renderer for every public case-study page. */
 
@@ -120,7 +120,8 @@ export function CaseStudyBody({
   locale: Locale;
 }) {
   const cover = project.media.find((media) => media.type === "COVER");
-  const video = project.media.find((media) => media.type === "VIDEO");
+  const videos = project.media.filter((media) => media.type === "VIDEO");
+  const video = videos[0];
   const poster = project.media.find((media) => media.type === "POSTER");
   const gallery = project.media.filter((media) => media.type === "GALLERY");
   const [beforeStatus, afterStatus] =
@@ -139,13 +140,22 @@ export function CaseStudyBody({
 
   return (
     <>
-      <ProjectMedia
-        media={cover}
-        title={project.title}
-        t={t}
-        className="case-media"
-        priority
-      />
+      {cover ? (
+        <ProjectMedia
+          media={cover}
+          title={project.title}
+          t={t}
+          className="case-media"
+          priority
+        />
+      ) : (
+        <ProjectMediaDock
+          media={videos}
+          title={project.title}
+          t={t}
+          poster={poster?.url}
+        />
+      )}
       <CaseSection title={t.caseStudy.problem} split>
         <div className="case-split-grid">
           <p>{project.problem}</p>
@@ -219,7 +229,7 @@ export function CaseStudyBody({
           )}
         </div>
       </CaseSection>
-      {video && (
+      {cover && video && (
         <CaseSection title={t.caseStudy.demo}>
           <ProjectMedia
             media={video}

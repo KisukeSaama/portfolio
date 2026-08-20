@@ -20,7 +20,7 @@ import { applySecurityHeaders } from "./app/lib/security-headers";
  * `/favicon.ico` is here because browsers ask for it at the origin root on their own, whatever the
  * page declares, and the redirect turned that into `/fr/favicon.ico` and a 404 in the console.
  */
-const STATIC = ["/images/", "/documents/", "/favicon.ico"];
+const STATIC = ["/images/", "/videos/", "/documents/", "/favicon.ico"];
 
 /**
  * The routes Next.js builds from the file conventions in `app/`. They are served once, outside any

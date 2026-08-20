@@ -22,7 +22,95 @@
     ],
     "seoTitle": "Episort, a JavaFX media sorter",
     "seoDescription": "A JavaFX application that sorts a Plex library of thousands of files. Six stages, two review gates, a journalled run you can resume or undo. In production.",
-    "media": []
+    "media": [
+      {
+        "type": "VIDEO",
+        "url": "/videos/episort/episort_1080p.mp4",
+        "alt": "Overview of the sorting workflow in Episort",
+        "caption": "Presentation",
+        "width": 1920,
+        "height": 1080,
+        "poster": "/videos/episort/episort-poster.webp",
+        "sources": [
+          {
+            "url": "/videos/episort/episort_360p.mp4",
+            "media": "(max-width: 520px)",
+            "width": 640,
+            "height": 360
+          },
+          {
+            "url": "/videos/episort/episort_480p.mp4",
+            "media": "(max-width: 960px)",
+            "width": 854,
+            "height": 480
+          },
+          {
+            "url": "/videos/episort/episort_720p.mp4",
+            "media": "(max-width: 1440px)",
+            "width": 1280,
+            "height": 720
+          }
+        ]
+      },
+      {
+        "type": "VIDEO",
+        "url": "/videos/episort/episort_correspondance_1080p.mp4",
+        "alt": "Reviewing TMDB matches in Episort",
+        "caption": "Matching",
+        "width": 1920,
+        "height": 1080,
+        "poster": "/videos/episort/episort_correspondance-poster.webp",
+        "sources": [
+          {
+            "url": "/videos/episort/episort_correspondance_360p.mp4",
+            "media": "(max-width: 520px)",
+            "width": 640,
+            "height": 360
+          },
+          {
+            "url": "/videos/episort/episort_correspondance_480p.mp4",
+            "media": "(max-width: 960px)",
+            "width": 854,
+            "height": 480
+          },
+          {
+            "url": "/videos/episort/episort_correspondance_720p.mp4",
+            "media": "(max-width: 1440px)",
+            "width": 1280,
+            "height": 720
+          }
+        ]
+      },
+      {
+        "type": "VIDEO",
+        "url": "/videos/episort/episort_conflit_1080p.mp4",
+        "alt": "Handling conflicts before applying a plan in Episort",
+        "caption": "Conflict",
+        "width": 1920,
+        "height": 1080,
+        "poster": "/videos/episort/episort_conflit-poster.webp",
+        "sources": [
+          {
+            "url": "/videos/episort/episort_conflit_360p.mp4",
+            "media": "(max-width: 520px)",
+            "width": 640,
+            "height": 360
+          },
+          {
+            "url": "/videos/episort/episort_conflit_480p.mp4",
+            "media": "(max-width: 960px)",
+            "width": 854,
+            "height": 480
+          },
+          {
+            "url": "/videos/episort/episort_conflit_720p.mp4",
+            "media": "(max-width: 1440px)",
+            "width": 1280,
+            "height": 720
+          }
+        ]
+      }
+    ]
   },
   {
     "title": "Janus",
@@ -48,7 +136,44 @@
     ],
     "seoTitle": "Janus, a Spring Boot API gateway",
     "seoDescription": "A self-hosted Spring Boot gateway that keeps third-party API keys out of the applications calling them. Secrets stay in OpenBao, every access is audited.",
-    "media": []
+    "media": [
+      {
+        "type": "VIDEO",
+        "url": "/videos/janus/janus_1080p.mp4",
+        "alt": "Demonstration of the Janus console and an authenticated API call",
+        "caption": "Presentation",
+        "width": 1920,
+        "height": 1080,
+        "sources": [
+          {
+            "url": "/videos/janus/janus_360p.mp4",
+            "media": "(max-width: 520px)",
+            "width": 640,
+            "height": 360
+          },
+          {
+            "url": "/videos/janus/janus_480p.mp4",
+            "media": "(max-width: 960px)",
+            "width": 854,
+            "height": 480
+          },
+          {
+            "url": "/videos/janus/janus_720p.mp4",
+            "media": "(max-width: 1440px)",
+            "width": 1280,
+            "height": 720
+          }
+        ]
+      },
+      {
+        "type": "POSTER",
+        "url": "/videos/janus/janus-poster.webp",
+        "alt": "Janus console beside an API call prepared in Postman",
+        "caption": null,
+        "width": 1280,
+        "height": 720
+      }
+    ]
   },
   {
     "title": "Overkill",

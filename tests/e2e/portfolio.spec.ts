@@ -59,6 +59,70 @@ test("public navigation, language switch and theme", async ({ page }) => {
   ).toBeVisible();
 });
 
+test("the Episort media dock exposes all videos and their qualities", async ({
+  page,
+}) => {
+  await page.goto("/en/episort");
+
+  const selectors = page.getByRole("button", { name: /^Show:/ });
+  await expect(selectors).toHaveCount(3);
+  const stagePreview = page.locator(".video-showcase-preview video");
+  await expect(stagePreview).toHaveAttribute(
+    "src",
+    (page.viewportSize()?.width ?? 1200) < 520
+      ? "/videos/episort/episort_360p.mp4"
+      : "/videos/episort/episort_480p.mp4",
+  );
+  await expect
+    .poll(() => stagePreview.evaluate((video: HTMLVideoElement) => video.muted))
+    .toBe(true);
+
+  if ((page.viewportSize()?.width ?? 1200) < 680) {
+    const track = page.locator(".media-selector-track");
+    await page.getByRole("button", { name: "Next media" }).click();
+    await expect.poll(() => track.evaluate((node) => node.scrollLeft)).toBeGreaterThan(0);
+  }
+
+  await page.getByRole("button", { name: "Show: Matching" }).click();
+  const openStage = page.getByRole("button", {
+    name: "Open video: Reviewing TMDB matches in Episort",
+  });
+  await expect(openStage).toBeVisible();
+  await stagePreview.evaluate((video: HTMLVideoElement) => {
+    video.currentTime = 4;
+  });
+  await openStage.click();
+  const player = page.getByRole("dialog", {
+    name: "Video player: Reviewing TMDB matches in Episort",
+  });
+  await expect(player).toBeVisible();
+  const panelBounds = await player.locator(".video-dialog-panel").boundingBox();
+  const viewportWidth = page.viewportSize()?.width ?? 1200;
+  expect(panelBounds!.width / viewportWidth).toBeGreaterThanOrEqual(0.9);
+  expect(panelBounds!.width / viewportWidth).toBeLessThanOrEqual(0.95);
+  await expect(
+    player.getByRole("button", { name: /fullscreen/i }),
+  ).toHaveCount(0);
+  await expect
+    .poll(() =>
+      player
+        .locator("video")
+        .evaluate((video: HTMLVideoElement) => video.currentTime),
+    )
+    .toBeGreaterThanOrEqual(3.5);
+  await player.getByRole("button", { name: "Video settings" }).click();
+  const qualities = player.getByRole("menuitemradio");
+  await expect(qualities).toHaveCount(4);
+  await expect(qualities).toHaveText(["1080p", "720p", "480p", "360p"]);
+  await player.getByRole("menuitemradio", { name: "720p" }).click();
+  await expect(player.locator("video")).toHaveAttribute(
+    "src",
+    "/videos/episort/episort_correspondance_720p.mp4",
+  );
+  await player.getByRole("button", { name: "Close video" }).click();
+  await expect(player).toBeHidden();
+});
+
 /**
  * The three ways the collapsed menu used to trap a visitor: it only closed from its own button, and
  * the language and theme entries only answered a press on their icon rather than on the row.
