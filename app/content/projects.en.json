@@ -116,7 +116,7 @@
     "title": "Overkill",
     "slug": "overkill",
     "shortDescription": "Aggregate and track job offers across the Paris region.",
-    "fullDescription": "A personal project still at the concept stage: bringing scattered job offers together, making them easier to compare, and keeping a clear record of applications.",
+    "fullDescription": "Bringing scattered job offers together, making them easier to compare, and keeping a clear record of applications.",
     "problem": "Offers are spread across several platforms. Searching, comparing and following them up costs more time than applying.",
     "context": "The need is identified, but the scope and data sources are still being framed. The architecture and technical choices remain to be validated before development starts.",
     "objectives": [
@@ -124,7 +124,7 @@
       "Speed up comparison",
       "Centralize application tracking"
     ],
-    "solution": "A personal web application combining search, comparison and application tracking in one flow.",
+    "solution": "A web application combining search, comparison and application tracking in one flow.",
     "role": "Sole designer and developer.",
     "architecture": "",
     "features": [],
@@ -136,8 +136,8 @@
       "Define the scope of a first version",
       "Choose the architecture after framing"
     ],
-    "seoTitle": "Overkill (case study)",
-    "seoDescription": "A personal project at the concept stage for aggregating and tracking job offers in the Paris region.",
+    "seoTitle": "Overkill, a job-application tracker",
+    "seoDescription": "Gather job offers from across the Paris region in one place, remove the duplicates, and track each application through to the answer.",
     "media": []
   },
   {

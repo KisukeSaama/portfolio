@@ -60,8 +60,8 @@ export const projectFacts = {
     updatedAt: "2026-08-19T19:04:18.429410Z",
   },
   "overkill": {
-    status: "CONCEPT",
-    projectType: "PERSONAL",
+    status: "COMPLETED",
+    projectType: "LEARNING",
     featureLevel: "SECONDARY",
     technologies: [],
     githubUrl: null,

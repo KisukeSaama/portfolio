@@ -116,7 +116,7 @@
     "title": "Overkill",
     "slug": "overkill",
     "shortDescription": "Agréger et suivre les offres d’emploi en Île-de-France.",
-    "fullDescription": "Un projet personnel encore au stade de la réflexion : rassembler les offres dispersées, les rendre plus faciles à comparer et garder une trace claire des candidatures.",
+    "fullDescription": "Rassembler les offres dispersées, les rendre plus faciles à comparer et garder une trace claire des candidatures.",
     "problem": "Les offres sont réparties sur plusieurs plateformes. Chercher, comparer et relancer coûte plus de temps que de candidater.",
     "context": "Le besoin est identifié, mais le périmètre et les sources de données sont encore en cours de cadrage. L’architecture et les choix techniques restent à valider avant le développement.",
     "objectives": [
@@ -124,7 +124,7 @@
       "Accélérer la comparaison",
       "Centraliser le suivi des candidatures"
     ],
-    "solution": "Une application web personnelle réunissant recherche, comparaison et suivi des candidatures dans un même parcours.",
+    "solution": "Une application web réunissant recherche, comparaison et suivi des candidatures dans un même parcours.",
     "role": "Conception et développement en autonomie.",
     "architecture": "",
     "features": [],
@@ -136,8 +136,8 @@
       "Définir le périmètre d’une première version",
       "Choisir l’architecture après le cadrage"
     ],
-    "seoTitle": "Overkill (étude de cas)",
-    "seoDescription": "Un projet personnel en réflexion pour agréger et suivre les offres d’emploi en Île-de-France.",
+    "seoTitle": "Overkill, suivi des candidatures",
+    "seoDescription": "Rassembler les offres d’emploi d’Île-de-France au même endroit, supprimer les doublons et suivre chaque candidature jusqu’à la réponse.",
     "media": []
   },
   {
