@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import Image from "next/image";
 import type { Dictionary } from "~/i18n";
 import { format } from "~/i18n";
-import type { ProjectMedia as Media } from "~/types/api";
+import type { ProjectMedia as Media } from "~/types/content";
 import { safeUrl } from "~/lib/safe-url";
 
 function ProjectVideo({

@@ -1,3 +1,8 @@
+/**
+ * The shape of the project content this site ships with. Nothing is fetched at runtime: the facts
+ * are authored in `app/content/project-facts.ts`, the prose in `app/content/projects.<locale>.json`,
+ * and the two are joined per language in `app/content/projects.ts`.
+ */
 export type ProjectStatus =
   | "CONCEPT"
   | "IN_PROGRESS"
@@ -39,15 +44,10 @@ export interface ProjectCopy {
   shortDescription: string;
   fullDescription: string;
   problem: string;
-  context: string;
-  objectives: string[];
   solution: string;
   role: string;
   architecture: string;
-  features: string[];
   decisions: string[];
-  challenges: string[];
-  learnings: string[];
   nextSteps: string[];
   seoTitle: string | null;
   seoDescription: string | null;

@@ -591,15 +591,6 @@ button:disabled,
 [data-theme="dark"] .intro-title {
   color: var(--orange-soft);
 }
-.intro-copy {
-  display: grid;
-  gap: 1.15rem;
-  max-width: 66ch;
-  font-size: var(--type-prose);
-}
-.intro-copy p {
-  margin: 0;
-}
 .journey-teaser {
   display: flex;
   flex-direction: column;
@@ -1074,12 +1065,6 @@ button:disabled,
   flex: 1;
   flex-direction: column;
   gap: 1.1rem;
-}
-.project-type {
-  margin: 0;
-  color: var(--muted);
-  font-size: var(--type-micro);
-  font-weight: var(--weight-label);
 }
 /* One size for a project's name wherever it is listed: the home card and the projects page both
    show the same entry, and they were set 16 px apart. */
@@ -1741,9 +1726,6 @@ button:disabled,
 .case-current-grid > div > .case-subsection:first-child {
   margin-top: 0;
 }
-.case-decisions-grid {
-  grid-template-columns: minmax(0, 1.35fr) minmax(16rem, 0.65fr);
-}
 .case-current-grid {
   grid-template-columns: minmax(16rem, 0.75fr) minmax(0, 1.25fr);
 }
@@ -1758,21 +1740,8 @@ button:disabled,
 .case-actions {
   margin-top: var(--gap-block);
 }
-/**
- * Tailwind's preflight strips `list-style` from every `ul`, so these read as loose lines of text
- * with an indent and no marker. The indent was already here, waiting for the bullet.
- */
-.case-list {
-  list-style: disc;
-  margin-bottom: 0;
-  padding-left: 1.35rem;
-}
-.case-list li::marker,
 .journey-points li::marker {
   color: var(--orange);
-}
-.case-list li + li {
-  margin-top: 0.85rem;
 }
 .case-technologies {
   margin: 0;
@@ -2064,7 +2033,6 @@ html:has(dialog[open]) {
     gap: 1.5rem;
   }
   .case-split-grid,
-  .case-decisions-grid,
   .case-current-grid {
     grid-template-columns: 1fr;
     gap: 1.75rem;

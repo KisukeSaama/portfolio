@@ -1,5 +1,5 @@
 import type { Locale } from "~/i18n/config";
-import type { Project, ProjectCopy } from "~/types/api";
+import type { Project, ProjectCopy } from "~/types/content";
 import { projectFacts, projectSlugs } from "./project-facts";
 import englishProjects from "./projects.en.json";
 import frenchProjects from "./projects.fr.json";

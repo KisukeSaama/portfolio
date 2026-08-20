@@ -7,7 +7,6 @@ next-env.d.ts
 playwright-report/
 test-results/
 coverage/
-infra/data/
 *.log
 *.tsbuildinfo
 .idea/

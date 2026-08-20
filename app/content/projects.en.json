@@ -5,47 +5,15 @@
     "shortDescription": "Sort a Plex library of thousands of files, and never lose one.",
     "fullDescription": "A Windows-first JavaFX desktop application. It scans a folder, parses names with deterministic rules, resolves titles against TMDB, then shows the exact source to destination plan. Nothing is written until that plan has been read and approved. Shipped as a portable build for Windows and Linux, with the Java runtime embedded.",
     "problem": "A download folder holds hundreds of files named by a dozen release groups. Several shows sit in one folder. Aired, DVD and absolute episode orders disagree. Renaming by hand costs a weekend. Automating it blindly destroys the library, and a wrong match does not fail loudly. It quietly moves the wrong file somewhere else.",
-    "context": "The task is irreversible on disk. The user sits at a desktop with the file explorer open beside the application. They will not trust a tool that acts first and reports afterwards, and they are right not to.",
-    "objectives": [
-      "Show exactly what will happen before anything happens",
-      "Make correcting twenty-five files cost the same gesture as correcting one",
-      "Never invent a value. An absent one shows a dash.",
-      "Ship something a non-developer can install and run"
-    ],
     "solution": "A fully deterministic pipeline: scan, rule-based parsing, TMDB resolution, identity review, plan review, journaled apply. The same folder always produces the same plan. Two explicit gates, and neither can be skipped. Conflicts, duplicates and unsafe Windows paths block the run before it starts.",
     "role": "Sole developer, from product design to packaging.",
     "architecture": "Six separate stages, each one inspectable. The interface never touches a file: it approves a plan. Only the apply stage writes, inside the configured workspace, with a journal that lets an interrupted run be recovered. TMDB is reached through Janus, so no TMDB secret exists anywhere in this project.",
-    "features": [
-      "Scans AVI, MP4 and MKV",
-      "Rule-based parsing of SxxExx, NxNN, absolute numbering, date-based episodes and folder-derived names",
-      "Mixed folders stay separated: a file name that contradicts its folder keeps its own title",
-      "Aired, DVD and absolute episode orders",
-      "Identity review, one line per detected group",
-      "Exact source to destination plan review",
-      "Conflicts, duplicates and unsafe Windows paths block the run",
-      "Journaled execution, recoverable after an interruption",
-      "Bilingual FR/EN interface, with no hardcoded string",
-      "Portable builds for Windows and Linux, runtime embedded"
-    ],
     "decisions": [
       "Deterministic rules, no model. The same folder must always produce the same plan, and every value on screen traces back to a real signal.",
       "The unit of work is the detected group, not the file. Correcting twenty-five files costs one click.",
       "An unavailable action stays visible and disabled, with the reason on screen. Hiding a button to prevent an action tells the user nothing.",
       "The two validation gates are the product, not friction to remove.",
       "TMDB is called through Janus, so this application ships without an upstream secret and end users need no account."
-    ],
-    "challenges": [
-      "Reading file names written by a dozen release groups, with no convention in common",
-      "Reconciling aired, DVD and absolute orders on the same show",
-      "Cutting metadata traffic: a 300-show, 1,000-film library went from more than 20,000 requests to roughly 3,000",
-      "Pacing requests from the gateway's own quota headers, so a small folder runs at full speed and only a large run slows down",
-      "Running JavaFX tests headless in CI, under Xvfb on Linux"
-    ],
-    "learnings": [
-      "Safe usage comes from how the flow is structured, not from a confirmation dialog.",
-      "Automation that cannot declare its own uncertainty should not be trusted with a filesystem.",
-      "Performance is a product feature. Rendering at the display's refresh rate removed a 31 ms stutter every second.",
-      "Being the first consumer of my own gateway found problems in it that none of my tests had."
     ],
     "nextSteps": [
       "Publish real screenshots of the review screens",
@@ -62,28 +30,9 @@
     "shortDescription": "Applications reach third-party APIs without ever holding the key.",
     "fullDescription": "A self-hosted credential boundary. Applications authenticate to Janus; only Janus reads the upstream secret from OpenBao and adds it on the way out. A Java 25 and Spring Boot 4 modular monolith, with a React console for identities, connections and grants. It runs in production, and my other application depends on it.",
     "problem": "An API key gets copied into a project, committed by accident, and rotated never. Every application holding a key can leak it. And nothing tells you which service called what, or how often.",
-    "context": "Each new integration adds a secret, a permission set, and a rotation to forget. Traceability breaks first. A provider's dashboard shows you that the key was used. Not by which of your services, on which route, or at what rate.",
-    "objectives": [
-      "Keep upstream secrets out of every application that uses them",
-      "Make each outbound call attributable to one service",
-      "Turn revocation and rotation into an immediate, routine operation",
-      "Give a self-hosted deployment the controls a managed gateway sells"
-    ],
     "solution": "An authenticated proxy. The caller proves its identity, Janus checks the grant, applies the quota, reads the secret from OpenBao, and forwards the request. The secret never crosses back: not in a response, not in a log, not in an error message. Every call is audited under a correlation ID.",
     "role": "Sole developer, from security model to production.",
     "architecture": "A modular monolith, layered controller to service to repository. The HTTP class decides nothing, the service owns the transaction and the audit record, and entities enforce their own invariants. Two independent security chains: one for the console, one for the gateway. PostgreSQL holds identities, connections, grants and audits, never a plaintext secret. Proxied calls run on virtual threads, so concurrency is bounded by the database pool rather than by the servlet container.",
-    "features": [
-      "Authenticated REST gateway, one slug per registered API",
-      "Machine identities with 256-bit keys, shown once, stored as BCrypt hashes",
-      "Short-lived opaque bearer tokens, with refresh rotation and family revocation on reuse",
-      "Grants scoped to a path prefix and a method set, for upstreams that cannot scope themselves",
-      "SSRF filtering re-checked at connection time, closing the DNS rebinding window",
-      "Per-address rate limiting applied before authentication, answered with 429 and Retry-After",
-      "Credential expiry sweep announcing each stage exactly once, safe across restarts and instances",
-      "Response reuse keyed on the credential, never on the caller",
-      "Audit stream with correlation IDs, carrying no credential material",
-      "React console for identities, connections, grants and audits"
-    ],
     "decisions": [
       "Java 25 and Spring Boot 4, the current LTS. Proven with nothing at stake, before production forces the upgrade.",
       "A modular monolith, not microservices. One artifact to deploy. The need did not justify the complexity.",
@@ -91,17 +40,6 @@
       "Client identity comes from the proxy chain, never from a header the caller sets. Otherwise a caller picks its own throttling identity and buys unlimited guesses.",
       "An unknown application still costs a hash comparison, so response timing does not disclose which identifiers exist.",
       "Rate limit refusals are counted, not audited. A row per rejected call would turn a flood into a second flood against the database."
-    ],
-    "challenges": [
-      "Deciding client identity behind a reverse proxy. Too narrow a trust list and the proxy becomes the throttled client, locking everyone out. Too wide and a caller is believed about its own address.",
-      "Rotating a key without dropping the calls already in flight.",
-      "Caching verified keys and passwords without weakening BCrypt, since HTTP Basic repeats the comparison on every single request.",
-      "Keeping the audit stream useful without letting it become sensitive itself."
-    ],
-    "learnings": [
-      "Secret management is a lifecycle problem, not a storage problem.",
-      "A control is worth what its cheapest bypass costs. Re-checking the address at connection time mattered more than the check at registration.",
-      "78 test classes against 153 production ones, concentrated on authentication and authorization. That is where a regression stays silent."
     ],
     "nextSteps": [
       "Publish real screenshots of the console",
@@ -118,19 +56,10 @@
     "shortDescription": "Aggregate and track job offers across the Paris region.",
     "fullDescription": "Bringing scattered job offers together, making them easier to compare, and keeping a clear record of applications.",
     "problem": "Offers are spread across several platforms. Searching, comparing and following them up costs more time than applying.",
-    "context": "The need is identified, but the scope and data sources are still being framed. The architecture and technical choices remain to be validated before development starts.",
-    "objectives": [
-      "Bring scattered offers together",
-      "Speed up comparison",
-      "Centralize application tracking"
-    ],
     "solution": "A web application combining search, comparison and application tracking in one flow.",
     "role": "Sole designer and developer.",
     "architecture": "",
-    "features": [],
     "decisions": [],
-    "challenges": [],
-    "learnings": [],
     "nextSteps": [
       "Validate the available data sources",
       "Define the scope of a first version",
@@ -146,33 +75,12 @@
     "shortDescription": "The same application, rebuilt to compare two backends.",
     "fullDescription": "A learning application built in several versions, around authentication, profiles, posts and social relationships. The backend moved from Laravel to Java along the way.",
     "problem": "Understanding a full-stack system means connecting authentication, data, API and interactions inside one coherent application.",
-    "context": "A deliberate testing ground. It documents a progression and an architecture change rather than a finished product.",
-    "objectives": [
-      "Practice a complete full-stack flow",
-      "Compare two backends on the same domain",
-      "Understand relationships between users and content"
-    ],
     "solution": "A small social network, kept small on purpose, rebuilt to compare framework and modeling choices on the same domain.",
     "role": "Sole developer, with learning as the goal.",
     "architecture": "One domain, several backend iterations. Laravel first, then Java.",
-    "features": [
-      "Authentication",
-      "Profiles",
-      "Posts",
-      "Comments",
-      "Interactions",
-      "Social relationships"
-    ],
     "decisions": [
       "Reuse the same domain, so the comparison means something",
       "Keep the scope small, so the rewrite stays affordable"
-    ],
-    "challenges": [
-      "Evolving the model across versions",
-      "Comparing backend trade-offs honestly"
-    ],
-    "learnings": [
-      "A rewrite only pays off when you can say what you are comparing."
     ],
     "nextSteps": [
       "Document the differences between versions"

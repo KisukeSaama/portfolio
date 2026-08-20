@@ -75,6 +75,8 @@ describe("proxy", () => {
     "/robots.txt",
     "/sitemap.xml",
     "/opengraph-image?1c4e5b",
+    // Asked for by the browser itself, at the root, with no link tag involved.
+    "/favicon.ico",
   ])("serves %s without a locale redirect", (path) => {
     const response = proxy(request(path));
     expect(response.status).toBe(200);

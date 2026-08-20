@@ -2,7 +2,7 @@ import { ExternalLink } from "lucide-react";
 import type { ReactNode } from "react";
 import type { Dictionary } from "~/i18n";
 import type { Locale } from "~/i18n/config";
-import type { Project } from "~/types/api";
+import type { Project } from "~/types/content";
 import { safeUrl } from "~/lib/safe-url";
 import { hasDiagram, ProjectDiagram } from "./project-diagram";
 import { ProjectMedia } from "./project-media";

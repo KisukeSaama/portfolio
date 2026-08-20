@@ -14,8 +14,13 @@ import {
 } from "./app/lib/csp";
 import { applySecurityHeaders } from "./app/lib/security-headers";
 
-/** Files served straight from /public. They still get the response headers, never the redirect. */
-const STATIC = ["/images/", "/documents/", "/favicon.svg"];
+/**
+ * Files served straight from /public. They still get the response headers, never the redirect.
+ *
+ * `/favicon.ico` is here because browsers ask for it at the origin root on their own, whatever the
+ * page declares, and the redirect turned that into `/fr/favicon.ico` and a 404 in the console.
+ */
+const STATIC = ["/images/", "/documents/", "/favicon.ico"];
 
 /**
  * The routes Next.js builds from the file conventions in `app/`. They are served once, outside any

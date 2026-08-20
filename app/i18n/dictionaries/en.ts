@@ -318,17 +318,15 @@ export const en = {
       TEAM: "Team project",
       LEARNING: "Learning project",
     },
-    statusLabel: "Status:",
     readCaseStudy: "Read the case study",
     caseStudyOf: "Read the {title} case study",
     startedAt: "Started",
-    discover: "Discover",
     demo: "Demo",
   },
 
   /**
-   * The two flagship projects. Their prose stays in the database, in one language, like every other
-   * project. What lives here is the part the database cannot hold: the labels of a diagram drawn in
+   * The two flagship projects. Their prose lives in `projects.<locale>.json`, like every other
+   * project. What lives here is the part that file cannot hold: the labels of a diagram drawn in
    * code, and one line about how I work that only makes sense beside it. A project with no entry
    * here still renders, without the diagram.
    */
@@ -375,27 +373,17 @@ export const en = {
   caseStudy: {
     allProjects: "All projects",
     status: "Status",
-    type: "Type",
     role: "Role",
-    mechanism: "How it works",
     problem: "The initial problem",
-    context: "Context",
-    objectives: "Objectives",
     solution: "The solution",
-    features: "Features",
     architecture: "Architecture",
     technologies: "Technologies",
     decisions: "Key decisions",
-    challenges: "Challenges",
-    learnings: "Learnings",
     remains: "What is left",
-    currentState: "Current state",
     currentStateBody:
       "The project is {status}.",
-    nextSteps: "Next steps",
     demo: "Demo",
     media: "Media",
-    links: "Links",
     mediaPlaceholderAlt: "Media for {title} still to be added",
     mediaPlaceholderNote: "Real project media will be added here",
     videoFallback: "Your browser cannot play this video.",
@@ -407,8 +395,6 @@ export const en = {
   },
 
   errors: {
-    csrf: "Could not initialize the request protection.",
-    network: "The server could not process the request.",
     notFoundTitle: "Page not found",
     notFoundBody: "This page does not exist or is no longer published.",
     backHome: "Back to home",

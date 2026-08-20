@@ -1,4 +1,4 @@
-import type { ProjectFacts } from "~/types/api";
+import type { ProjectFacts } from "~/types/content";
 
 /**
  * Everything about a project that does not change with the language it is read in: where it stands,
