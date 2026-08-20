@@ -385,6 +385,7 @@ export const en = {
     decisions: "Key decisions",
     challenges: "Challenges",
     learnings: "Learnings",
+    remains: "What is left",
     currentState: "Current state",
     currentStateBody:
       "The project is {status}.",

@@ -388,6 +388,7 @@ export const fr: Dictionary = {
     decisions: "Choix importants",
     challenges: "Difficultés",
     learnings: "Apprentissages",
+    remains: "Ce qui reste",
     currentState: "État actuel",
     currentStateBody:
       "Le projet est {status}.",

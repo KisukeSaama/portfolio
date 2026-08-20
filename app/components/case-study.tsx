@@ -45,15 +45,14 @@ function signalFor(slug: string, t: Dictionary) {
 }
 
 /**
- * The mechanism, drawn, read back in a paragraph, and the one line about how I work that goes with
- * it. This is the first thing under the cover on the two flagship case studies, because a reader who
- * opened the page is asking how the thing works before asking anything else.
+ * The drawing, the paragraph that reads it back, and the one line about how I work that goes with
+ * it. A diagram shows the parts; the prose says why they are arranged that way. Neither is worth
+ * much alone, and the paragraph used to render only when a project had no drawing, so the two
+ * projects that have one were the two that never showed it.
  *
- * The paragraph belongs here rather than beside the problem: a drawing shows the parts, and the
- * prose is what says why they are arranged that way. It used to render only when a project had no
- * drawing, so the two projects that have one were the two that never showed it.
+ * A project with neither renders nothing. An empty heading says less than no heading.
  */
-function MechanismSection({
+function ArchitectureSection({
   project,
   t,
   locale,
@@ -62,26 +61,16 @@ function MechanismSection({
   t: Dictionary;
   locale: Locale;
 }) {
-  if (!hasDiagram(project.slug)) return null;
+  const drawn = hasDiagram(project.slug);
+  const prose = project.architecture.trim();
+  if (!drawn && !prose) return null;
   const signal = signalFor(project.slug, t);
   return (
-    <CaseSection title={t.caseStudy.mechanism} wide>
-      <ProjectDiagram slug={project.slug} t={t} locale={locale} />
-      {project.architecture.trim() && (
-        <p className="case-panel-wide">{project.architecture}</p>
-      )}
+    <CaseSection title={t.caseStudy.architecture} wide={drawn}>
+      {drawn && <ProjectDiagram slug={project.slug} t={t} locale={locale} />}
+      {prose && <p className={drawn ? "case-panel-wide" : undefined}>{prose}</p>}
       {signal && <p className="showcase-signal">{signal}</p>}
     </CaseSection>
-  );
-}
-
-function CompactList({ items }: { items: string[] }) {
-  return (
-    <ul className="case-list">
-      {items.map((item) => (
-        <li key={item}>{item}</li>
-      ))}
-    </ul>
   );
 }
 
@@ -110,6 +99,16 @@ export function CaseIntro({ project, t }: { project: Project; t: Dictionary }) {
   );
 }
 
+/**
+ * Four sections, in this order, on every case study: the problem, the decisions, the architecture,
+ * what is left.
+ *
+ * It used to be thirteen, most of them a heading over two or three words. A page built that way
+ * reads as a form someone filled in, not as an account of a piece of work, and a heading with a
+ * fragment under it is worth less than no heading. Decisions and what-is-left are paragraphs here,
+ * never bullets, which is a constraint on the content as much as on this file: a section with
+ * nothing written for it does not render.
+ */
 export function CaseStudyBody({
   project,
   t,
@@ -125,10 +124,10 @@ export function CaseStudyBody({
   const gallery = project.media.filter((media) => media.type === "GALLERY");
   const [beforeStatus, afterStatus] =
     t.caseStudy.currentStateBody.split("{status}");
+  // Three is the ceiling on purpose. A fourth decision is always the weakest of the four, and a
+  // reader who wanted the full list would be reading the repository instead.
   const decisions = project.decisions.slice(0, 3);
-  const challenges = project.challenges.slice(0, 2);
-  const nextSteps = project.nextSteps.slice(0, 2);
-  const hasMechanism = hasDiagram(project.slug);
+  const remains = project.nextSteps;
 
   return (
     <>
@@ -139,7 +138,6 @@ export function CaseStudyBody({
         className="case-media"
         priority
       />
-      <MechanismSection project={project} t={t} locale={locale} />
       <CaseSection title={t.caseStudy.problem} split>
         <div className="case-split-grid case-problem-grid">
           <p>{project.problem}</p>
@@ -147,28 +145,17 @@ export function CaseStudyBody({
             <h3>{t.caseStudy.solution}</h3>
             <p>{project.solution}</p>
           </div>
-          {!hasMechanism && project.architecture.trim() && (
-            <div className="case-subsection case-panel-wide">
-              <h3>{t.caseStudy.architecture}</h3>
-              <p>{project.architecture}</p>
-            </div>
-          )}
         </div>
       </CaseSection>
-      {(decisions.length > 0 || challenges.length > 0) && (
-        <CaseSection title={t.caseStudy.decisions} split>
-          <div className="case-split-grid case-decisions-grid">
-            {decisions.length > 0 && <CompactList items={decisions} />}
-            {challenges.length > 0 && (
-              <div className="case-subsection">
-                <h3>{t.caseStudy.challenges}</h3>
-                <CompactList items={challenges} />
-              </div>
-            )}
-          </div>
+      {decisions.length > 0 && (
+        <CaseSection title={t.caseStudy.decisions}>
+          {decisions.map((decision) => (
+            <p key={decision}>{decision}</p>
+          ))}
         </CaseSection>
       )}
-      <CaseSection title={t.caseStudy.currentState} split>
+      <ArchitectureSection project={project} t={t} locale={locale} />
+      <CaseSection title={t.caseStudy.remains} split>
         <div className="case-split-grid case-current-grid">
           <div>
             <p className="case-status">
@@ -178,12 +165,9 @@ export function CaseStudyBody({
               </strong>
               {afterStatus}
             </p>
-            {nextSteps.length > 0 && (
-              <div className="case-subsection">
-                <h3>{t.caseStudy.nextSteps}</h3>
-                <CompactList items={nextSteps} />
-              </div>
-            )}
+            {remains.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
           </div>
           <div>
             {project.technologies.length > 0 && (
@@ -201,7 +185,7 @@ export function CaseStudyBody({
                     className="button button-secondary"
                     href={project.githubUrl}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                   >
                     GitHub <ExternalLink size={16} aria-hidden />
                   </a>
@@ -211,7 +195,7 @@ export function CaseStudyBody({
                     className="button button-primary"
                     href={project.demoUrl}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                   >
                     {t.caseStudy.demo} <ExternalLink size={16} aria-hidden />
                   </a>
