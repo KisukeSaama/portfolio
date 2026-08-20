@@ -5,11 +5,10 @@ import type { ReactNode } from "react";
 import { getDictionary } from "~/i18n";
 import { activeLocale } from "~/i18n/server";
 import { NONCE_HEADER } from "~/lib/csp";
-import { DARK_THEME_QUERY, THEME_COLOR, THEME_STORAGE_KEY } from "~/lib/theme";
+import { PRE_PAINT_THEME_SCRIPT } from "~/lib/theme";
 import "./styles/global.css";
 
 const siteUrl = process.env.PUBLIC_SITE_URL ?? "http://localhost:5173";
-const themeScript = `(()=>{try{const saved=localStorage.getItem('${THEME_STORAGE_KEY}');const theme=saved==='light'||saved==='dark'?saved:(matchMedia('${DARK_THEME_QUERY}').matches?'dark':'light');document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme;const meta=document.createElement('meta');meta.name='theme-color';meta.content=theme==='dark'?'${THEME_COLOR.dark}':'${THEME_COLOR.light}';document.head.appendChild(meta)}catch{}})()`;
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await activeLocale();
@@ -75,7 +74,7 @@ export default async function RootLayout({
       <head>
         <script
           nonce={nonce}
-          dangerouslySetInnerHTML={{ __html: themeScript }}
+          dangerouslySetInnerHTML={{ __html: PRE_PAINT_THEME_SCRIPT }}
         />
       </head>
       <body>

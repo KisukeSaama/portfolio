@@ -147,7 +147,7 @@ export function CaseStudyBody({
         priority
       />
       <CaseSection title={t.caseStudy.problem} split>
-        <div className="case-split-grid case-problem-grid">
+        <div className="case-split-grid">
           <p>{project.problem}</p>
           <div className="case-subsection">
             <h3>{t.caseStudy.solution}</h3>

@@ -37,6 +37,33 @@
   --container: 73.75rem;
   --gutter: clamp(1rem, 3vw, 2.25rem);
   --radius: 0.75rem;
+  /**
+   * One type ramp for the whole site. Every heading, lede and label on every page is set from this
+   * list, so the same role reads the same way whichever route it appears on. A section heading used
+   * to be set six different ways, and a project title was 2 rem on the home page against 3 rem on
+   * the projects page: two views of one project looked like two different sites.
+   */
+  --type-hero: clamp(2.35rem, 5vw, 4.35rem);
+  --type-page: clamp(2.15rem, 3.5vw, 3.25rem);
+  --type-section: clamp(1.85rem, 3vw, 2.75rem);
+  --type-entry: clamp(1.6rem, 2.4vw, 2.1rem);
+  --type-panel: clamp(1.35rem, 2vw, 1.75rem);
+  --type-item: 1.25rem;
+  --type-lead: clamp(1.05rem, 1.3vw, 1.25rem);
+  --type-prose: clamp(1.0625rem, 1.1vw, 1.15rem);
+  --type-body: 1rem;
+  --type-small: 0.9375rem;
+  --type-micro: 0.8125rem;
+  /**
+   * Three weights, and no more. Small text used to carry 650, 700, 750 and 800 while every heading
+   * inherited 400 from the preflight, so a list of technologies was set heavier than the heading
+   * above it. Display type takes its rank from size; small type takes it from weight.
+   */
+  --weight-display: 400;
+  --weight-label: 600;
+  --weight-strong: 700;
+  /* The one step between a section's heading block and the content under it. */
+  --gap-block: clamp(2rem, 3.5vw, 2.75rem);
   --z-sticky: 30;
 }
 /**
@@ -132,13 +159,30 @@ video {
   display: block;
   max-width: 100%;
 }
+/**
+ * The preflight resets every heading to the body weight, which the site then never set back, so the
+ * whole display register shipped at 400 while the labels under it ran to 800. Four hundred is the
+ * right answer for this face at these sizes; it is stated here so it is a decision rather than a
+ * reset leaking through, and so nothing smaller is allowed to out-weigh it.
+ */
 h1,
 h2,
-h3 {
+h3,
+h4 {
   margin: 0;
+  font-weight: var(--weight-display);
+  text-wrap: balance;
+}
+h1,
+h2 {
   line-height: 1.08;
   letter-spacing: -0.035em;
-  text-wrap: balance;
+}
+/* Display tracking closes up a 44 px heading and strangles a 17 px one. Subheadings get their own. */
+h3,
+h4 {
+  line-height: 1.3;
+  letter-spacing: -0.015em;
 }
 p {
   text-wrap: pretty;
@@ -194,14 +238,14 @@ p {
   padding-block: clamp(2rem, 3vw, 3rem);
 }
 .section-heading {
-  font-size: clamp(1.85rem, 3vw, 2.75rem);
+  font-size: var(--type-section);
   max-width: 22ch;
 }
 .section-lede {
   margin: 1rem 0 0;
   max-width: 62ch;
   color: var(--muted);
-  font-size: clamp(1rem, 1.2vw, 1.125rem);
+  font-size: var(--type-lead);
 }
 .button {
   min-height: 2.9rem;
@@ -212,7 +256,7 @@ p {
   border-radius: 0.5rem;
   border: 0;
   padding: 0.75rem 1.1rem;
-  font-weight: 800;
+  font-weight: var(--weight-strong);
   line-height: 1.2;
   cursor: pointer;
   text-decoration: none;
@@ -264,7 +308,7 @@ button:disabled,
   align-items: center;
   gap: 0.35rem;
   color: var(--orange-deep);
-  font-weight: 750;
+  font-weight: var(--weight-label);
 }
 [data-theme="dark"] .text-link {
   color: var(--orange-soft);
@@ -288,7 +332,7 @@ button:disabled,
   align-items: center;
   gap: 0.6rem;
   color: var(--orange-deep);
-  font-weight: 800;
+  font-weight: var(--weight-strong);
   text-decoration: none;
   white-space: nowrap;
 }
@@ -322,8 +366,8 @@ button:disabled,
   border-radius: 0.5rem;
   color: var(--muted);
   text-decoration: none;
-  font-size: 0.92rem;
-  font-weight: 650;
+  font-size: var(--type-small);
+  font-weight: var(--weight-label);
 }
 .nav-link:hover,
 .nav-link[data-active="true"] {
@@ -431,8 +475,13 @@ button:disabled,
   margin-top: 0.5rem;
   padding-top: 0.5rem;
 }
+/**
+ * Asymmetric padding, because the availability card belongs to the hero. Equal padding plus the
+ * card's own section padding left a hundred and thirty pixels of empty page between the two, and
+ * the block a recruiter is meant to read first floated free of the introduction it answers.
+ */
 .hero {
-  padding-block: clamp(2.75rem, 6vw, 5.5rem);
+  padding-block: clamp(2.75rem, 6vw, 5.5rem) clamp(1.75rem, 3vw, 2.75rem);
 }
 .hero-layout {
   display: grid;
@@ -454,21 +503,32 @@ button:disabled,
   grid-row: 1 / span 2;
 }
 .hero h1 {
-  font-size: clamp(2.35rem, 5vw, 4.35rem);
+  font-size: var(--type-hero);
   max-width: 22ch;
 }
 .hero-statement {
-  font-size: clamp(1.08rem, 1.5vw, 1.3rem);
+  font-size: var(--type-lead);
   max-width: 58ch;
   margin: 0;
   color: var(--muted);
   line-height: 1.55;
 }
+/**
+ * A statement set aside from the column it belongs to: one hairline orange rule and nothing else.
+ * `.hero-availability`, `.note-card` and `.showcase-signal` are the three places it appears, and
+ * they each carried their own copy of the rule at their own indent. It is one declaration now, so
+ * the aside under the hero, the aside on the home page and the one on a case study line up.
+ */
+.hero-availability,
+.note-card,
+.showcase-signal {
+  box-shadow: inset 1px 0 0 var(--orange);
+  padding: 0.15rem 0 0.15rem clamp(1rem, 2.5vw, 1.5rem);
+  max-width: 68ch;
+}
 .hero-availability {
   margin: 1.35rem 0 0;
   max-width: 60ch;
-  padding-left: 1rem;
-  box-shadow: inset 1px 0 0 var(--orange);
 }
 .hero-actions {
   display: flex;
@@ -499,8 +559,8 @@ button:disabled,
   color: var(--ink);
   padding: 0.7rem 0.8rem;
   border-radius: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 750;
+  font-size: var(--type-small);
+  font-weight: var(--weight-label);
 }
 .portrait-frame img {
   width: 100%;
@@ -525,7 +585,7 @@ button:disabled,
   gap: clamp(2rem, 7vw, 7rem);
 }
 .intro-title {
-  font-size: clamp(1.75rem, 2.9vw, 2.6rem);
+  font-size: var(--type-section);
   color: var(--orange-deep);
 }
 [data-theme="dark"] .intro-title {
@@ -535,7 +595,7 @@ button:disabled,
   display: grid;
   gap: 1.15rem;
   max-width: 66ch;
-  font-size: clamp(1rem, 1.15vw, 1.1rem);
+  font-size: var(--type-prose);
 }
 .intro-copy p {
   margin: 0;
@@ -549,14 +609,14 @@ button:disabled,
 .journey-teaser-statement {
   max-width: 66ch;
   margin: 0;
-  font-size: clamp(1rem, 1.15vw, 1.1rem);
-  line-height: 1.65;
+  font-size: var(--type-prose);
+  line-height: 1.7;
 }
 .principles {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0 4rem;
-  margin-top: 3.5rem;
+  gap: 0 clamp(2rem, 4vw, 3.5rem);
+  margin-top: var(--gap-block);
   border-top: 1px solid var(--border);
 }
 .principle {
@@ -564,32 +624,31 @@ button:disabled,
   border-bottom: 1px solid var(--border);
 }
 .principle h3 {
-  font-size: 1.1rem;
-  letter-spacing: -0.02em;
+  font-size: var(--type-item);
+  font-weight: var(--weight-label);
 }
 .principle p {
   color: var(--muted);
-  margin: 0.5rem 0 0;
-  font-size: 0.9375rem;
+  margin: 0.55rem 0 0;
+  font-size: var(--type-small);
 }
 .decision-list {
   column-gap: clamp(2rem, 5vw, 4rem);
-  margin-top: clamp(2.25rem, 4vw, 3rem);
+  margin-top: var(--gap-block);
 }
 .decision-list .principle {
   padding-block: 1.35rem 1.55rem;
 }
-.decision-list .principle h3 {
-  line-height: 1.35;
-}
 .decision-list .principle p {
-  margin-top: 0.625rem;
   max-width: 62ch;
   line-height: 1.65;
 }
 .journey-period {
   color: var(--orange-deep);
-  font-weight: 750;
+  font-weight: var(--weight-label);
+}
+[data-theme="dark"] .journey-period {
+  color: var(--orange-soft);
 }
 .journey-points {
   list-style: disc;
@@ -605,42 +664,38 @@ button:disabled,
  * The journey page is a compact career map, not a second long-form case study. Its three current
  * stages share one horizontal measure, while the supporting facts close in a single dense band.
  */
+/**
+ * The opening band, built as the home page's introduction band is built: same proportions, same
+ * raised grey ground, same top alignment. It used to paint its own near-black slab from five
+ * hardcoded colours that no theme could reach, which is the exact treatment `.intro-section` was
+ * moved off. In the light theme it punched a hole through the page; in the dark theme it sat below
+ * the page background and vanished. The one surface that ignored the palette was the one a visitor
+ * meets first on this route, and it was why the journey page did not look like the rest of the site.
+ */
 .journey-story {
-  --story-bg: oklch(0.225 0 0);
-  --story-ink: oklch(0.965 0 0);
-  --story-muted: oklch(0.79 0 0);
-  --story-rule: oklch(0.43 0 0);
-  --story-orange: oklch(0.78 0.135 58);
-  padding-block: clamp(4.5rem, 8vw, 8rem);
-  background: var(--story-bg);
-  color: var(--story-ink);
+  padding-block: clamp(2.75rem, 4.25vw, 4.25rem);
+  background: var(--surface-2);
+  color: var(--ink);
+}
+[data-theme="dark"] .journey-story {
+  background: var(--elevated);
 }
 .journey-story-layout {
   display: grid;
-  grid-template-columns: minmax(19rem, 0.72fr) minmax(0, 1.28fr);
-  gap: clamp(3rem, 5.5vw, 5.5rem);
+  grid-template-columns: minmax(14rem, 0.65fr) minmax(0, 1.35fr);
+  gap: clamp(2rem, 7vw, 7rem);
   align-items: start;
-}
-/**
- * Centred against the copy column rather than pinned to its top. Top-aligned, a three-line heading
- * left four hundred pixels of unbroken black under it, which read as a rendering fault rather than
- * as composition.
- */
-.journey-story-heading {
-  align-self: center;
 }
 .journey-story-heading h1 {
   max-width: 15ch;
-  color: var(--story-ink);
-  font-size: clamp(2rem, 3.25vw, 3rem);
-  line-height: 1.12;
+  font-size: var(--type-page);
 }
 .journey-story-copy {
   position: relative;
   max-width: 68ch;
   margin: 0;
   padding-top: clamp(1.5rem, 2.5vw, 2rem);
-  border-top: 1px solid var(--story-rule);
+  border-top: 1px solid var(--border);
 }
 .journey-story-copy::before {
   content: "";
@@ -649,42 +704,59 @@ button:disabled,
   left: 0;
   width: clamp(3.5rem, 8vw, 6rem);
   height: 3px;
-  background: var(--story-orange);
+  background: var(--orange);
 }
 .journey-story-copy p {
   margin: 0;
-  color: var(--story-muted);
-  font-size: clamp(1rem, 1.15vw, 1.075rem);
+  color: var(--muted);
+  font-size: var(--type-prose);
   line-height: 1.75;
   text-wrap: pretty;
 }
 .journey-story-copy p:first-child {
-  color: var(--story-ink);
-  font-size: clamp(1.08rem, 1.45vw, 1.28rem);
+  color: var(--ink);
+  font-size: var(--type-lead);
   line-height: 1.65;
 }
 .journey-story-copy p + p {
   margin-top: clamp(1.35rem, 2.5vw, 2rem);
 }
+/* The closing claim, and the only line here that takes the accent. Three lines of 750-weight orange
+   made it shout over the heading; at the label weight it still reads as the conclusion. */
 .journey-story-copy p:last-child {
-  color: var(--story-orange);
-  font-size: clamp(1.05rem, 1.3vw, 1.2rem);
-  font-weight: 750;
-  line-height: 1.58;
+  color: var(--orange-deep);
+  font-size: var(--type-lead);
+  font-weight: var(--weight-label);
+  line-height: 1.6;
+}
+[data-theme="dark"] .journey-story-copy p:last-child {
+  color: var(--orange-soft);
 }
 .journey-current .section-heading {
   max-width: 18ch;
 }
+/**
+ * Three stages on one rail, and the rows inside them line up across the rail. Each stage laid its
+ * own column out independently before, so a title that ran to two lines pushed that stage's period,
+ * employer and prose out of step with its neighbours and the whole block read as three unrelated
+ * lists. The subgrid hands every stage the same five rows.
+ */
 .journey-steps {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin: clamp(2.25rem, 4vw, 3.5rem) 0 0;
+  /* Marker, period, title, employer, description, points: six rows, shared by all three stages. */
+  grid-template-rows: repeat(6, auto);
+  margin: var(--gap-block) 0 0;
   padding: 0;
   list-style: none;
   counter-reset: journey-stage;
 }
 .journey-step {
   min-width: 0;
+  display: grid;
+  grid-row: span 6;
+  grid-template-rows: subgrid;
+  align-content: start;
   padding: 1.35rem clamp(1.25rem, 2.5vw, 2.25rem) 0;
   border-top: 1px solid var(--border-strong);
   counter-increment: journey-stage;
@@ -695,14 +767,17 @@ button:disabled,
 .journey-step + .journey-step {
   border-left: 1px solid var(--border);
 }
+/* The order is information, so it is marked. It is not the headline: at 2.65 rem and weight 800 the
+   index outweighed the job title under it, which is the one thing in the stage worth reading. */
 .journey-step::before {
   content: "0" counter(journey-stage);
   display: block;
-  margin-bottom: 1.75rem;
+  margin-bottom: 1.1rem;
   color: var(--orange-deep);
-  font-size: clamp(1.8rem, 3vw, 2.65rem);
-  font-weight: 800;
-  letter-spacing: -0.04em;
+  font-size: var(--type-item);
+  font-weight: var(--weight-strong);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
   line-height: 1;
 }
 [data-theme="dark"] .journey-step::before {
@@ -710,28 +785,35 @@ button:disabled,
 }
 .journey-step .journey-period {
   display: block;
-  margin-bottom: 0.65rem;
-  font-size: 0.8125rem;
+  margin-bottom: 0.55rem;
+  font-size: var(--type-micro);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
   font-variant-numeric: tabular-nums;
 }
 .journey-step h3 {
-  font-size: clamp(1.3rem, 2vw, 1.75rem);
+  align-self: start;
+  font-size: var(--type-panel);
+  line-height: 1.15;
+  letter-spacing: -0.03em;
 }
 .journey-step p {
-  margin: 0.7rem 0 0;
+  margin: 0.75rem 0 0;
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: var(--type-small);
   line-height: 1.6;
 }
+/* The employer, not the headline. It was set heavier than the job title above it. */
 .journey-step p.journey-org {
-  margin-top: 0.4rem;
+  align-self: start;
+  margin-top: 0.45rem;
   color: var(--ink);
-  font-weight: 750;
+  font-weight: var(--weight-label);
 }
 .journey-step .journey-points {
   margin-top: 1.1rem;
-  font-size: 0.875rem;
-  line-height: 1.55;
+  font-size: var(--type-small);
+  line-height: 1.6;
 }
 .journey-details {
   padding-block: clamp(2.75rem, 5vw, 4.5rem);
@@ -745,11 +827,11 @@ button:disabled,
   align-items: start;
 }
 .journey-detail-group h2 {
-  font-size: clamp(1.45rem, 2.2vw, 2rem);
+  font-size: var(--type-panel);
 }
 .journey-earlier,
 .journey-facts {
-  margin: 1.5rem 0 0;
+  margin: 1.35rem 0 0;
   padding: 0;
 }
 .journey-earlier {
@@ -763,21 +845,23 @@ button:disabled,
 .journey-earlier .journey-period {
   display: block;
   margin-bottom: 0.35rem;
-  font-size: 0.8125rem;
+  font-size: var(--type-micro);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
   font-variant-numeric: tabular-nums;
 }
-.journey-earlier h3,
-.journey-facts dt {
-  font-size: 0.875rem;
-  font-weight: 800;
-  letter-spacing: -0.015em;
+/* A role and a school are titles; a language and an interest are labels. They were set identically
+   at 14 px and weight 800, which is the size of a caption at the weight of a headline. */
+.journey-earlier h3 {
+  font-size: var(--type-body);
+  font-weight: var(--weight-label);
 }
 .journey-earlier p,
 .journey-facts dd {
-  margin: 0.3rem 0 0;
+  margin: 0.35rem 0 0;
   color: var(--muted);
-  font-size: 0.875rem;
-  line-height: 1.55;
+  font-size: var(--type-small);
+  line-height: 1.6;
 }
 .journey-interests .journey-facts > div {
   display: grid;
@@ -804,8 +888,12 @@ button:disabled,
   border-radius: var(--radius);
   background: var(--surface);
 }
+.availability-intro {
+  /* Matches the first fact's own padding, so both columns start on the same optical line. */
+  padding-top: 0.75rem;
+}
 .availability-intro h2 {
-  font-size: clamp(1.4rem, 2.6vw, 1.9rem);
+  font-size: var(--type-panel);
 }
 .availability-intro p {
   margin: 0.6rem 0 0;
@@ -816,36 +904,46 @@ button:disabled,
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0 2rem;
+  /* Closed at the foot, as the contact rows and the case-study facts are. An open list left the
+     card's lower half reading as an unfinished column rather than as deliberate white space. */
+  border-bottom: 1px solid var(--border);
 }
 .availability-fact {
-  padding: 0.7rem 0;
+  padding: 0.75rem 0;
   border-top: 1px solid var(--border);
 }
-.availability-fact dt {
-  font-size: 0.8125rem;
-  font-weight: 750;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  color: var(--orange-deep);
-}
 .availability-fact dd {
-  margin: 0.2rem 0 0;
-  font-size: 1.0625rem;
-  font-weight: 650;
+  margin: 0.25rem 0 0;
+  font-size: var(--type-body);
+  font-weight: var(--weight-label);
 }
 
 /**
- * A single aside that must read as an answer, not as decoration. The orange rule is 1px, matching
- * `.hero-availability`: one idiom for "this is set aside from the main column", and a heavy colored
- * edge would be decoration doing a heading's job.
+ * One label treatment for every definition list on the site. A fact carried an uppercase orange
+ * label on the home page, a sentence-case muted one on a case study and a 14 px weight-800 one on
+ * the journey page, which made the same structure read as three unrelated components. The
+ * availability card keeps the accent, because it is the one surface a recruiter has to find twice.
  */
-.note-card {
-  box-shadow: inset 1px 0 0 var(--orange);
-  padding: 0.25rem 0 0.25rem clamp(1rem, 3vw, 1.75rem);
-  max-width: 68ch;
+.availability-fact dt,
+.case-facts dt,
+.journey-facts dt {
+  font-size: var(--type-micro);
+  font-weight: var(--weight-label);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
+.availability-fact dt {
+  color: var(--orange-deep);
+}
+[data-theme="dark"] .availability-fact dt {
+  color: var(--orange-soft);
+}
+
+/* An answer to a question the reader already has, never emphasis. A heavy coloured edge would be
+   decoration doing a heading's job, so the rule stays at a hairline. */
 .note-card h2 {
-  font-size: clamp(1.25rem, 2.4vw, 1.6rem);
+  font-size: var(--type-panel);
 }
 .note-card p {
   margin: 0.6rem 0 0;
@@ -853,7 +951,7 @@ button:disabled,
 }
 
 .fact-rows {
-  margin: 2rem 0 0;
+  margin: var(--gap-block) 0 0;
 }
 .fact-row {
   display: grid;
@@ -866,7 +964,7 @@ button:disabled,
   border-bottom: 1px solid var(--border);
 }
 .fact-row dt {
-  font-weight: 750;
+  font-weight: var(--weight-label);
 }
 .fact-row dd {
   margin: 0;
@@ -884,7 +982,7 @@ button:disabled,
  */
 .prose > h2 {
   margin-top: clamp(2rem, 3.5vw, 2.75rem);
-  font-size: clamp(1.25rem, 2vw, 1.5rem);
+  font-size: var(--type-panel);
 }
 .prose > h2:first-child {
   margin-top: 0;
@@ -892,12 +990,14 @@ button:disabled,
 .prose > p {
   margin: 0.7rem 0 0;
   color: var(--muted);
+  font-size: var(--type-prose);
+  line-height: 1.7;
 }
 .contact-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
-  margin-top: 2rem;
+  margin-top: var(--gap-block);
 }
 .contact-panel-actions {
   display: flex;
@@ -911,7 +1011,7 @@ button:disabled,
  * here and pushed two projects across four screens of a page whose job was to summarize.
  */
 .projects-featured {
-  margin-top: 2.5rem;
+  margin-top: var(--gap-block);
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: clamp(1rem, 2vw, 1.5rem);
@@ -936,10 +1036,6 @@ button:disabled,
 .project-card:focus-within {
   border-color: var(--orange);
 }
-/* The projects page sets a second heading straight after the cards, which otherwise touched them. */
-.projects-featured + .section-heading {
-  margin-top: clamp(2.5rem, 5vw, 4rem);
-}
 .project-stack {
   display: flex;
   flex-wrap: wrap;
@@ -953,8 +1049,8 @@ button:disabled,
   border-radius: 0.4rem;
   background: var(--surface-2);
   color: var(--muted);
-  font-size: 0.8125rem;
-  font-weight: 650;
+  font-size: var(--type-micro);
+  font-weight: var(--weight-label);
   line-height: 1.35;
 }
 /* Pushed to the bottom edge so two cards of unequal prose still line their actions up. */
@@ -982,11 +1078,16 @@ button:disabled,
 .project-type {
   margin: 0;
   color: var(--muted);
-  font-size: 0.8125rem;
-  font-weight: 700;
+  font-size: var(--type-micro);
+  font-weight: var(--weight-label);
 }
-.project-title {
-  font-size: clamp(1.5rem, 2.2vw, 2rem);
+/* One size for a project's name wherever it is listed: the home card and the projects page both
+   show the same entry, and they were set 16 px apart. */
+.project-title,
+.catalog-project-heading h2 {
+  font-size: var(--type-entry);
+  line-height: 1.12;
+  letter-spacing: -0.03em;
 }
 /* Pills are for statuses only, and this is the one fact that separates shipped from finished. */
 .status-pill {
@@ -995,8 +1096,8 @@ button:disabled,
   border-radius: 999px;
   background: var(--orange-light);
   color: var(--orange-deep);
-  font-size: 0.8125rem;
-  font-weight: 750;
+  font-size: var(--type-micro);
+  font-weight: var(--weight-label);
   line-height: 1.35;
 }
 [data-theme="dark"] .status-pill {
@@ -1007,7 +1108,7 @@ button:disabled,
   margin: 0;
   max-width: 52ch;
   color: var(--muted);
-  font-size: 1rem;
+  font-size: var(--type-body);
 }
 .all-projects-action {
   margin: 1.5rem 0 0;
@@ -1041,9 +1142,6 @@ button:disabled,
   background: var(--surface-2);
   border-right: 1px solid var(--border);
 }
-.catalog-project-heading h2 {
-  font-size: clamp(2rem, 3.7vw, 3rem);
-}
 .catalog-project-heading .status-pill {
   width: fit-content;
   margin-top: 1rem;
@@ -1051,11 +1149,11 @@ button:disabled,
 .catalog-project-date {
   margin: 1.25rem 0 0;
   color: var(--muted);
-  font-size: 0.875rem;
+  font-size: var(--type-small);
 }
 .catalog-project-date time {
   color: var(--ink);
-  font-weight: 750;
+  font-weight: var(--weight-label);
 }
 /**
  * Content starts at the top and the actions are pushed to the bottom by their own `margin-top`.
@@ -1071,7 +1169,7 @@ button:disabled,
   max-width: 52ch;
   margin: 0;
   color: var(--ink);
-  font-size: clamp(1.05rem, 1.5vw, 1.2rem);
+  font-size: var(--type-lead);
   line-height: 1.55;
 }
 .project-link-actions {
@@ -1089,7 +1187,7 @@ button:disabled,
   gap: 0.5rem;
   margin-left: auto;
   color: var(--orange-deep);
-  font-weight: 800;
+  font-weight: var(--weight-label);
   text-decoration: none;
 }
 [data-theme="dark"] .project-case-link {
@@ -1124,31 +1222,27 @@ button:disabled,
   padding: clamp(1rem, 2vw, 1.4rem);
 }
 .project-catalog-compact .catalog-project-heading h2 {
-  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  font-size: var(--type-panel);
 }
 .project-catalog-compact .catalog-project-heading .status-pill {
   margin-top: 0.75rem;
 }
 .project-catalog-compact .catalog-project-lede {
-  font-size: 1rem;
+  font-size: var(--type-body);
 }
 .project-catalog-compact .catalog-project-body {
   gap: 0.85rem;
 }
 .projects-group-heading {
-  margin-bottom: clamp(1.5rem, 3vw, 2.25rem);
-  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  margin-bottom: var(--gap-block);
+  font-size: var(--type-section);
 }
 .projects-page-school {
   border-top: 1px solid var(--border);
   background: var(--surface-2);
 }
-/* The `note-card` treatment: one orange rule, for a statement the reader is already asking for. */
 .showcase-signal {
-  margin: 2rem 0 0;
-  padding: 0.15rem 0 0.15rem clamp(1rem, 2.5vw, 1.5rem);
-  box-shadow: inset 1px 0 0 var(--orange);
-  max-width: 68ch;
+  margin: var(--gap-block) 0 0;
   color: var(--muted);
 }
 .project-actions {
@@ -1183,7 +1277,7 @@ button:disabled,
   margin-top: 1.75rem;
   max-width: 70ch;
   color: var(--muted);
-  font-size: 0.9375rem;
+  font-size: var(--type-small);
 }
 .flow-node,
 .flow-step {
@@ -1195,17 +1289,15 @@ button:disabled,
 .flow-node h4,
 .flow-step h4 {
   margin: 0;
-  font-size: 1rem;
-  font-weight: 750;
-  letter-spacing: -0.02em;
-  line-height: 1.3;
+  font-size: var(--type-body);
+  font-weight: var(--weight-label);
 }
 .flow-node p,
 .flow-step p {
   margin: 0.3rem 0 0;
   color: var(--muted);
-  font-size: 0.875rem;
-  line-height: 1.45;
+  font-size: var(--type-small);
+  line-height: 1.5;
 }
 /* Janus is the actor in its own diagram, so it is the one box carrying the accent. */
 .flow-node-strong {
@@ -1219,7 +1311,7 @@ button:disabled,
   gap: 0.25rem;
   margin: 0;
   color: var(--muted);
-  font-size: 0.8125rem;
+  font-size: var(--type-micro);
   line-height: 1.35;
   text-align: center;
 }
@@ -1252,8 +1344,8 @@ button:disabled,
   gap: 0.35rem;
   margin: 0;
   color: var(--orange-deep);
-  font-size: 0.8125rem;
-  font-weight: 750;
+  font-size: var(--type-micro);
+  font-weight: var(--weight-label);
   line-height: 1.3;
 }
 [data-theme="dark"] .flow-boundary-label {
@@ -1273,7 +1365,7 @@ button:disabled,
   padding-top: 1.1rem;
   border-top: 1px solid var(--border);
   color: var(--muted);
-  font-size: 0.875rem;
+  font-size: var(--type-small);
 }
 .flow-return svg {
   flex: none;
@@ -1331,8 +1423,8 @@ button:disabled,
   gap: 0.3rem;
   margin: 0.6rem 0 0;
   color: var(--orange-deep);
-  font-size: 0.8125rem;
-  font-weight: 750;
+  font-size: var(--type-micro);
+  font-weight: var(--weight-label);
   line-height: 1.3;
 }
 [data-theme="dark"] .flow-tag {
@@ -1342,10 +1434,10 @@ button:disabled,
   flex: none;
 }
 .skills-list {
-  margin-top: 3rem;
+  margin-top: var(--gap-block);
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0 3.5rem;
+  gap: 0 clamp(2rem, 4vw, 3.5rem);
 }
 /**
  * Four lines used to sit here at four sizes, four weights and two colors, spaced evenly. Evenly is
@@ -1357,20 +1449,23 @@ button:disabled,
   border-top: 1px solid var(--border);
 }
 .skill-group h3 {
-  font-size: 1.1rem;
+  font-size: var(--type-item);
+  font-weight: var(--weight-label);
 }
 .skill-group p {
-  margin: 0.4rem 0 0;
+  margin: 0.55rem 0 0;
   color: var(--muted);
-  font-size: 0.9375rem;
+  font-size: var(--type-small);
 }
+/* The list of technologies, not the heading of the group. It was set at 700 under a heading the
+   preflight had left at 400, so the payload was heavier than the thing naming it. */
 .skill-group p.skill-names {
   margin-top: 0.9rem;
-  font-weight: 700;
+  font-weight: var(--weight-label);
   color: var(--ink);
 }
 .skill-proof {
-  font-size: 0.875rem;
+  font-size: var(--type-small);
 }
 .contact-panel {
   --panel-ink: oklch(0.19 0 0);
@@ -1388,7 +1483,7 @@ button:disabled,
   align-items: center;
 }
 .contact-panel h2 {
-  font-size: clamp(1.9rem, 3.4vw, 3.1rem);
+  font-size: var(--type-section);
   max-width: 16ch;
 }
 .contact-panel p {
@@ -1429,11 +1524,11 @@ button:disabled,
   border-bottom: 1px solid var(--border);
 }
 .page-hero h1 {
-  font-size: clamp(2.2rem, 3.6vw, 3.3rem);
+  font-size: var(--type-page);
   max-width: 20ch;
 }
 .page-hero p {
-  font-size: clamp(1rem, 1.25vw, 1.175rem);
+  font-size: var(--type-lead);
   color: var(--muted);
   max-width: 62ch;
   margin: 1rem 0 0;
@@ -1448,8 +1543,10 @@ button:disabled,
   align-items: center;
   margin-bottom: 1.5rem;
 }
+/* The same page-title size the projects, contact and journey pages use. At 3.75 rem a case study
+   opened louder than every other route, and its own section headings had to grow to keep up. */
 .case-header h1 {
-  font-size: clamp(2.5rem, 4.5vw, 3.75rem);
+  font-size: var(--type-page);
   max-width: 16ch;
 }
 .case-intro {
@@ -1460,9 +1557,9 @@ button:disabled,
   align-items: start;
 }
 .case-intro > p {
-  font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+  font-size: var(--type-lead);
   color: var(--ink);
-  line-height: 1.55;
+  line-height: 1.6;
   margin: 0;
 }
 .case-facts {
@@ -1470,20 +1567,19 @@ button:disabled,
 }
 .case-facts div {
   display: block;
-  padding: 0.85rem 0;
+  padding: 0.75rem 0;
   border-top: 1px solid var(--border);
 }
 .case-facts div:last-child {
   border-bottom: 1px solid var(--border);
 }
 .case-facts dt {
-  color: var(--muted);
-  margin-bottom: 0.3rem;
-  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
 }
 .case-facts dd {
   margin: 0;
-  font-weight: 650;
+  font-size: var(--type-body);
+  font-weight: var(--weight-label);
 }
 .case-media {
   aspect-ratio: 16/9;
@@ -1491,9 +1587,14 @@ button:disabled,
   border-radius: var(--radius);
   background: var(--surface-2);
 }
+/**
+ * No bottom padding. The last case section already closes with its own, and the contact panel below
+ * opens with a section's worth again: three paddings stacked left two hundred pixels of empty page
+ * between the end of the reasoning and the one call to action on the route.
+ */
 .case-study-body {
   width: min(100% - 2 * var(--gutter), var(--container));
-  padding-block: clamp(2.5rem, 6vw, 5rem);
+  padding-block: clamp(2.5rem, 6vw, 5rem) 0;
 }
 .case-study-body > .case-media:first-child {
   margin-bottom: clamp(2.5rem, 6vw, 5rem);
@@ -1561,8 +1662,8 @@ button:disabled,
   border-radius: 0.5rem;
   background: var(--surface-2);
   color: var(--ink);
-  font-size: 0.875rem;
-  font-weight: 750;
+  font-size: var(--type-small);
+  font-weight: var(--weight-label);
   text-align: center;
 }
 .case-section {
@@ -1576,8 +1677,8 @@ button:disabled,
  * the home page: the page title stopped leading, and the same role was set two ways across routes.
  */
 .case-section h2 {
-  margin-bottom: clamp(1.5rem, 2.75vw, 2.25rem);
-  font-size: clamp(1.85rem, 3vw, 2.75rem);
+  margin-bottom: var(--gap-block);
+  font-size: var(--type-section);
   color: var(--ink);
 }
 /* A diagram is the one thing on this page that needs the whole measure, so it drops the side column. */
@@ -1593,19 +1694,38 @@ button:disabled,
 .case-content {
   max-width: 66ch;
   color: var(--muted);
-  font-size: clamp(1.05rem, 1.25vw, 1.15rem);
+  font-size: var(--type-prose);
   line-height: 1.7;
 }
 .case-content > :first-child {
   margin-top: 0;
+}
+/**
+ * The preflight zeroes every paragraph margin and nothing here put one back, so three separate
+ * decisions, or four open questions, ran together as one block of prose with no break between them.
+ * A case study is a sequence of statements; they need to be seen as separate ones.
+ */
+.case-content p {
+  margin: 0;
+}
+.case-content p + p {
+  margin-top: 1.15rem;
+}
+.case-content figure + p {
+  margin-top: 1.75rem;
+}
+/* Emphasis inside a muted paragraph, at the label weight rather than the browser's bold. */
+.case-content strong {
+  color: var(--ink);
+  font-weight: var(--weight-label);
 }
 /* A subsection heading has to out-rank the paragraph it introduces; at 1.05 rem it was set below
    the surrounding body copy and read as a stray bold line. */
 .case-content h3 {
   margin: 0 0 0.65rem;
   color: var(--ink);
-  font-size: 1.25rem;
-  font-weight: 800;
+  font-size: var(--type-item);
+  font-weight: var(--weight-label);
 }
 .case-subsection {
   margin-top: clamp(1.5rem, 2.5vw, 2rem);
@@ -1636,7 +1756,7 @@ button:disabled,
   margin-bottom: 0;
 }
 .case-actions {
-  margin-top: clamp(2rem, 3vw, 2.75rem);
+  margin-top: var(--gap-block);
 }
 /**
  * Tailwind's preflight strips `list-style` from every `ul`, so these read as loose lines of text
@@ -1657,7 +1777,7 @@ button:disabled,
 .case-technologies {
   margin: 0;
   color: var(--muted);
-  font-size: 0.9375rem;
+  font-size: var(--type-small);
   line-height: 1.7;
   text-wrap: pretty;
 }
@@ -1672,7 +1792,7 @@ button:disabled,
 }
 .gallery figcaption {
   color: var(--muted);
-  font-size: 0.875rem;
+  font-size: var(--type-small);
   margin-top: 0.5rem;
 }
 .site-footer {
@@ -1682,9 +1802,23 @@ button:disabled,
 .footer-inner {
   display: flex;
   justify-content: space-between;
-  gap: 1rem;
+  align-items: baseline;
+  gap: 1rem 2rem;
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: var(--type-small);
+}
+/* The only link down here was set exactly like the tagline beside it, so nothing said it was one. */
+.footer-inner a {
+  text-decoration-line: underline;
+  text-decoration-color: var(--border-strong);
+  transition: color 160ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.footer-inner a:hover {
+  color: var(--orange-deep);
+  text-decoration-color: currentColor;
+}
+[data-theme="dark"] .footer-inner a:hover {
+  color: var(--orange-soft);
 }
 /**
  * A 404 is a page of the site, not an interstitial. It used to be centered in a full viewport with
@@ -1695,22 +1829,22 @@ button:disabled,
   padding-block: clamp(3rem, 7vw, 6rem);
 }
 .error-page h1 {
-  font-size: clamp(1.85rem, 3vw, 2.75rem);
-  margin-top: 0.5rem;
+  font-size: var(--type-page);
+  margin-top: 0.4rem;
   max-width: 20ch;
 }
 .error-body {
   margin: 0.9rem 0 0;
   max-width: 52ch;
   color: var(--muted);
-  font-size: clamp(1rem, 1.2vw, 1.125rem);
+  font-size: var(--type-lead);
 }
 .error-actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.75rem 1rem;
-  margin-top: 2rem;
+  margin-top: var(--gap-block);
 }
 /* The error boundaries keep the old centered treatment: the layout around them may be what broke. */
 .error-boundary {
@@ -1724,19 +1858,29 @@ button:disabled,
   max-width: 40rem;
 }
 .error-boundary h1 {
-  font-size: clamp(1.5rem, 2.4vw, 2.1rem);
-  margin-top: 0.5rem;
+  font-size: var(--type-section);
+  margin-top: 0.4rem;
 }
 .error-boundary p:not(.error-code) {
   margin: 0.75rem 0 1.5rem;
   color: var(--muted);
 }
+/**
+ * The status code, and not the headline. At 4.5 rem and weight 800 it was the largest and heaviest
+ * thing on the page, set above an `h1` at half its size that carried the sentence a visitor
+ * actually needs. It is a marker on the heading now, the way the stage numbers on the journey are.
+ */
 .error-code {
-  font-size: clamp(2.75rem, 6vw, 4.5rem);
-  line-height: 1;
   margin: 0;
-  color: var(--orange);
-  font-weight: 800;
+  color: var(--orange-deep);
+  font-size: var(--type-item);
+  font-weight: var(--weight-strong);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+[data-theme="dark"] .error-code {
+  color: var(--orange-soft);
 }
 dialog {
   border: 0;
@@ -1806,9 +1950,8 @@ html:has(dialog[open]) {
   padding: 0.1rem 0 0.7rem 0.65rem;
 }
 .language-dialog-head h2 {
-  font-size: 1.05rem;
-  font-weight: 750;
-  letter-spacing: -0.015em;
+  font-size: var(--type-body);
+  font-weight: var(--weight-label);
 }
 .language-options {
   display: grid;
@@ -1828,7 +1971,7 @@ html:has(dialog[open]) {
   border-radius: 0.5rem;
   background: transparent;
   color: var(--ink);
-  font-weight: 650;
+  font-weight: var(--weight-label);
   text-align: left;
   cursor: pointer;
   transition: background-color 160ms cubic-bezier(0.16, 1, 0.3, 1);
@@ -1842,8 +1985,8 @@ html:has(dialog[open]) {
   border-radius: 0.35rem;
   background: var(--surface-2);
   color: var(--muted);
-  font-size: 0.72rem;
-  font-weight: 750;
+  font-size: var(--type-micro);
+  font-weight: var(--weight-label);
   letter-spacing: 0.06em;
   text-align: center;
 }
@@ -1898,9 +2041,6 @@ html:has(dialog[open]) {
   .hero-layout .portrait-frame {
     grid-column: 2;
     grid-row: 2;
-  }
-  .hero h1 {
-    font-size: clamp(2.5rem, 7.5vw, 4.7rem);
   }
   /* The flow turns vertical, so every arrow turns with it. */
   .flow-janus {
@@ -1958,13 +2098,20 @@ html:has(dialog[open]) {
   }
   .journey-steps {
     grid-template-columns: 1fr;
+    grid-template-rows: none;
   }
   .journey-step,
   .journey-step:first-child {
     display: grid;
-    grid-template-columns: 3.75rem minmax(0, 1fr);
+    grid-row: auto;
+    grid-template-rows: none;
+    grid-template-columns: 2.75rem minmax(0, 1fr);
     gap: 0 1rem;
     padding: 1.5rem 0;
+  }
+  /* Has to out-specify the rail's own `.journey-step + .journey-step`, which otherwise kept drawing
+     a column divider down the left of every stacked stage. */
+  .journey-step + .journey-step {
     border-left: 0;
   }
   .journey-step:last-child {
@@ -1973,7 +2120,7 @@ html:has(dialog[open]) {
   .journey-step::before {
     grid-column: 1;
     grid-row: 1 / 6;
-    margin: 0;
+    margin: 0.15rem 0 0;
   }
   .journey-step > * {
     grid-column: 2;
@@ -2025,7 +2172,7 @@ html:has(dialog[open]) {
     grid-template-columns: 1fr;
   }
   .hero {
-    padding-block: 2.25rem 4rem;
+    padding-block: 2.25rem 2.5rem;
   }
   .hero-layout,
   .intro-grid {
@@ -2060,11 +2207,8 @@ html:has(dialog[open]) {
   }
   .journey-step,
   .journey-step:first-child {
-    grid-template-columns: 2.75rem minmax(0, 1fr);
+    grid-template-columns: 2.25rem minmax(0, 1fr);
     gap: 0 0.75rem;
-  }
-  .journey-step::before {
-    font-size: 1.4rem;
   }
   .journey-interests {
     grid-column: auto;

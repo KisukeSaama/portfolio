@@ -7,39 +7,36 @@ import {
   applyTheme,
   DARK_THEME_QUERY,
   isTheme,
+  readStoredTheme,
+  storeTheme,
+  systemTheme,
   THEME_STORAGE_KEY,
   type Theme,
 } from "~/lib/theme";
 
 function subscribe(callback: () => void) {
-  const systemTheme = window.matchMedia(DARK_THEME_QUERY);
+  const systemQuery = window.matchMedia(DARK_THEME_QUERY);
   const handleSystemThemeChange = (event: MediaQueryListEvent) => {
     // A deliberate choice remains authoritative. With no choice saved, the site follows the OS,
     // including when its theme changes while this tab is already open.
-    if (!isTheme(localStorage.getItem(THEME_STORAGE_KEY))) {
+    if (readStoredTheme() === null) {
       applyTheme(event.matches ? "dark" : "light");
       callback();
     }
   };
   const handleStorageChange = (event: StorageEvent) => {
     if (event.key !== THEME_STORAGE_KEY) return;
-    applyTheme(
-      isTheme(event.newValue)
-        ? event.newValue
-        : systemTheme.matches
-          ? "dark"
-          : "light",
-    );
+    applyTheme(isTheme(event.newValue) ? event.newValue : systemTheme());
     callback();
   };
 
   window.addEventListener("portfolio-theme-change", callback);
   window.addEventListener("storage", handleStorageChange);
-  systemTheme.addEventListener("change", handleSystemThemeChange);
+  systemQuery.addEventListener("change", handleSystemThemeChange);
   return () => {
     window.removeEventListener("portfolio-theme-change", callback);
     window.removeEventListener("storage", handleStorageChange);
-    systemTheme.removeEventListener("change", handleSystemThemeChange);
+    systemQuery.removeEventListener("change", handleSystemThemeChange);
   };
 }
 
@@ -52,7 +49,7 @@ export function ThemeToggle({ t }: { t: Dictionary }) {
   function toggle() {
     const next = theme === "dark" ? "light" : "dark";
     applyTheme(next);
-    localStorage.setItem(THEME_STORAGE_KEY, next);
+    storeTheme(next);
     window.dispatchEvent(new Event("portfolio-theme-change"));
   }
   const label = theme === "dark" ? t.theme.toLight : t.theme.toDark;

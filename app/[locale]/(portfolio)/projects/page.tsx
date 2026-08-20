@@ -40,19 +40,12 @@ export default async function ProjectsPage({ params }: LocaleParams) {
           <p>{t.projectsPage.heroBody}</p>
         </div>
       </header>
-      <section
-        className="section projects-page projects-page-personal"
-        aria-labelledby="personal-projects"
-      >
+      <section className="section" aria-labelledby="personal-projects">
         <div className="shell">
           <h2 className="projects-group-heading" id="personal-projects">
             {t.projectsPage.personalProjects}
           </h2>
-          <ProjectCatalog
-            projects={personalProjects}
-            locale={locale}
-            t={t}
-          />
+          <ProjectCatalog projects={personalProjects} locale={locale} t={t} />
         </div>
       </section>
       {schoolProjects.length > 0 && (
