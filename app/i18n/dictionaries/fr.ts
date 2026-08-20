@@ -5,13 +5,13 @@ export const fr: Dictionary = {
   ogLocale: "fr_FR",
 
   site: {
-    titleDefault: "Jonathan Blanchard | Développeur Java / Spring Boot",
+    titleDefault: "Jonathan Blanchard | Développeur Java et Spring Boot",
     titleTemplate: "%s | Jonathan Blanchard",
     applicationName: "Portfolio de Jonathan Blanchard",
     ogDescription:
-      "Deux applications livrées et maintenues, dont une en production sur un serveur que j’exploite moi-même. Alternance de 14 mois recherchée dès septembre 2026.",
+      "Deux applications livrées et maintenues, dont une en production sur un serveur que j’exploite moi-même. Alternance de 14 mois à Paris dès septembre 2026.",
     skipToContent: "Aller au contenu",
-    jobTitle: "Développeur full-stack Java / Spring Boot",
+    jobTitle: "Développeur full-stack Java et Spring Boot",
   },
 
   nav: {
@@ -209,7 +209,8 @@ export const fr: Dictionary = {
   },
 
   home: {
-    metaTitle: "Développeur Java / Spring Boot, alternance septembre 2026",
+    metaDescription:
+      "Développeur full-stack à Paris : Java, Spring Boot, React. Deux applications en production sur mon propre serveur. Alternance de 14 mois dès septembre 2026.",
     viewResume: "Consulter mon CV",
     contactMe: "Me contacter",
     introTitle: "Mon parcours",
@@ -245,9 +246,9 @@ export const fr: Dictionary = {
   },
 
   journeyPage: {
-    metaTitle: "Parcours",
+    metaTitle: "Du support IT au développement Java",
     metaDescription:
-      "De l’assistance technique événementielle au développement Java. Le parcours de Jonathan Blanchard, et ce qu’il recherche.",
+      "Trois ans d’assistance technique, puis une reconversion vers le développement Java. Douze projets d’équipe à la Web@cadémie, deux applications en production.",
     heroTitle: "Une reconversion choisie.",
     heroBody:
       "Je n’ai pas quitté mon métier précédent parce qu’il se passait mal. Je l’ai quitté parce que je préférais construire les outils plutôt que les réparer.",
@@ -255,9 +256,9 @@ export const fr: Dictionary = {
   },
 
   projectsPage: {
-    metaTitle: "Projets",
+    metaTitle: "Projets Java et React en production",
     metaDescription:
-      "Janus et Episort, deux applications en production, et les projets d’équipe et d’apprentissage qui les précèdent.",
+      "Janus, passerelle Spring Boot qui garde les clés d’API hors des applications, et Episort, trieur JavaFX déterministe. Plus les projets d’école qui précèdent.",
     heroTitle: "Des applications face à des problèmes concrets.",
     heroBody:
       "Les technologies comptent quand elles rendent la solution plus claire, plus sûre, ou plus facile à maintenir debout.",
@@ -266,9 +267,9 @@ export const fr: Dictionary = {
   },
 
   contact: {
-    metaTitle: "Contact",
+    metaTitle: "Contact, alternance septembre 2026",
     metaDescription:
-      "Contacter Jonathan Blanchard pour une alternance de 14 mois dès septembre 2026, à Paris et en Île-de-France.",
+      "E-mail, téléphone et LinkedIn de Jonathan Blanchard, développeur full-stack Java à Paris, pour une alternance de 14 mois dès septembre 2026.",
     heroTitle: "Le plus rapide, c’est un e-mail.",
     heroBody:
       "Une alternance, un test technique, ou un premier échange. Je réponds vite, et j’arrive préparé.",
@@ -291,6 +292,8 @@ export const fr: Dictionary = {
 
   legal: {
     metaTitle: "Mentions légales",
+    metaDescription:
+      "Éditeur, hébergement et traitement des données de ce site. Aucun cookie de suivi, aucune mesure d’audience tierce.",
     heroTitle: "Mentions légales",
     heroBody:
       "Qui publie ce site, où il tourne, et ce qu’il fait de votre visite.",

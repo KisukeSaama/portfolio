@@ -13,8 +13,12 @@
  * `style-src` keeps `'unsafe-inline'` on purpose: React writes `style` attributes, which a nonce
  * cannot cover, and Next.js inlines critical CSS.
  *
- * `img-src`/`media-src` allow any https origin because a case study may attach media by external
- * URL instead of uploading it.
+ * `img-src`/`media-src` stay on `'self'`: every asset a case study references is committed under
+ * `public/`, so a blanket `https:` bought nothing and left an injected `<img>` a working channel
+ * for sending page contents to an attacker's host. Attaching media by external URL means adding
+ * that one host here.
+ *
+ * `data:` remains on `img-src` because `next/image` emits blur placeholders as data URIs.
  */
 export const NONCE_HEADER = "x-nonce";
 
@@ -28,8 +32,8 @@ export function contentSecurityPolicy(
     "default-src 'self'",
     `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${developmentScriptSource}`,
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: https:",
-    "media-src 'self' https:",
+    "img-src 'self' data:",
+    "media-src 'self'",
     "font-src 'self'",
     "connect-src 'self'",
     "manifest-src 'self'",

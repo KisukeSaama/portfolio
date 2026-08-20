@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { ContactPanel } from "~/components/contact-panel";
 import { ProjectCatalog } from "~/components/project-list";
 import { getProjects } from "~/content/projects";
-import { getDictionary, localePath } from "~/i18n";
+import { getDictionary } from "~/i18n";
 import type { Locale } from "~/i18n/config";
+import { pageMetadata } from "~/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -13,11 +15,11 @@ export async function generateMetadata({
 }: LocaleParams): Promise<Metadata> {
   const { locale } = await params;
   const t = getDictionary(locale);
-  return {
+  return pageMetadata(locale, {
+    path: "/projects",
     title: t.projectsPage.metaTitle,
     description: t.projectsPage.metaDescription,
-    alternates: { canonical: localePath(locale, "/projects") },
-  };
+  });
 }
 
 export default async function ProjectsPage({ params }: LocaleParams) {
@@ -71,6 +73,7 @@ export default async function ProjectsPage({ params }: LocaleParams) {
           </div>
         </section>
       )}
+      <ContactPanel locale={locale} t={t} />
     </>
   );
 }

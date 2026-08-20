@@ -11,6 +11,7 @@ import { getDictionary, localePath } from "~/i18n";
 import type { Locale } from "~/i18n/config";
 import { NONCE_HEADER } from "~/lib/csp";
 import { jsonLd } from "~/lib/json-ld";
+import { pageMetadata } from "~/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -21,11 +22,14 @@ export async function generateMetadata({
 }: LocaleParams): Promise<Metadata> {
   const { locale } = await params;
   const t = getDictionary(locale);
-  return {
-    title: t.home.metaTitle,
-    description: t.profile.tagline,
-    alternates: { canonical: localePath(locale, "/") },
-  };
+  // The home title is the site title: it already carries the name, so the template must not append
+  // it again.
+  return pageMetadata(locale, {
+    path: "/",
+    title: t.site.titleDefault,
+    description: t.home.metaDescription,
+    absoluteTitle: true,
+  });
 }
 
 export default async function HomePage({ params }: LocaleParams) {
@@ -59,7 +63,7 @@ export default async function HomePage({ params }: LocaleParams) {
                   href={profile.cvUrl}
                   className="button button-secondary"
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   hrefLang={profile.cvLanguage}
                 >
                   <FileText size={18} aria-hidden /> {t.home.viewResume}

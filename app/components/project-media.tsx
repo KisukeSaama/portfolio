@@ -5,13 +5,16 @@ import Image from "next/image";
 import type { Dictionary } from "~/i18n";
 import { format } from "~/i18n";
 import type { ProjectMedia as Media } from "~/types/api";
+import { safeUrl } from "~/lib/safe-url";
 
 function ProjectVideo({
   media,
+  src,
   poster,
   t,
 }: {
   media: Media;
+  src: string;
   poster?: string;
   t: Dictionary;
 }) {
@@ -49,10 +52,10 @@ function ProjectVideo({
       muted
       playsInline
       preload="metadata"
-      poster={poster}
+      poster={safeUrl(poster) ?? undefined}
       aria-label={media.alt}
     >
-      <source src={media.url} />
+      <source src={src} />
       <p>{t.caseStudy.videoFallback}</p>
     </video>
   );
@@ -72,32 +75,36 @@ export function ProjectMedia({
   priority?: boolean;
   poster?: string;
 }) {
-  if (!media)
+  // The address comes from case-study content, so it is checked before it reaches a `src`. An
+  // address that is not an http(s) URL or a site-relative path renders as the placeholder, which
+  // is the same thing the page shows when no media exists at all.
+  const source = media ? safeUrl(media.url) : null;
+  if (!media || !source)
     return (
-      <div className={`${className} media-empty`}>
-        <Image
-          src="/images/project-placeholder.svg"
-          alt={format(t.caseStudy.mediaPlaceholderAlt, { title })}
-          width={1200}
-          height={900}
-          priority={priority}
-          sizes="(max-width: 760px) 100vw, 50vw"
-        />
-        {/* The caption used to be a <text> node inside the SVG, which meant one hardcoded language
-            on a bilingual site. It is rendered from the dictionary now. */}
+      // Drawn in CSS rather than served as an SVG. The asset this replaced painted a window with a
+      // title bar, a coloured button and two rows of text bars: a fake screenshot, on a site whose
+      // own rule forbids one, and on the project still at the concept stage it showed a product
+      // nobody has built. It also baked the light theme in, so the dark pages carried a white slab.
+      <div
+        className={`${className} media-empty`}
+        role="img"
+        aria-label={format(t.caseStudy.mediaPlaceholderAlt, { title })}
+      >
+        {/* Rendered from the dictionary, never from inside the drawing: a bilingual site cannot
+            ship a hardcoded language in an image. */}
         <p className="media-note">{t.caseStudy.mediaPlaceholderNote}</p>
       </div>
     );
   if (media.type === "VIDEO")
     return (
       <div className={className}>
-        <ProjectVideo media={media} poster={poster} t={t} />
+        <ProjectVideo media={media} src={source} poster={poster} t={t} />
       </div>
     );
   return (
     <div className={className}>
       <Image
-        src={media.url}
+        src={source}
         alt={media.alt}
         width={media.width ?? 1200}
         height={media.height ?? 900}

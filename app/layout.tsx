@@ -5,10 +5,11 @@ import type { ReactNode } from "react";
 import { getDictionary } from "~/i18n";
 import { activeLocale } from "~/i18n/server";
 import { NONCE_HEADER } from "~/lib/csp";
+import { DARK_THEME_QUERY, THEME_COLOR, THEME_STORAGE_KEY } from "~/lib/theme";
 import "./styles/global.css";
 
 const siteUrl = process.env.PUBLIC_SITE_URL ?? "http://localhost:5173";
-const themeScript = `(()=>{try{const saved=localStorage.getItem('jonathan-theme');const theme=saved==='light'||saved==='dark'?saved:(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme}catch{}})()`;
+const themeScript = `(()=>{try{const saved=localStorage.getItem('${THEME_STORAGE_KEY}');const theme=saved==='light'||saved==='dark'?saved:(matchMedia('${DARK_THEME_QUERY}').matches?'dark':'light');document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme;const meta=document.createElement('meta');meta.name='theme-color';meta.content=theme==='dark'?'${THEME_COLOR.dark}':'${THEME_COLOR.light}';document.head.appendChild(meta)}catch{}})()`;
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await activeLocale();
@@ -16,8 +17,10 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     metadataBase: new URL(siteUrl),
     title: { default: t.site.titleDefault, template: t.site.titleTemplate },
-    description: t.profile.tagline,
+    description: t.home.metaDescription,
     applicationName: t.site.applicationName,
+    authors: [{ name: "Jonathan Blanchard", url: siteUrl }],
+    creator: "Jonathan Blanchard",
     alternates: { canonical: `/${locale}` },
     openGraph: {
       type: "website",
@@ -53,12 +56,8 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  // The browser chrome, matched to `--background` in each theme. These were still the warm greys the
-  // palette used before it went neutral, so a phone framed the page in a color the page no longer had.
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f3f3f3" },
-    { media: "(prefers-color-scheme: dark)", color: "#282828" },
-  ],
+  // No `themeColor` here. It would only ever key off the OS query, which a saved choice overrides,
+  // and a second tag would win over the one the theme script writes. See `applyTheme`.
 };
 
 export default async function RootLayout({

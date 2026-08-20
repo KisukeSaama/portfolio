@@ -35,6 +35,9 @@ describe("theme", () => {
       })),
     );
     document.documentElement.dataset.theme = "light";
+    document.head.querySelectorAll('meta[name="theme-color"]').forEach((meta) => {
+      meta.remove();
+    });
     localStorage.clear();
   });
 
@@ -77,5 +80,17 @@ describe("theme", () => {
     });
 
     expect(document.documentElement.dataset.theme).toBe("dark");
+  });
+
+  it("keeps the browser chrome on the applied theme, not on the OS", () => {
+    systemIsDark = false;
+    render(<ThemeToggle t={getDictionary("en")} />);
+    fireEvent.click(
+      screen.getByRole("button", { name: "Switch to the dark theme" }),
+    );
+
+    const metas = document.head.querySelectorAll('meta[name="theme-color"]');
+    expect(metas).toHaveLength(1);
+    expect(metas[0]?.getAttribute("content")).toBe("#282828");
   });
 });

@@ -81,7 +81,7 @@ export function PublicHeader({ locale, t }: { locale: Locale; t: Dictionary }) {
                 href={profile.cvUrl}
                 className="nav-link"
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 hrefLang={profile.cvLanguage}
               >
                 {t.nav.resume}
@@ -104,7 +104,7 @@ export function PublicHeader({ locale, t }: { locale: Locale; t: Dictionary }) {
                 href={profile.cvUrl}
                 className="nav-link"
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
               >
                 {t.nav.viewResume}
               </a>

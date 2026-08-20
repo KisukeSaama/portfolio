@@ -1,8 +1,9 @@
 import { FileText, Mail } from "lucide-react";
 import type { Metadata } from "next";
 import { profile } from "~/content/profile";
-import { getDictionary, localePath } from "~/i18n";
+import { getDictionary } from "~/i18n";
 import type { Locale } from "~/i18n/config";
+import { pageMetadata } from "~/lib/seo";
 
 type LocaleParams = { params: Promise<{ locale: Locale }> };
 
@@ -11,11 +12,11 @@ export async function generateMetadata({
 }: LocaleParams): Promise<Metadata> {
   const { locale } = await params;
   const t = getDictionary(locale);
-  return {
+  return pageMetadata(locale, {
+    path: "/contact",
     title: t.contact.metaTitle,
     description: t.contact.metaDescription,
-    alternates: { canonical: localePath(locale, "/contact") },
-  };
+  });
 }
 
 export default async function ContactPage({ params }: LocaleParams) {
@@ -51,87 +52,89 @@ export default async function ContactPage({ params }: LocaleParams) {
       </section>
 
       <section className="section" aria-labelledby="reach-title">
-        <div className="shell readable">
-          <h2 id="reach-title" className="section-heading">
-            {t.contact.sectionTitle}
-          </h2>
+        <div className="shell">
+          <div className="readable">
+            <h2 id="reach-title" className="section-heading">
+              {t.contact.sectionTitle}
+            </h2>
 
-          <p className="contact-actions">
-            <a
-              className="button button-primary"
-              href={`mailto:${profile.email}`}
-            >
-              <Mail size={18} aria-hidden /> {t.contact.sendEmail}
-            </a>
-            {profile.cvAvailable && (
+            <p className="contact-actions">
               <a
-                className="button button-secondary"
-                href={profile.cvUrl}
-                target="_blank"
-                rel="noreferrer"
-                hrefLang={profile.cvLanguage}
+                className="button button-primary"
+                href={`mailto:${profile.email}`}
               >
-                <FileText size={18} aria-hidden /> {t.contact.viewResume}
+                <Mail size={18} aria-hidden /> {t.contact.sendEmail}
               </a>
-            )}
-          </p>
+              {profile.cvAvailable && (
+                <a
+                  className="button button-secondary"
+                  href={profile.cvUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  hrefLang={profile.cvLanguage}
+                >
+                  <FileText size={18} aria-hidden /> {t.contact.viewResume}
+                </a>
+              )}
+            </p>
 
-          <dl className="fact-rows">
-            <div className="fact-row">
-              <dt>{t.contact.labels.email}</dt>
-              <dd>
-                <a className="text-link" href={`mailto:${profile.email}`}>
-                  {profile.email}
-                </a>
-              </dd>
-            </div>
-            <div className="fact-row">
-              <dt>{t.contact.labels.phone}</dt>
-              <dd>
-                <a className="text-link" href={profile.phoneHref}>
-                  {profile.phone}
-                </a>
-              </dd>
-            </div>
-            <div className="fact-row">
-              <dt>{t.contact.labels.location}</dt>
-              <dd>{t.contact.location}</dd>
-            </div>
-            <div className="fact-row">
-              <dt>{t.contact.labels.github}</dt>
-              <dd>
-                <a
-                  className="text-link"
-                  href={profile.githubUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  github.com/KisukeSaama
-                </a>
-              </dd>
-            </div>
-            <div className="fact-row">
-              <dt>{t.contact.labels.linkedin}</dt>
-              <dd>
-                <a
-                  className="text-link"
-                  href={profile.linkedinUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  linkedin.com/in/jo-blanchard
-                </a>
-              </dd>
-            </div>
-            {profile.cvAvailable && (
+            <dl className="fact-rows">
               <div className="fact-row">
-                <dt>{t.contact.labels.resume}</dt>
-                <dd>{t.contact.resumeNote}</dd>
+                <dt>{t.contact.labels.email}</dt>
+                <dd>
+                  <a className="text-link" href={`mailto:${profile.email}`}>
+                    {profile.email}
+                  </a>
+                </dd>
               </div>
-            )}
-          </dl>
+              <div className="fact-row">
+                <dt>{t.contact.labels.phone}</dt>
+                <dd>
+                  <a className="text-link" href={profile.phoneHref}>
+                    {profile.phone}
+                  </a>
+                </dd>
+              </div>
+              <div className="fact-row">
+                <dt>{t.contact.labels.location}</dt>
+                <dd>{t.contact.location}</dd>
+              </div>
+              <div className="fact-row">
+                <dt>{t.contact.labels.github}</dt>
+                <dd>
+                  <a
+                    className="text-link"
+                    href={profile.githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    github.com/KisukeSaama
+                  </a>
+                </dd>
+              </div>
+              <div className="fact-row">
+                <dt>{t.contact.labels.linkedin}</dt>
+                <dd>
+                  <a
+                    className="text-link"
+                    href={profile.linkedinUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    linkedin.com/in/jo-blanchard
+                  </a>
+                </dd>
+              </div>
+              {profile.cvAvailable && (
+                <div className="fact-row">
+                  <dt>{t.contact.labels.resume}</dt>
+                  <dd>{t.contact.resumeNote}</dd>
+                </div>
+              )}
+            </dl>
 
-          <p className="muted">{t.contact.noForm}</p>
+            <p className="fact-note">{t.contact.noForm}</p>
+          </div>
         </div>
       </section>
     </>

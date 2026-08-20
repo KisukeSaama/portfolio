@@ -1,4 +1,4 @@
-# Jonathan Blanchard — Portfolio
+# Jonathan Blanchard, portfolio
 
 A bilingual personal portfolio built as a single Next.js application. It introduces Jonathan before
 his projects, states the apprenticeship terms clearly, and presents the product and engineering
@@ -102,9 +102,16 @@ For a standalone host:
 PUBLIC_SITE_URL=https://example.com docker compose -f docker-compose.prod.yml up -d --build
 ```
 
+That binds the container to `127.0.0.1:3000`, not to every interface. Next.js speaks plain HTTP, so
+it needs a TLS terminator in front of it, and the terminator has to repeat the response-security
+headers: Next.js serves `robots.txt`, `sitemap.xml`, the manifest and the social card ahead of the
+proxy and never calls it for them, so those four responses leave the container bare. Everything else
+carries its headers from `app/lib/security-headers.ts`.
+
 The GitLab pipeline runs the frontend checks, builds a single `web` image and deploys it with
-`deploy/compose.yml`. Traefik terminates TLS and applies the response-security headers. The container
-runs read-only as a non-root user and needs no persistent volume or application secret.
+`deploy/compose.yml`. Traefik terminates TLS, rate limits per source address and repeats the
+response-security headers. The container runs read-only as a non-root user with no capabilities, and
+needs no persistent volume or application secret.
 
 ## Before going live
 

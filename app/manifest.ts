@@ -8,7 +8,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Jonathan Blanchard | Portfolio",
     short_name: "Jonathan Blanchard",
-    description: t.profile.title,
+    description: t.site.ogDescription,
     start_url: `/${defaultLocale}`,
     display: "standalone",
     background_color: "#f5efe5",

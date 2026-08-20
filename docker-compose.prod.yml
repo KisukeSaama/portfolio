@@ -1,3 +1,11 @@
+# Standalone production stack: one container, no reverse proxy of its own.
+#
+# The published port is bound to the loopback interface on purpose. Next.js speaks plain HTTP, so
+# exposing it on every interface would serve the site without TLS, and the browser would refuse to
+# honour the HSTS header the application sets. Put a TLS terminator in front of 127.0.0.1:3000, or
+# use deploy/compose.yml, which already carries the Traefik routing.
+#
+# Override BIND_ADDRESS only for a host that terminates TLS elsewhere on the same network.
 services:
   web:
     build:
@@ -10,9 +18,23 @@ services:
       NODE_ENV: production
       PUBLIC_SITE_URL: ${PUBLIC_SITE_URL}
     ports:
-      - "80:3000"
+      - "${BIND_ADDRESS:-127.0.0.1}:${HTTP_PORT:-3000}:3000"
+    # Same container hardening as the Traefik stack: nothing here needs to write outside /tmp,
+    # gain privileges, or hold a capability.
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/en/legal >/dev/null"]
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/en/legal >/dev/null"]
       interval: 15s
       timeout: 5s
       retries: 12

@@ -3,20 +3,13 @@
 import { Moon, Sun } from "lucide-react";
 import { useSyncExternalStore } from "react";
 import type { Dictionary } from "~/i18n";
-
-type Theme = "light" | "dark";
-
-const THEME_STORAGE_KEY = "jonathan-theme";
-const DARK_THEME_QUERY = "(prefers-color-scheme: dark)";
-
-function isTheme(value: string | null): value is Theme {
-  return value === "light" || value === "dark";
-}
-
-function applyTheme(theme: Theme) {
-  document.documentElement.dataset.theme = theme;
-  document.documentElement.style.colorScheme = theme;
-}
+import {
+  applyTheme,
+  DARK_THEME_QUERY,
+  isTheme,
+  THEME_STORAGE_KEY,
+  type Theme,
+} from "~/lib/theme";
 
 function subscribe(callback: () => void) {
   const systemTheme = window.matchMedia(DARK_THEME_QUERY);

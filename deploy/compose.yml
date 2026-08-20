@@ -38,14 +38,29 @@ services:
       - traefik.http.routers.${APP_SUBDOMAIN}-${DEPLOY_ENV}.tls=true
       - traefik.http.routers.${APP_SUBDOMAIN}-${DEPLOY_ENV}.tls.certresolver=letsencrypt
       - traefik.http.routers.${APP_SUBDOMAIN}-${DEPLOY_ENV}.service=${APP_SUBDOMAIN}-${DEPLOY_ENV}
-      - traefik.http.routers.${APP_SUBDOMAIN}-${DEPLOY_ENV}.middlewares=${APP_SUBDOMAIN}-${DEPLOY_ENV}-headers
+      - traefik.http.routers.${APP_SUBDOMAIN}-${DEPLOY_ENV}.middlewares=${APP_SUBDOMAIN}-${DEPLOY_ENV}-ratelimit,${APP_SUBDOMAIN}-${DEPLOY_ENV}-headers
       - traefik.http.services.${APP_SUBDOMAIN}-${DEPLOY_ENV}.loadbalancer.server.port=3000
+      # The application sets the same headers itself, in app/lib/security-headers.ts. They are
+      # repeated here because the proxy matcher skips a few routes (robots.txt, sitemap.xml, the
+      # manifest, the social card) and all of /_next, and those responses leave the container bare.
+      # Keep the two lists in step: whichever writes last is the value the browser reads.
       - traefik.http.middlewares.${APP_SUBDOMAIN}-${DEPLOY_ENV}-headers.headers.contentTypeNosniff=true
       - traefik.http.middlewares.${APP_SUBDOMAIN}-${DEPLOY_ENV}-headers.headers.frameDeny=true
       - traefik.http.middlewares.${APP_SUBDOMAIN}-${DEPLOY_ENV}-headers.headers.referrerPolicy=strict-origin-when-cross-origin
-      - traefik.http.middlewares.${APP_SUBDOMAIN}-${DEPLOY_ENV}-headers.headers.stsSeconds=31536000
+      - traefik.http.middlewares.${APP_SUBDOMAIN}-${DEPLOY_ENV}-headers.headers.stsSeconds=63072000
       - traefik.http.middlewares.${APP_SUBDOMAIN}-${DEPLOY_ENV}-headers.headers.stsIncludeSubdomains=true
-      - traefik.http.middlewares.${APP_SUBDOMAIN}-${DEPLOY_ENV}-headers.headers.customResponseHeaders.Permissions-Policy=camera=(), microphone=(), geolocation=(), payment=()
+      - traefik.http.middlewares.${APP_SUBDOMAIN}-${DEPLOY_ENV}-headers.headers.stsPreload=true
+      - traefik.http.middlewares.${APP_SUBDOMAIN}-${DEPLOY_ENV}-headers.headers.customResponseHeaders.Permissions-Policy=accelerometer=(), autoplay=(), camera=(), display-capture=(), encrypted-media=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), usb=()
+      - traefik.http.middlewares.${APP_SUBDOMAIN}-${DEPLOY_ENV}-headers.headers.customResponseHeaders.Cross-Origin-Opener-Policy=same-origin
+      - traefik.http.middlewares.${APP_SUBDOMAIN}-${DEPLOY_ENV}-headers.headers.customResponseHeaders.Cross-Origin-Resource-Policy=same-origin
+      - traefik.http.middlewares.${APP_SUBDOMAIN}-${DEPLOY_ENV}-headers.headers.customResponseHeaders.X-DNS-Prefetch-Control=off
+      # Every page is server rendered, so one client can keep the event loop busy on its own. The
+      # allowance is per source address and counts assets as well as documents, so the burst has to
+      # cover a cold first load, which pulls the document plus its chunks, fonts and images at once.
+      # A crawler that trips the limit is slowed, not blocked.
+      - traefik.http.middlewares.${APP_SUBDOMAIN}-${DEPLOY_ENV}-ratelimit.ratelimit.average=120
+      - traefik.http.middlewares.${APP_SUBDOMAIN}-${DEPLOY_ENV}-ratelimit.ratelimit.burst=240
+      - traefik.http.middlewares.${APP_SUBDOMAIN}-${DEPLOY_ENV}-ratelimit.ratelimit.period=1m
 
 networks:
   traefik:

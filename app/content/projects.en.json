@@ -13,7 +13,7 @@
       "Ship something a non-developer can install and run"
     ],
     "solution": "A fully deterministic pipeline: scan, rule-based parsing, TMDB resolution, identity review, plan review, journaled apply. The same folder always produces the same plan. Two explicit gates, and neither can be skipped. Conflicts, duplicates and unsafe Windows paths block the run before it starts.",
-    "role": "Sole developer — from product design to packaging.",
+    "role": "Sole developer, from product design to packaging.",
     "architecture": "Six separate stages, each one inspectable. The interface never touches a file: it approves a plan. Only the apply stage writes, inside the configured workspace, with a journal that lets an interrupted run be recovered. TMDB is reached through Janus, so no TMDB secret exists anywhere in this project.",
     "features": [
       "Scans AVI, MP4 and MKV",
@@ -52,8 +52,8 @@
       "Broaden the release-naming test corpus",
       "Document the parsing rules for contributors"
     ],
-    "seoTitle": "Episort (case study)",
-    "seoDescription": "A deterministic JavaFX application that sorts a Plex library behind two review gates.",
+    "seoTitle": "Episort, a JavaFX media sorter",
+    "seoDescription": "A JavaFX application that sorts a Plex library of thousands of files. Six stages, two review gates, a journalled run you can resume or undo. In production.",
     "media": []
   },
   {
@@ -70,7 +70,7 @@
       "Give a self-hosted deployment the controls a managed gateway sells"
     ],
     "solution": "An authenticated proxy. The caller proves its identity, Janus checks the grant, applies the quota, reads the secret from OpenBao, and forwards the request. The secret never crosses back: not in a response, not in a log, not in an error message. Every call is audited under a correlation ID.",
-    "role": "Sole developer — from security model to production.",
+    "role": "Sole developer, from security model to production.",
     "architecture": "A modular monolith, layered controller to service to repository. The HTTP class decides nothing, the service owns the transaction and the audit record, and entities enforce their own invariants. Two independent security chains: one for the console, one for the gateway. PostgreSQL holds identities, connections, grants and audits, never a plaintext secret. Proxied calls run on virtual threads, so concurrency is bounded by the database pool rather than by the servlet container.",
     "features": [
       "Authenticated REST gateway, one slug per registered API",
@@ -108,8 +108,8 @@
       "Document the threat model as a page of its own",
       "Widen coverage on the token exchange paths"
     ],
-    "seoTitle": "Janus (case study)",
-    "seoDescription": "A self-hosted Spring Boot gateway that keeps API keys out of the applications using them.",
+    "seoTitle": "Janus, a Spring Boot API gateway",
+    "seoDescription": "A self-hosted Spring Boot gateway that keeps third-party API keys out of the applications calling them. Secrets stay in OpenBao, every access is audited.",
     "media": []
   },
   {
@@ -177,8 +177,8 @@
     "nextSteps": [
       "Document the differences between versions"
     ],
-    "seoTitle": "Mini social network (case study)",
-    "seoDescription": "A full-stack learning project rebuilt across two backends, Laravel and Java.",
+    "seoTitle": "Mini social network, Laravel and Java",
+    "seoDescription": "The same full-stack application built twice, on Laravel and on Java, to compare two backends against identical requirements. A Web@cadémie learning project.",
     "media": []
   }
 ]

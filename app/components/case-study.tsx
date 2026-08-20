@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import type { Dictionary } from "~/i18n";
 import type { Locale } from "~/i18n/config";
 import type { Project } from "~/types/api";
+import { safeUrl } from "~/lib/safe-url";
 import { hasDiagram, ProjectDiagram } from "./project-diagram";
 import { ProjectMedia } from "./project-media";
 
@@ -128,6 +129,13 @@ export function CaseStudyBody({
   // reader who wanted the full list would be reading the repository instead.
   const decisions = project.decisions.slice(0, 3);
   const remains = project.nextSteps;
+  const repositoryUrl = safeUrl(project.githubUrl);
+  const demoUrl = safeUrl(project.demoUrl);
+  // A project still at the concept stage has no stack and no repository. Splitting the section
+  // anyway left the whole right-hand column empty, which reads as a layout that failed rather than
+  // as a page with less to say.
+  const hasSupportingColumn =
+    project.technologies.length > 0 || Boolean(repositoryUrl || demoUrl);
 
   return (
     <>
@@ -155,8 +163,12 @@ export function CaseStudyBody({
         </CaseSection>
       )}
       <ArchitectureSection project={project} t={t} locale={locale} />
-      <CaseSection title={t.caseStudy.remains} split>
-        <div className="case-split-grid case-current-grid">
+      <CaseSection title={t.caseStudy.remains} split={hasSupportingColumn}>
+        <div
+          className={
+            hasSupportingColumn ? "case-split-grid case-current-grid" : ""
+          }
+        >
           <div>
             <p className="case-status">
               {beforeStatus}
@@ -169,40 +181,42 @@ export function CaseStudyBody({
               <p key={paragraph}>{paragraph}</p>
             ))}
           </div>
-          <div>
-            {project.technologies.length > 0 && (
-              <div className="case-subsection">
-                <h3>{t.caseStudy.technologies}</h3>
-                <p className="case-technologies">
-                  {project.technologies.join(" · ")}
-                </p>
-              </div>
-            )}
-            {(project.githubUrl || project.demoUrl) && (
-              <div className="project-actions case-actions">
-                {project.githubUrl && (
-                  <a
-                    className="button button-secondary"
-                    href={project.githubUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    GitHub <ExternalLink size={16} aria-hidden />
-                  </a>
-                )}
-                {project.demoUrl && (
-                  <a
-                    className="button button-primary"
-                    href={project.demoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {t.caseStudy.demo} <ExternalLink size={16} aria-hidden />
-                  </a>
-                )}
-              </div>
-            )}
-          </div>
+          {hasSupportingColumn && (
+            <div>
+              {project.technologies.length > 0 && (
+                <div className="case-subsection">
+                  <h3>{t.caseStudy.technologies}</h3>
+                  <p className="case-technologies">
+                    {project.technologies.join(" · ")}
+                  </p>
+                </div>
+              )}
+              {(repositoryUrl || demoUrl) && (
+                <div className="project-actions case-actions">
+                  {repositoryUrl && (
+                    <a
+                      className="button button-secondary"
+                      href={repositoryUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      GitHub <ExternalLink size={16} aria-hidden />
+                    </a>
+                  )}
+                  {demoUrl && (
+                    <a
+                      className="button button-primary"
+                      href={demoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {t.caseStudy.demo} <ExternalLink size={16} aria-hidden />
+                    </a>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </CaseSection>
       {video && (

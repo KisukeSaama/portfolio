@@ -7,7 +7,7 @@ export const en = {
     titleTemplate: "%s | Jonathan Blanchard",
     applicationName: "Jonathan Blanchard's portfolio",
     ogDescription:
-      "Two applications shipped and maintained, one of them in production on a server I operate myself. Looking for a 14-month apprenticeship from September 2026.",
+      "Two applications shipped and maintained, one in production on a server I operate myself. Looking for a 14-month apprenticeship in Paris from September 2026.",
     skipToContent: "Skip to content",
     jobTitle: "Full-stack developer, Java and Spring Boot",
   },
@@ -65,7 +65,7 @@ export const en = {
   },
 
   introduction: [
-    "For three years at Novelty, I dealt with incidents that had to be resolved quickly. But it was often afterward—digging into what had happened, testing different approaches and exploring what could have been done differently—that I wanted to move to the other side: building the tools I had been missing.",
+    "For three years at Novelty, I dealt with incidents that had to be resolved quickly. But it was often by digging into those problems afterward, testing different approaches and exploring what could have been done differently, that I wanted to move to the other side: building the tools I had been missing.",
     "I chose to specialize in Java and React, technologies widely used to build robust, durable applications. Today, my projects rely on them and run in production on the Linux server I administer myself. I am my own on-call: when a problem occurs, I analyze the logs, identify the cause, fix it and, when necessary, roll back to the previous version.",
     "At the Web@cadémie, I completed 12 team projects, working in pairs, groups of three and teams of up to five. I learned to review other people’s code, defend my technical decisions and take over a project I had not started. What I need now is scale: working on a more complex application, alongside an experienced team and under real production constraints.",
     "By the end of this fourteen-month apprenticeship, I want to be the developer trusted to own a feature end to end, from its design through to production.",
@@ -201,7 +201,8 @@ export const en = {
   },
 
   home: {
-    metaTitle: "Java and Spring Boot developer, apprenticeship September 2026",
+    metaDescription:
+      "Full-stack developer in Paris: Java, Spring Boot, React. Two applications in production on my own server. Seeking a 14-month apprenticeship from September 2026.",
     viewResume: "View my resume",
     contactMe: "Get in touch",
     introTitle: "My journey",
@@ -237,9 +238,9 @@ export const en = {
   },
 
   journeyPage: {
-    metaTitle: "Journey",
+    metaTitle: "From IT support to Java developer",
     metaDescription:
-      "From event-technology incident response to Java development. Jonathan Blanchard's path, and what he is looking for.",
+      "Three years of IT incident response, then a switch to Java at Web@cadémie by EPITECH. Twelve team projects, and two applications I run in production.",
     heroTitle: "A career change I chose.",
     heroBody:
       "I did not leave my previous job because it went badly. I left because I preferred building the tools to repairing them.",
@@ -247,9 +248,9 @@ export const en = {
   },
 
   projectsPage: {
-    metaTitle: "Projects",
+    metaTitle: "Java and React projects in production",
     metaDescription:
-      "Janus and Episort, two applications in production, plus the team and learning projects behind them.",
+      "Janus, a Spring Boot gateway that keeps API keys out of the applications using them, and Episort, a deterministic JavaFX sorter. Plus the school projects.",
     heroTitle: "Applications facing concrete problems.",
     heroBody:
       "Technologies matter when they make the solution clearer, safer, or easier to keep up.",
@@ -258,9 +259,9 @@ export const en = {
   },
 
   contact: {
-    metaTitle: "Contact",
+    metaTitle: "Contact, apprenticeship September 2026",
     metaDescription:
-      "Reach Jonathan Blanchard about a 14-month apprenticeship from September 2026, in Paris and Île-de-France.",
+      "Email, phone and LinkedIn for Jonathan Blanchard, full-stack Java developer in Paris, open to a 14-month apprenticeship from September 2026.",
     heroTitle: "The fastest way is email.",
     heroBody:
       "An apprenticeship, a technical test, or a first conversation. I answer fast, and I come prepared.",
@@ -282,6 +283,8 @@ export const en = {
 
   legal: {
     metaTitle: "Legal notice",
+    metaDescription:
+      "Publisher, hosting and data handling for this site. No tracking cookie, no third-party analytics.",
     heroTitle: "Legal notice",
     heroBody:
       "Who publishes this site, where it runs, and what it does with your visit.",

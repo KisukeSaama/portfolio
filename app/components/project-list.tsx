@@ -1,13 +1,40 @@
 import { ArrowRight, ExternalLink } from "lucide-react";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import type { Dictionary } from "~/i18n";
 import { format, localePath } from "~/i18n";
 import type { Locale } from "~/i18n/config";
 import type { Project } from "~/types/api";
+import { safeUrl } from "~/lib/safe-url";
 
 type ListProps = { projects: Project[]; locale: Locale; t: Dictionary };
-type FeaturedProps = ListProps & { variant?: "cards" | "catalog" };
 type CatalogProps = ListProps & { compact?: boolean };
+
+/**
+ * An outbound link whose address comes from case-study content rather than from code. It renders
+ * nothing when the content does not hold an http(s) address, so a repository or demo field that
+ * ever carried a script URL leaves a gap on the page instead of a live link.
+ */
+function ExternalProjectLink({
+  url,
+  children,
+}: {
+  url: string | null;
+  children: ReactNode;
+}) {
+  const href = safeUrl(url);
+  if (!href) return null;
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-link project-external-link"
+    >
+      {children} <ExternalLink size={15} aria-hidden />
+    </a>
+  );
+}
 
 function formatStartDate(date: string, locale: Locale) {
   return new Intl.DateTimeFormat(locale, {
@@ -18,14 +45,9 @@ function formatStartDate(date: string, locale: Locale) {
   }).format(new Date(`${date}T00:00:00Z`));
 }
 
-export function FeaturedProjects({
-  projects,
-  locale,
-  t,
-  variant = "cards",
-}: FeaturedProps) {
+export function FeaturedProjects({ projects, locale, t }: ListProps) {
   return (
-    <div className={`projects-featured projects-featured-${variant}`}>
+    <div className="projects-featured">
       {projects.map((project) => (
         <article className="project-card" key={project.slug}>
           <div className="project-card-heading">
@@ -42,26 +64,12 @@ export function FeaturedProjects({
               ))}
             </ul>
             <div className="project-link-actions">
-              {project.githubUrl && (
-                <a
-                  href={project.githubUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-link project-external-link"
-                >
-                  GitHub <ExternalLink size={15} aria-hidden />
-                </a>
-              )}
-              {project.demoUrl && (
-                <a
-                  href={project.demoUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-link project-external-link"
-                >
-                  {t.projects.demo} <ExternalLink size={15} aria-hidden />
-                </a>
-              )}
+              <ExternalProjectLink url={project.githubUrl}>
+                GitHub
+              </ExternalProjectLink>
+              <ExternalProjectLink url={project.demoUrl}>
+                {t.projects.demo}
+              </ExternalProjectLink>
               <Link
                 href={localePath(locale, `/${project.slug}`)}
                 className="project-case-link"
@@ -116,16 +124,9 @@ export function ProjectCatalog({
               </ul>
             )}
             <div className="project-link-actions">
-              {project.githubUrl && (
-                <a
-                  href={project.githubUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-link project-external-link"
-                >
-                  GitHub <ExternalLink size={15} aria-hidden />
-                </a>
-              )}
+              <ExternalProjectLink url={project.githubUrl}>
+                GitHub
+              </ExternalProjectLink>
               <Link
                 href={localePath(locale, `/${project.slug}`)}
                 className="project-case-link"

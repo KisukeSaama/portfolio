@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { ContactPanel } from "~/components/contact-panel";
-import { getDictionary, localePath } from "~/i18n";
+import { getDictionary } from "~/i18n";
 import type { Locale } from "~/i18n/config";
+import { pageMetadata } from "~/lib/seo";
 
 type LocaleParams = { params: Promise<{ locale: Locale }> };
 
@@ -10,11 +11,11 @@ export async function generateMetadata({
 }: LocaleParams): Promise<Metadata> {
   const { locale } = await params;
   const t = getDictionary(locale);
-  return {
+  return pageMetadata(locale, {
+    path: "/journey",
     title: t.journeyPage.metaTitle,
     description: t.journeyPage.metaDescription,
-    alternates: { canonical: localePath(locale, "/journey") },
-  };
+  });
 }
 
 export default async function JourneyPage({ params }: LocaleParams) {
