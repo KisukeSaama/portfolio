@@ -15,20 +15,6 @@
     "solution": "Un pipeline entièrement déterministe : scan, analyse par règles, résolution TMDB, revue des identités, revue du plan, application journalisée. Le même dossier produit toujours le même plan. Deux barrières explicites, et aucune ne peut être sautée. Conflits, doublons et chemins Windows dangereux bloquent l’exécution avant qu’elle ne commence.",
     "role": "Développeur unique — de la conception au packaging.",
     "architecture": "Six étapes distinctes, chacune inspectable. L’interface ne touche jamais un fichier : elle approuve un plan. Seule l’étape d’application écrit, à l’intérieur de l’espace de travail configuré, avec un journal qui permet de reprendre une exécution interrompue. TMDB est atteint via Janus, donc aucun secret TMDB n’existe dans ce projet.",
-    "status": "MAINTAINED",
-    "projectType": "PERSONAL",
-    "featureLevel": "PRIMARY",
-    "startedAt": "2026-05-07",
-    "technologies": [
-      "Java 25",
-      "JavaFX 25",
-      "Gradle",
-      "JUnit 5",
-      "TMDB API",
-      "Janus gateway",
-      "Go 1.26",
-      "GitHub Actions"
-    ],
     "features": [
       "Scanne les fichiers AVI, MP4 et MKV",
       "Analyse par règles des formats SxxExx, NxNN, numérotation absolue, épisodes datés et noms déduits du dossier",
@@ -66,12 +52,8 @@
       "Élargir le corpus de test des conventions de nommage",
       "Documenter les règles d’analyse pour les contributeurs"
     ],
-    "githubUrl": "https://github.com/KisukeSaama/episort",
-    "demoUrl": null,
     "seoTitle": "Episort (étude de cas)",
     "seoDescription": "Une application JavaFX déterministe qui trie une bibliothèque Plex derrière deux barrières de revue.",
-    "openGraphImageUrl": null,
-    "updatedAt": "2026-08-19T19:04:18.427819Z",
     "media": []
   },
   {
@@ -90,26 +72,6 @@
     "solution": "Un proxy authentifié. L’appelant prouve son identité, Janus vérifie l’autorisation, applique le quota, lit le secret dans OpenBao et transmet la requête. Le secret ne repasse jamais dans l’autre sens : ni dans une réponse, ni dans un log, ni dans un message d’erreur. Chaque appel est audité sous un identifiant de corrélation.",
     "role": "Développeur unique — du modèle de sécurité à la production.",
     "architecture": "Un monolithe modulaire, en couches du contrôleur au service puis au dépôt. La classe HTTP ne décide de rien, le service porte la transaction et l’enregistrement d’audit, et les entités font respecter leurs propres invariants. Deux chaînes de sécurité indépendantes : une pour la console, une pour la passerelle. PostgreSQL contient les identités, les connexions, les autorisations et les audits, jamais un secret en clair. Les appels proxifiés tournent sur des threads virtuels, donc la concurrence est bornée par le pool de la base plutôt que par le conteneur de servlets.",
-    "status": "MAINTAINED",
-    "projectType": "PERSONAL",
-    "featureLevel": "PRIMARY",
-    "startedAt": "2026-08-10",
-    "technologies": [
-      "Java 25",
-      "Spring Boot 4",
-      "Virtual threads",
-      "React 19",
-      "TypeScript",
-      "Vite",
-      "Tailwind CSS",
-      "PostgreSQL",
-      "OpenBao",
-      "Maven",
-      "Docker Compose",
-      "Traefik",
-      "nginx",
-      "GitLab CI"
-    ],
     "features": [
       "Passerelle REST authentifiée, un slug par API enregistrée",
       "Identités machine à clés de 256 bits, affichées une fois, stockées en empreintes BCrypt",
@@ -146,12 +108,8 @@
       "Documenter le modèle de menaces sur une page dédiée",
       "Élargir la couverture sur les chemins d’échange de jetons"
     ],
-    "githubUrl": "https://github.com/KisukeSaama/janus",
-    "demoUrl": null,
     "seoTitle": "Janus (étude de cas)",
     "seoDescription": "Une passerelle Spring Boot auto-hébergée qui garde les clés d’API hors des applications qui s’en servent.",
-    "openGraphImageUrl": null,
-    "updatedAt": "2026-08-19T19:04:18.429410Z",
     "media": []
   },
   {
@@ -169,10 +127,6 @@
     "solution": "Une application web personnelle réunissant recherche, comparaison et suivi des candidatures dans un même parcours.",
     "role": "Conception et développement en autonomie.",
     "architecture": "",
-    "status": "CONCEPT",
-    "projectType": "PERSONAL",
-    "featureLevel": "SECONDARY",
-    "technologies": [],
     "features": [],
     "decisions": [],
     "challenges": [],
@@ -182,12 +136,8 @@
       "Définir le périmètre d’une première version",
       "Choisir l’architecture après le cadrage"
     ],
-    "githubUrl": null,
-    "demoUrl": null,
     "seoTitle": "Overkill (étude de cas)",
     "seoDescription": "Un projet personnel en réflexion pour agréger et suivre les offres d’emploi en Île-de-France.",
-    "openGraphImageUrl": null,
-    "updatedAt": "2026-08-19T19:04:18.430621Z",
     "media": []
   },
   {
@@ -205,15 +155,6 @@
     "solution": "Un petit réseau social, gardé petit exprès, reconstruit pour comparer des choix de framework et de modélisation sur le même domaine.",
     "role": "Développeur unique, avec l’apprentissage pour objectif.",
     "architecture": "Un seul domaine, plusieurs itérations de backend. Laravel d’abord, puis Java.",
-    "status": "COMPLETED",
-    "projectType": "LEARNING",
-    "featureLevel": "SECONDARY",
-    "technologies": [
-      "Laravel",
-      "PHP",
-      "Java",
-      "REST API"
-    ],
     "features": [
       "Authentification",
       "Profils",
@@ -236,12 +177,8 @@
     "nextSteps": [
       "Documenter les différences entre versions"
     ],
-    "githubUrl": null,
-    "demoUrl": null,
     "seoTitle": "Mini réseau social (étude de cas)",
     "seoDescription": "Un projet d’apprentissage full-stack reconstruit sur deux backends, Laravel et Java.",
-    "openGraphImageUrl": null,
-    "updatedAt": "2026-08-19T19:04:18.431907Z",
     "media": []
   }
 ]

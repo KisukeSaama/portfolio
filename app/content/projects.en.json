@@ -15,20 +15,6 @@
     "solution": "A fully deterministic pipeline: scan, rule-based parsing, TMDB resolution, identity review, plan review, journaled apply. The same folder always produces the same plan. Two explicit gates, and neither can be skipped. Conflicts, duplicates and unsafe Windows paths block the run before it starts.",
     "role": "Sole developer — from product design to packaging.",
     "architecture": "Six separate stages, each one inspectable. The interface never touches a file: it approves a plan. Only the apply stage writes, inside the configured workspace, with a journal that lets an interrupted run be recovered. TMDB is reached through Janus, so no TMDB secret exists anywhere in this project.",
-    "status": "MAINTAINED",
-    "projectType": "PERSONAL",
-    "featureLevel": "PRIMARY",
-    "startedAt": "2026-05-07",
-    "technologies": [
-      "Java 25",
-      "JavaFX 25",
-      "Gradle",
-      "JUnit 5",
-      "TMDB API",
-      "Janus gateway",
-      "Go 1.26",
-      "GitHub Actions"
-    ],
     "features": [
       "Scans AVI, MP4 and MKV",
       "Rule-based parsing of SxxExx, NxNN, absolute numbering, date-based episodes and folder-derived names",
@@ -66,12 +52,8 @@
       "Broaden the release-naming test corpus",
       "Document the parsing rules for contributors"
     ],
-    "githubUrl": "https://github.com/KisukeSaama/episort",
-    "demoUrl": null,
     "seoTitle": "Episort (case study)",
     "seoDescription": "A deterministic JavaFX application that sorts a Plex library behind two review gates.",
-    "openGraphImageUrl": null,
-    "updatedAt": "2026-08-19T19:04:18.427819Z",
     "media": []
   },
   {
@@ -90,26 +72,6 @@
     "solution": "An authenticated proxy. The caller proves its identity, Janus checks the grant, applies the quota, reads the secret from OpenBao, and forwards the request. The secret never crosses back: not in a response, not in a log, not in an error message. Every call is audited under a correlation ID.",
     "role": "Sole developer — from security model to production.",
     "architecture": "A modular monolith, layered controller to service to repository. The HTTP class decides nothing, the service owns the transaction and the audit record, and entities enforce their own invariants. Two independent security chains: one for the console, one for the gateway. PostgreSQL holds identities, connections, grants and audits, never a plaintext secret. Proxied calls run on virtual threads, so concurrency is bounded by the database pool rather than by the servlet container.",
-    "status": "MAINTAINED",
-    "projectType": "PERSONAL",
-    "featureLevel": "PRIMARY",
-    "startedAt": "2026-08-10",
-    "technologies": [
-      "Java 25",
-      "Spring Boot 4",
-      "Virtual threads",
-      "React 19",
-      "TypeScript",
-      "Vite",
-      "Tailwind CSS",
-      "PostgreSQL",
-      "OpenBao",
-      "Maven",
-      "Docker Compose",
-      "Traefik",
-      "nginx",
-      "GitLab CI"
-    ],
     "features": [
       "Authenticated REST gateway, one slug per registered API",
       "Machine identities with 256-bit keys, shown once, stored as BCrypt hashes",
@@ -146,12 +108,8 @@
       "Document the threat model as a page of its own",
       "Widen coverage on the token exchange paths"
     ],
-    "githubUrl": "https://github.com/KisukeSaama/janus",
-    "demoUrl": null,
     "seoTitle": "Janus (case study)",
     "seoDescription": "A self-hosted Spring Boot gateway that keeps API keys out of the applications using them.",
-    "openGraphImageUrl": null,
-    "updatedAt": "2026-08-19T19:04:18.429410Z",
     "media": []
   },
   {
@@ -169,10 +127,6 @@
     "solution": "A personal web application combining search, comparison and application tracking in one flow.",
     "role": "Sole designer and developer.",
     "architecture": "",
-    "status": "CONCEPT",
-    "projectType": "PERSONAL",
-    "featureLevel": "SECONDARY",
-    "technologies": [],
     "features": [],
     "decisions": [],
     "challenges": [],
@@ -182,12 +136,8 @@
       "Define the scope of a first version",
       "Choose the architecture after framing"
     ],
-    "githubUrl": null,
-    "demoUrl": null,
     "seoTitle": "Overkill (case study)",
     "seoDescription": "A personal project at the concept stage for aggregating and tracking job offers in the Paris region.",
-    "openGraphImageUrl": null,
-    "updatedAt": "2026-08-19T19:04:18.430621Z",
     "media": []
   },
   {
@@ -205,15 +155,6 @@
     "solution": "A small social network, kept small on purpose, rebuilt to compare framework and modeling choices on the same domain.",
     "role": "Sole developer, with learning as the goal.",
     "architecture": "One domain, several backend iterations. Laravel first, then Java.",
-    "status": "COMPLETED",
-    "projectType": "LEARNING",
-    "featureLevel": "SECONDARY",
-    "technologies": [
-      "Laravel",
-      "PHP",
-      "Java",
-      "REST API"
-    ],
     "features": [
       "Authentication",
       "Profiles",
@@ -236,12 +177,8 @@
     "nextSteps": [
       "Document the differences between versions"
     ],
-    "githubUrl": null,
-    "demoUrl": null,
     "seoTitle": "Mini social network (case study)",
     "seoDescription": "A full-stack learning project rebuilt across two backends, Laravel and Java.",
-    "openGraphImageUrl": null,
-    "updatedAt": "2026-08-19T19:04:18.431907Z",
     "media": []
   }
 ]

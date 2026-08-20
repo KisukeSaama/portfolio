@@ -16,8 +16,24 @@ export interface ProjectMedia {
   height: number | null;
 }
 
-/** Public case-study content, authored directly in the repository. */
-export interface Project {
+/**
+ * What a project is, rather than what is said about it. None of these change with the language the
+ * page is read in, so they are authored once, in `app/content/project-facts.ts`.
+ */
+export interface ProjectFacts {
+  status: ProjectStatus;
+  projectType: ProjectType;
+  featureLevel: FeatureLevel;
+  startedAt?: string | null;
+  technologies: readonly string[];
+  githubUrl: string | null;
+  demoUrl: string | null;
+  openGraphImageUrl: string | null;
+  updatedAt: string;
+}
+
+/** The prose, written once per language in `projects.<locale>.json`. */
+export interface ProjectCopy {
   title: string;
   slug: string;
   shortDescription: string;
@@ -28,21 +44,15 @@ export interface Project {
   solution: string;
   role: string;
   architecture: string;
-  status: ProjectStatus;
-  projectType: ProjectType;
-  featureLevel: FeatureLevel;
-  startedAt?: string | null;
-  technologies: string[];
   features: string[];
   decisions: string[];
   challenges: string[];
   learnings: string[];
   nextSteps: string[];
-  githubUrl: string | null;
-  demoUrl: string | null;
   seoTitle: string | null;
   seoDescription: string | null;
-  openGraphImageUrl: string | null;
-  updatedAt: string;
   media: ProjectMedia[];
 }
+
+/** A case study as every page consumes it: the facts, joined to the prose for the active language. */
+export type Project = ProjectCopy & ProjectFacts;
