@@ -1439,7 +1439,7 @@ button:disabled,
 .contact-panel {
   --panel-ink: oklch(0.19 0 0);
   --panel-paper: oklch(0.985 0 0);
-  background: var(--orange-action);
+  background: var(--orange);
   color: var(--panel-ink);
   padding: clamp(2rem, 5vw, 4rem);
   border-radius: 0.875rem;

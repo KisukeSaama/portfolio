@@ -35,8 +35,7 @@ test("public navigation, language switch and theme", async ({ page }) => {
     "Full-stack developer",
   );
   await page
-    .getByRole("link", { name: /Read the case study/ })
-    .first()
+    .getByRole("link", { name: "Read the Episort case study" })
     .click();
   await expect(page).toHaveURL(/\/en\/episort$/);
 
