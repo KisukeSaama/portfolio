@@ -5,6 +5,9 @@ const pages = [
   "/en",
   "/fr",
   "/en/journey",
+  "/en/projects",
+  "/en/contact",
+  "/en/legal",
   "/en/episort",
   "/fr/janus",
 ] as const;

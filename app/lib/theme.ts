@@ -2,7 +2,7 @@ export const THEME_STORAGE_KEY = "jonathan-theme";
 export const DARK_THEME_QUERY = "(prefers-color-scheme: dark)";
 
 /** The browser chrome, matched to `--background` in each theme. */
-export const THEME_COLOR = { light: "#f3f3f3", dark: "#282828" } as const;
+export const THEME_COLOR = { light: "#f9f3e9", dark: "#282828" } as const;
 
 export type Theme = keyof typeof THEME_COLOR;
 

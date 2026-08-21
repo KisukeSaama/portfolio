@@ -1,24 +1,25 @@
 @import "tailwindcss";
 
 /**
- * Surfaces carry no hue at all. The warm tint they used to carry read as coffee rather than as the
- * graphite the direction asks for, and at these chroma levels a warm grey cannot look deliberate:
- * it looks like a white that went off. Orange is now the only hue on the page, which is the point.
+ * The light theme is a sunlit workbench rather than the dark theme with its values inverted: an
+ * ivory page, near-white paper and one distinctly beige secondary plane. The chroma stays low
+ * enough to keep the portfolio precise, but the warm ramp gives the orange a material to belong to.
+ * Dark mode keeps its graphite construction below; the two themes share roles, not paint values.
  */
 :root {
   color-scheme: light;
-  --background: oklch(0.965 0 0);
-  --surface: oklch(0.995 0 0);
-  --surface-2: oklch(0.925 0 0);
-  --elevated: oklch(1 0 0);
-  --ink: oklch(0.215 0 0);
-  --muted: oklch(0.44 0 0);
-  --border: oklch(0.85 0 0);
+  --background: oklch(0.965 0.014 78);
+  --surface: oklch(0.99 0.008 78);
+  --surface-2: oklch(0.925 0.028 76);
+  --elevated: oklch(0.998 0.003 78);
+  --ink: oklch(0.23 0.018 60);
+  --muted: oklch(0.46 0.026 62);
+  --border: oklch(0.835 0.028 72);
   /**
    * Section rules are decoration and stay quiet at `--border`. A diagram box is different: its
    * outline is what makes it a box, so it is information and has to clear 3:1 on the page.
    */
-  --border-strong: oklch(0.62 0 0);
+  --border-strong: oklch(0.58 0.04 66);
   /**
    * Hue 58: a tool orange. The ramp used to sit at hue 30-48, which is terracotta â€” it read as
    * salmon, and it is the same corner of the wheel every AI product's brand occupies. Nothing about
@@ -29,11 +30,13 @@
   --orange-action-hover: oklch(0.5 0.12 58);
   --on-orange: oklch(0.99 0 0);
   --orange-soft: oklch(0.8 0.12 62);
-  --orange-deep: oklch(0.5 0.12 58);
-  --orange-light: oklch(0.93 0.045 62);
-  --orange-muted: oklch(0.86 0.055 60);
+  --orange-deep: oklch(0.44 0.07 58);
+  --orange-light: oklch(0.91 0.06 65);
+  --orange-muted: oklch(0.84 0.07 63);
+  --contact-surface: oklch(0.89 0.045 70);
   --focus: oklch(0.63 0.15 58);
-  --shadow: 0 4px 8px oklch(0.2 0 0/0.09);
+  --shadow: 0 2px 8px oklch(0.28 0.025 60/0.1);
+  --shadow-elevated: 0 12px 28px oklch(0.22 0.02 60/0.18);
   --container: 73.75rem;
   /**
    * The page's side margin, and the one number that decides how close the text gets to the glass.
@@ -99,11 +102,13 @@
   --orange-action-hover: oklch(0.76 0.14 58);
   --on-orange: oklch(0.2 0 0);
   --orange-soft: oklch(0.85 0.1 60);
-  --orange-deep: oklch(0.83 0.115 60);
+  --orange-deep: oklch(0.84 0.075 62);
   --orange-light: oklch(0.9 0.065 62);
   --orange-muted: oklch(0.4 0.085 58);
+  --contact-surface: oklch(0.36 0.025 58);
   --focus: oklch(0.8 0.125 58);
   --shadow: 0 4px 8px oklch(0.05 0 0/0.32);
+  --shadow-elevated: 0 12px 28px oklch(0.05 0 0/0.38);
 }
 * {
   box-sizing: border-box;
@@ -290,6 +295,7 @@ p {
   transition:
     background-color 180ms cubic-bezier(0.16, 1, 0.3, 1),
     color 180ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 180ms cubic-bezier(0.16, 1, 0.3, 1),
     transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 .button:hover {
@@ -311,12 +317,9 @@ p {
   box-shadow: inset 0 0 0 1px var(--border-strong);
 }
 .button-secondary:hover {
-  background: var(--orange-light);
-  color: var(--orange-deep);
-  box-shadow: inset 0 0 0 1px var(--orange);
-}
-[data-theme="dark"] .button-secondary:hover {
-  color: var(--on-orange);
+  background: var(--elevated);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--orange-deep);
 }
 .button svg {
   transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
@@ -346,6 +349,11 @@ button:disabled,
   z-index: var(--z-sticky);
   background: var(--background);
   border-bottom: 1px solid var(--border);
+}
+/* In daylight the navigation sits on a clean sheet above the warmer page. Dark mode instead uses
+   tonal depth, so it deliberately keeps the header on the root background. */
+:root:not([data-theme="dark"]) .site-header {
+  background: var(--surface);
 }
 .header-inner {
   min-height: 4.5rem;
@@ -1123,6 +1131,11 @@ button:disabled,
     border-color 180ms cubic-bezier(0.16, 1, 0.3, 1),
     transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
 }
+:root:not([data-theme="dark"]) .availability-card,
+:root:not([data-theme="dark"]) .project-card,
+:root:not([data-theme="dark"]) .catalog-project {
+  box-shadow: var(--shadow);
+}
 .project-card:hover {
   border-color: var(--orange);
   transform: translateY(-2px);
@@ -1556,11 +1569,10 @@ button:disabled,
   font-size: var(--type-small);
 }
 .contact-panel {
-  --panel-ink: oklch(0.19 0 0);
-  --panel-paper: oklch(0.985 0 0);
-  background: var(--orange);
-  color: var(--panel-ink);
+  background: var(--contact-surface);
+  color: var(--ink);
   padding: clamp(2rem, 5vw, 4rem);
+  border: 1px solid var(--border);
   border-radius: 0.875rem;
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) minmax(7rem, 0.35fr) minmax(
@@ -1577,7 +1589,7 @@ button:disabled,
 .contact-panel p {
   max-width: 58ch;
   margin: 1rem 0 0;
-  color: var(--panel-ink);
+  color: var(--ink);
 }
 .contact-panel-brand {
   display: grid;
@@ -1587,25 +1599,6 @@ button:disabled,
   width: clamp(7rem, 11vw, 10rem);
   height: auto;
   transform: rotate(-3deg);
-}
-.contact-panel .button-secondary {
-  background: transparent;
-  color: var(--panel-ink);
-  box-shadow: inset 0 0 0 1px var(--panel-ink);
-}
-.contact-panel .button-secondary:hover {
-  background: var(--panel-paper);
-  color: var(--panel-ink);
-  box-shadow: inset 0 0 0 1px var(--panel-paper);
-}
-/* The panel is already orange, so the primary action inverts instead of stacking orange on orange. */
-.contact-panel .button-primary {
-  background: var(--panel-ink);
-  color: var(--panel-paper);
-}
-.contact-panel .button-primary:hover {
-  background: oklch(0.27 0 0);
-  color: var(--panel-paper);
 }
 .page-hero {
   padding-block: clamp(2.75rem, 5vw, 4.5rem);
@@ -2464,7 +2457,7 @@ dialog {
   background: var(--elevated);
   color: var(--ink);
   width: min(calc(100% - 2rem), 31rem);
-  box-shadow: 0 8px 20px oklch(0.05 0 0/0.3);
+  box-shadow: var(--shadow-elevated);
   /**
    * A modal dialog is centred by the `margin: auto` in the UA stylesheet, and Tailwind's preflight
    * zeroes the margin on every element. Without this it opens in the top-left corner.

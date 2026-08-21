@@ -303,8 +303,9 @@ export const en = {
   },
 
   contactPanel: {
-    title: "Let's talk about September 2026.",
-    body: "Hiring a full-stack apprentice? I am one email away.",
+    title: "Could we work together?",
+    body:
+      "I am looking for a 14-month full-stack apprenticeship starting in September 2026.",
     write: "Write to me",
     seeContact: "View my contact details",
   },
@@ -408,7 +409,7 @@ export const en = {
   },
 
   footer: {
-    tagline: "Problems, decisions, applications that stay up.",
+    tagline: "Build, ship, maintain.",
     legal: "Legal notice",
   },
 

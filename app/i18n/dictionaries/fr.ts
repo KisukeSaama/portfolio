@@ -312,7 +312,7 @@ export const fr: Dictionary = {
   },
 
   contactPanel: {
-    title: "Parlons de septembre 2026.",
+    title: "Et si nous travaillions ensemble ?",
     body: "Vous recrutez un alternant full-stack ? Je suis à un e-mail.",
     write: "M’écrire",
     seeContact: "Voir mes coordonnées",
@@ -411,7 +411,7 @@ export const fr: Dictionary = {
   },
 
   footer: {
-    tagline: "Des problèmes, des choix, des applications qui tiennent debout.",
+    tagline: "Concevoir, livrer, maintenir.",
     legal: "Mentions légales",
   },
 

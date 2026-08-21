@@ -11,7 +11,7 @@ export default function manifest(): MetadataRoute.Manifest {
     description: t.site.ogDescription,
     start_url: `/${defaultLocale}`,
     display: "standalone",
-    background_color: "#f5efe5",
+    background_color: "#f9f3e9",
     theme_color: "#e86f32",
     icons: [
       {
