@@ -5,11 +5,11 @@ export const fr: Dictionary = {
   ogLocale: "fr_FR",
 
   site: {
-    titleDefault: "Jonathan Blanchard | Développeur Java et Spring Boot",
+    titleDefault: "Jonathan Blanchard | Développeur full-stack Java & React",
     titleTemplate: "%s | Jonathan Blanchard",
     applicationName: "Portfolio de Jonathan Blanchard",
     ogDescription:
-      "Deux applications livrées et maintenues, dont une en production sur un serveur que j’exploite moi-même. Alternance de 14 mois à Paris dès septembre 2026.",
+      "Développeur full-stack Java et React à Paris. Je conçois, déploie et maintiens des applications de bout en bout. Alternance dès septembre 2026.",
     skipToContent: "Aller au contenu",
     jobTitle: "Développeur full-stack Java et Spring Boot",
   },
@@ -213,7 +213,7 @@ export const fr: Dictionary = {
 
   home: {
     metaDescription:
-      "Développeur full-stack à Paris : Java, Spring Boot, React. Deux applications en production sur mon propre serveur. Alternance de 14 mois dès septembre 2026.",
+      "Développeur full-stack Java et React à Paris. Je conçois, déploie et maintiens des applications de bout en bout. Alternance dès septembre 2026.",
     viewResume: "Consulter mon CV",
     contactMe: "Me contacter",
     introTitle: "Mon parcours",

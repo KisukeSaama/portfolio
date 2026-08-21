@@ -3,11 +3,11 @@ export const en = {
   ogLocale: "en_US",
 
   site: {
-    titleDefault: "Jonathan Blanchard | Java and Spring Boot developer",
+    titleDefault: "Jonathan Blanchard | Full-stack Java & React developer",
     titleTemplate: "%s | Jonathan Blanchard",
     applicationName: "Jonathan Blanchard's portfolio",
     ogDescription:
-      "Two applications shipped and maintained, one in production on a server I operate myself. Looking for a 14-month apprenticeship in Paris from September 2026.",
+      "Full-stack Java and React developer in Paris. I design, deploy, and maintain applications end to end. Seeking an apprenticeship from September 2026.",
     skipToContent: "Skip to content",
     jobTitle: "Full-stack developer, Java and Spring Boot",
   },
@@ -205,7 +205,7 @@ export const en = {
 
   home: {
     metaDescription:
-      "Full-stack developer in Paris: Java, Spring Boot, React. Two applications in production on my own server. Seeking a 14-month apprenticeship from September 2026.",
+      "Full-stack Java and React developer in Paris. I design, deploy, and maintain applications end to end. Seeking an apprenticeship from September 2026.",
     viewResume: "View my resume",
     contactMe: "Get in touch",
     introTitle: "My journey",
